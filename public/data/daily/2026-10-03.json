@@ -92,35 +92,84 @@
       "id": "20261003-02",
       "date": "2026-10-03",
       "category": "tech",
-      "title": "firelex/jeff: Millisecond decisions, any domain: a 0.8B open",
-      "hook": "jeffhub. ai · Hugging Face · Adapters · Quick start · Changelog\nCommunity preview: Jeff v1.",
-      "story": "jeffhub. ai · Hugging Face · Adapters · Quick start · ChangelogCommunity preview: Jeff v1.\n\nこの現象は、なぜこうなるのだろうか。何が入力され、何に変わっているのか。\n\n仕組みの見方はまだ仮説です。（AI未設定のため仮の文章です。DEEP で自分の言葉に置き換えてください）\n\n同じ構造は、別の分野でも使えるかもしれない。DEEP の7つの質問で分解してみよう。",
+      "title": "巨大なAIを「判断」の最終防衛線にする：Jeffのモデル構造",
+      "hook": "インボックスの整理やラベル付けといった些細な判断に、わざわざ巨大なAIを動かしていませんか。GitHubで公開された「Jeff」は、わずか0.8Bのモデルで高速に判断を下し、自信がない時だけ巨大モデルに助けを求めます。なぜ、あえて小さなAIを先に走らせるのでしょうか。",
+      "story": "多くのAIシステムでは、単純な分類や選択にも巨大な言語モデルが使われ、そのたびに膨大な計算コストと待ち時間を消費しています。しかし、Jeffは「System 1」的な直感に近い判断を0.8Bの超軽量モデルに任せ、重い処理を回避する設計を採用しています。\n\nなぜこの方法が有効なのでしょうか。おそらく、すべての判断に「論理的な推論」が必要なわけではないからです。多くのタスクはパターンマッチングで十分であり、巨大モデルはそのためのオーバースペックなリソースとして機能してしまっている可能性があります。\n\nこのモデルの構造は、AIを「思考の主体」としてではなく、「判断のフィルター」として捉え直している点に特徴があります。軽量なベースモデルにLoRAという軽量な追加学習済みアダプターを差し替えることで、特定の業務に特化した「瞬発力」を確保し、例外的なケースのみを上位のモデルへエスカレーションする階層構造をとっていると考えられます。\n\nこのアプローチは、他の領域にも応用できるかもしれません。例えば、顧客対応やセンサー監視、あるいは複雑な意思決定プロセスにおいて、人間や高度なAIを「最終判断者」として隔離し、日常的な判断をすべて軽量な自動化層で完結させることで、システム全体を劇的に高速化できる可能性があります。ただし、この手法は「判断の自信度」が正確に算出できることが前提となります。",
       "sourceTitle": "firelex/jeff: Millisecond decisions, any domain: a 0.8B open \"System 1\" model that picks between your options with calibrated probabilities. One base, swappable LoRA adapters, on your own hardware.",
       "sourceUrl": "https://github.com/firelex/jeff",
       "sourceDate": "2026-09-28",
       "sourceName": "GitHub（最近伸びているリポジトリ）",
       "image": "https://opengraph.githubassets.com/1/firelex/jeff",
-      "observation": "jeffhub.ai · Hugging Face · Adapters · Quick start · Changelog\nCommunity preview: Jeff v1.2 and nine adapters (1 October 2026). Try them and tell us what works ( issues ). A stable long-term-support base, v1.3 , is due in about 36 hours; the official adapters will be retrained on it shortly after. A",
-      "input": "（未分析）何が入っている？ 情報・時間・材料・人・エネルギーなど",
-      "inputTypes": [],
-      "transformation": "（未分析）何 → 何 に変えている？",
-      "why": "（AI未設定のため仮の文章です。DEEP で自分の言葉に置き換えてください）",
-      "speed": "（未分析）なぜ速い・軽い・手間が少ない？",
-      "speedTypes": [],
-      "discard": "（未分析）何を捨てている？",
-      "discardTypes": [],
-      "tradeoff": "（未分析）何 ↔ 何？",
-      "minimumStructure": "（未分析）要素 + 関係 + ルール",
-      "removePurpose": "（未分析）元の用途を消すと「〜する構造」？",
-      "principleCandidate": "GitHub・技術の現象から：まだ原理候補はありません",
-      "counterexample": "（未分析）成立しない例は？",
-      "transferIdeas": [],
-      "hypothesis": "",
-      "boundary": [],
-      "invert": "",
-      "tags": [],
-      "transferability": 0.3,
-      "aiProvider": "mock",
+      "observation": "Jeffは0.8Bのモデルで選択肢から回答を選び、不確かな場合のみQwen3.8-27Bへクエリを転送する。LoRAアダプターを差し替えることで特定の業務精度を向上させ、生成テキストではなく確率を出力する。",
+      "input": "状況説明と選択肢のリスト",
+      "inputTypes": [
+        "情報",
+        "制約",
+        "ルール"
+      ],
+      "transformation": "状況と選択肢の組み合わせ → 各選択肢の確率分布",
+      "why": "推論（テキスト生成）と判断（確率選択）を分離し、単純な判断を小さなモデルで完結させ、例外のみを大きなモデルに委ねる階層構造をとっているため。",
+      "speed": "生成プロセスを排除し、単一のフォワードパスで確率を算出するため。",
+      "speedTypes": [
+        "計算量削減",
+        "判断回数削減",
+        "全体把握を捨てている"
+      ],
+      "discard": "テキスト生成能力、多段階の推論プロセス",
+      "discardTypes": [
+        "汎用性",
+        "完璧さ"
+      ],
+      "tradeoff": "瞬発的な判断力 ↔ 深い論理的推論",
+      "minimumStructure": "軽量な判断モデル + 特定タスク用アダプター + 巨大な判断モデルへのエスカレーション経路",
+      "removePurpose": "不確実な入力を振り分け、確実な入力を即時に処理する構造。",
+      "principleCandidate": "複雑な課題を解く際、まず軽量なモデルで「確実な判断」を済ませ、残った例外のみを高度なリソースに委ねることで全体の負荷を下げる。",
+      "counterexample": "判断の基準が頻繁に変わる環境や、判断そのものに高度な文脈理解が必要な場合は、軽量モデルの精度が追いつかず、かえって二度手間になる可能性がある。",
+      "transferIdeas": [
+        "コールセンターの着信振り分けにおいて、定型判断を自動化し、複雑なクレームのみを熟練オペレーターに回す。",
+        "製造ラインの検品で、軽量モデルが良品を高速選別し、異常検知時のみ高精度なカメラと解析AIを起動する。",
+        "ニュース配信において、軽量モデルがユーザーの興味を即時判定し、詳細なレコメンドはバックグラウンドで行う。"
+      ],
+      "hypothesis": "判断の「自信度」の閾値を調整することで、全体の処理速度と精度のトレードオフを動的に制御できるはずである。",
+      "boundary": [
+        {
+          "probe": "10倍なら？",
+          "answer": "処理の階層が深くなり、レイテンシと精度のバランスをさらに細かく調整する必要が出る。"
+        },
+        {
+          "probe": "1/100なら？",
+          "answer": "単純なルールベースの判定と変わらなくなり、AIを使うメリットが消失する。"
+        },
+        {
+          "probe": "ノイズが入ったら？",
+          "answer": "小さなモデルは確率の分布が平坦になり、すべて巨大モデルへ転送されるようになる。"
+        },
+        {
+          "probe": "人間を消したら？",
+          "answer": "システムは自己完結するが、判定不能なケースが放置されるリスクが生じる。"
+        },
+        {
+          "probe": "人間が介入したら？",
+          "answer": "人間が「巨大モデル」の役割を担い、AIが人間の判断を補助する形になる。"
+        },
+        {
+          "probe": "リアルタイムなら？",
+          "answer": "この階層構造が必須となり、巨大モデルを常駐させないための最適解となる。"
+        },
+        {
+          "probe": "巨大化したら？",
+          "answer": "メモリ消費が激しくなり、エッジ環境での動作が困難になる。"
+        }
+      ],
+      "invert": "高度なAIがすべての判断を行い、納得できない場合のみ、人間や軽量なモデルに「再検討」を依頼する構造。品質保証や監査プロセスに利用できる。",
+      "tags": [
+        "AI",
+        "アーキテクチャ",
+        "最適化",
+        "GitHub"
+      ],
+      "transferability": 0.8,
+      "aiProvider": "gemini",
       "saved": false
     },
     {
@@ -210,35 +259,83 @@
       "id": "20261003-04",
       "date": "2026-10-03",
       "category": "mind",
-      "title": "Surprisingly Complex Waves Reveal the Brain’s Inner Workings",
-      "hook": "I get out of bed. I walk through the dimly lit hallway, thinking of what’s in my fridge and what I should have for breakfast.",
-      "story": "I get out of bed. I walk through the dimly lit hallway, thinking of what’s in my fridge and what I should have for breakfast.\n\nこの現象は、なぜこうなるのだろうか。何が入力され、何に変わっているのか。\n\n仕組みの見方はまだ仮説です。（AI未設定のため仮の文章です。DEEP で自分の言葉に置き換えてください）\n\n同じ構造は、別の分野でも使えるかもしれない。DEEP の7つの質問で分解してみよう。",
+      "title": "脳内の「波」が示す、リアルタイムな情報処理の設計図",
+      "hook": "朝、目が覚めて冷蔵庫の中身を思い浮かべながら歩くとき、脳は瞬時に環境を把握し、記憶を呼び出し、身体の状態を整えている。この一連の動作には、膨大な計算が必要なはずだが、私たちは何の努力も感じない。なぜ脳は、これほど複雑な処理をいとも簡単にやってのけるのか。",
+      "story": "脳内では、何十億ものニューロンが電気信号をやり取りしている。かつて科学者は、この電気活動を「エンジンが回っている音」のようなものだと考えていた。しかし、最新の研究では、ニューロンの活動が単なる背景音ではなく、渦を巻いたり収束したりする「波」となって脳内を伝播していることが明らかになった。\n\nなぜ、この「波」が重要なのか。ニューロン同士の結合の組み換えには通常、数日から数ヶ月という時間がかかる。しかし、私たちの行動は秒単位で変化する。研究者たちは、この物理的な波のパターンが、脳の回路をリアルタイムで再構成し、その瞬間の課題に適した状態へと瞬時に調整しているのではないかと推測している。\n\nこの見方は、脳を「固定された回路」ではなく「動的な干渉パターン」として捉えることを可能にする。複雑な計算を個々のニューロンのスイッチングで行うのではなく、全体を横断する波の干渉によって、処理の優先順位や方向性を決定しているという構造だ。\n\nこの原理を転用すれば、固定されたハードウェアに依存しない柔軟な情報処理システムが作れるかもしれない。例えば、物理的な配線を変えずに、信号の干渉パターンだけで処理ロジックを動的に書き換えるアルゴリズムや、膨大なノードを持つネットワークの制御に応用できる可能性がある。ただし、この波が単なる副産物である可能性も否定できず、どこまでが制御主体で、どこまでが結果なのかの境界を見極める必要がある。",
       "sourceTitle": "Surprisingly Complex Waves Reveal the Brain’s Inner Workings",
       "sourceUrl": "https://www.quantamagazine.org/surprisingly-complex-waves-reveal-the-brains-inner-workings-20260930/",
       "sourceDate": "2026-09-30",
       "sourceName": "Quanta Magazine",
       "image": "https://www.quantamagazine.org/wp-content/uploads/2026/09/Thought-Geometry-cr.Mark-Belan-Default.webp",
-      "observation": "I get out of bed. I walk through the dimly lit hallway, thinking of what’s in my fridge and what I should have for breakfast. With no real effort, I’ve navigated my environment, accessed my memory, and assessed the energetic state of my body, all in the space of a few seconds. How is the brain able",
-      "input": "（未分析）何が入っている？ 情報・時間・材料・人・エネルギーなど",
-      "inputTypes": [],
-      "transformation": "（未分析）何 → 何 に変えている？",
-      "why": "（AI未設定のため仮の文章です。DEEP で自分の言葉に置き換えてください）",
-      "speed": "（未分析）なぜ速い・軽い・手間が少ない？",
-      "speedTypes": [],
-      "discard": "（未分析）何を捨てている？",
-      "discardTypes": [],
-      "tradeoff": "（未分析）何 ↔ 何？",
-      "minimumStructure": "（未分析）要素 + 関係 + ルール",
-      "removePurpose": "（未分析）元の用途を消すと「〜する構造」？",
-      "principleCandidate": "心理・人間行動の現象から：まだ原理候補はありません",
-      "counterexample": "（未分析）成立しない例は？",
-      "transferIdeas": [],
-      "hypothesis": "",
-      "boundary": [],
-      "invert": "",
-      "tags": [],
-      "transferability": 0.3,
-      "aiProvider": "mock",
+      "observation": "脳内の電気活動は、ニューロン群の集団的な波として伝播する。2026年4月の研究では、発生源から広がる波、一点に収束する波、渦巻く波などが観測され、それぞれ異なる行動タスクと関連していることが確認された。これらの波は、日常的な行動ニーズに合わせ、脳の状態をリアルタイムで再構成している可能性がある。",
+      "input": "",
+      "inputTypes": [
+        "エネルギー",
+        "位置",
+        "行動"
+      ],
+      "transformation": "局所的な神経発火 → 全体的な干渉波形",
+      "why": "個別のニューロン変化は低速だが、波の干渉によるパターン形成は瞬時に広域な情報処理状態を定義できるため。",
+      "speed": "個別の接続変更を待たず、物理的な波の伝播によって広域的な同期状態を即座に作り出している。",
+      "speedTypes": [
+        "並列処理",
+        "全体把握を捨てている"
+      ],
+      "discard": "個別のニューロンの接続状態の固定性",
+      "discardTypes": [
+        "精度",
+        "完璧さ"
+      ],
+      "tradeoff": "処理の柔軟性 ↔ 個別の信号の正確な制御",
+      "minimumStructure": "多数の独立した振動体 + 伝播媒体 + 干渉によるパターン形成",
+      "removePurpose": "動的な物理干渉によって状態を同期させる構造",
+      "principleCandidate": "動的な干渉パターンが、物理的接続を介さずに広域的な状態遷移を制御する。",
+      "counterexample": "波は単に神経活動の副産物であり、情報処理の本体はあくまで個別のニューロン発火の連鎖である可能性。",
+      "transferIdeas": [
+        "多数の小型ドローンを通信なしで、空気の渦や光の干渉パターンを介して編隊飛行させる制御技術。",
+        "大規模な製造ラインにおいて、個別のセンサー監視ではなく、工場内の振動パターンで異常を検知・修正する仕組み。",
+        "サーバーの負荷分散において、リクエストの「波」を物理的に干渉させ、重い処理を自然に回避させるルーティング手法。"
+      ],
+      "hypothesis": "脳内の波のパターンを外部から干渉（磁気刺激等）で操作すると、特定の行動課題の切り替え速度が変化するはずである。",
+      "boundary": [
+        {
+          "probe": "10倍なら？",
+          "answer": "処理の解像度は上がるが、ノイズの干渉により収束が困難になる可能性がある。"
+        },
+        {
+          "probe": "1/100なら？",
+          "answer": "リアルタイムな行動適応が追いつかず、反応が極めて遅くなる。"
+        },
+        {
+          "probe": "ノイズが入ったら？",
+          "answer": "パターンが崩れ、広域的な同期が取れず機能不全を起こす。"
+        },
+        {
+          "probe": "人間を消したら？",
+          "answer": "物理的な振動体さえあれば、同様の干渉現象は発生しうる。"
+        },
+        {
+          "probe": "人間が介入したら？",
+          "answer": "意識的な注意が波のパターンを誘導し、特定の処理を強化する可能性がある。"
+        },
+        {
+          "probe": "リアルタイムなら？",
+          "answer": "常に現在進行形で動的な最適化が繰り返される。"
+        },
+        {
+          "probe": "巨大化したら？",
+          "answer": "伝播遅延により、全体を同期させるためのより複雑な階層構造が必要になる。"
+        }
+      ],
+      "invert": "波をあえて打ち消す「逆位相」の信号を流すことで、特定の広域的な脳活動を強制的に停止させる。",
+      "tags": [
+        "脳科学",
+        "動的システム",
+        "干渉パターン",
+        "自己組織化"
+      ],
+      "transferability": 0.8,
+      "aiProvider": "gemini",
       "saved": false
     },
     {
