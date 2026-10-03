@@ -14,7 +14,7 @@ import { DAILY_SUBJECT, appLink, buildDailyEmail, buildPauseEmail, escapeHtml } 
 import { MONDAY, SUNDAY, tempData } from './helpers.ts';
 import type { EmailContent } from '../scripts/mail/template.ts';
 
-const sample = JSON.parse(await readFile(path.join(ROOT, 'public/data/daily/2026-10-03.json'), 'utf8')) as DailyFile;
+const sample = JSON.parse(await readFile(path.join(ROOT, 'tests/fixtures/sample-daily.json'), 'utf8')) as DailyFile;
 const APP = 'https://nakajima-yuji.github.io/principle-loop/';
 
 function recorder() {

@@ -114,24 +114,53 @@ export function withLimits(
   };
 }
 
-/** AI の返答から JSON を取り出す（```json で囲まれていても、前後に文があっても読む） */
+/**
+ * 文字列の中から、最初の「完結した」JSON（{...} または [...]）だけを切り出す。
+ * 文字列リテラル内の括弧やエスケープを考慮する。見つからなければ null。
+ * AI は JSON の後ろに 2 つ目の JSON や説明文を付けることがあるため（"Unexpected non-whitespace character after JSON"）。
+ */
+export function extractFirstJson(text: string): string | null {
+  const start = text.search(/[[{]/);
+  if (start < 0) return null;
+  const stack: string[] = [];
+  let inString = false;
+  let escaped = false;
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (ch === '\\') escaped = true;
+      else if (ch === '"') inString = false;
+      continue;
+    }
+    if (ch === '"') inString = true;
+    else if (ch === '{' || ch === '[') stack.push(ch === '{' ? '}' : ']');
+    else if (ch === '}' || ch === ']') {
+      if (stack.pop() !== ch) return null;
+      if (stack.length === 0) return text.slice(start, i + 1);
+    }
+  }
+  return null;
+}
+
+/** AI の返答から JSON を取り出す（```json で囲まれていても、前後に文や 2 つ目の JSON があっても読む） */
 export function parseJsonLoose<T = unknown>(text: string): T {
-  const cleaned = text.replace(/^﻿/, '').trim();
+  const cleaned = text.replace(/^\uFEFF/, '').trim();
   try {
     return JSON.parse(cleaned) as T;
   } catch {
     // 続けて抜き出しを試す
   }
   const fence = /```(?:json)?\s*([\s\S]*?)```/i.exec(cleaned);
-  if (fence) {
+  for (const candidate of [fence?.[1], cleaned]) {
+    if (!candidate) continue;
+    const first = extractFirstJson(candidate);
+    if (!first) continue;
     try {
-      return JSON.parse(fence[1]) as T;
+      return JSON.parse(first) as T;
     } catch {
-      // 続けて試す
+      // 次の候補へ
     }
   }
-  const start = cleaned.search(/[[{]/);
-  const end = Math.max(cleaned.lastIndexOf('}'), cleaned.lastIndexOf(']'));
-  if (start >= 0 && end > start) return JSON.parse(cleaned.slice(start, end + 1)) as T;
   throw new SyntaxError('AI の応答から JSON を読み取れませんでした');
 }

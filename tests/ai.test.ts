@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { createGeminiProvider } from '../src/ai/gemini.ts';
 import { createProvider } from '../src/ai/index.ts';
-import { AIBudgetError, AIError, parseJsonLoose, withLimits, type AIProvider } from '../src/ai/provider.ts';
+import { AIBudgetError, AIError, extractFirstJson, parseJsonLoose, withLimits, type AIProvider } from '../src/ai/provider.ts';
 
 const limits = { maxRequests: 3, minIntervalMs: 0, maxRetries: 2, maxPromptChars: 50, maxOutputTokens: 100 };
 const noWait = async () => undefined;
@@ -55,6 +55,15 @@ test('AI の応答から JSON を取り出す', () => {
   assert.deepEqual(parseJsonLoose('はい。\n```json\n{"a":2}\n```\n以上'), { a: 2 });
   assert.deepEqual(parseJsonLoose('結果: {"a":3} です'), { a: 3 });
   assert.throws(() => parseJsonLoose('なし'));
+});
+
+test('JSON の後ろに 2 つ目の JSON や文が付いていても、最初の JSON を読む（実際に Gemini で起きた）', () => {
+  assert.deepEqual(parseJsonLoose('{"a":1}\n{"a":2}'), { a: 1 });
+  assert.deepEqual(parseJsonLoose('{"a":{"b":[1,2]}}\n```'), { a: { b: [1, 2] } });
+  assert.deepEqual(parseJsonLoose('{"s":"括弧 } や { と \\" を含む"}\n以上です。{"x":1}'), { s: '括弧 } や { と " を含む' });
+  assert.deepEqual(parseJsonLoose('```json\n{"a":5}\n{"a":6}\n```'), { a: 5 });
+  assert.equal(extractFirstJson('前置き [1,[2,3]] 後ろ'), '[1,[2,3]]');
+  assert.equal(extractFirstJson('{"a":'), null);
 });
 
 test('Gemini：キーは URL ではなくヘッダーで送る。JSON モード。429 は再試行可能', async () => {

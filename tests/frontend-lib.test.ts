@@ -14,9 +14,9 @@ import { dateFromItemId, formatJaDate, makeItemId } from '../src/shared/time.ts'
 import type { DailyFile, DiaryEntry } from '../src/shared/types.ts';
 import { ROOT } from '../scripts/lib/paths.ts';
 
-const sample = JSON.parse(await readFile(path.join(ROOT, 'public/data/daily/2026-10-03.json'), 'utf8')) as DailyFile;
+const sample = JSON.parse(await readFile(path.join(ROOT, 'tests/fixtures/sample-daily.json'), 'utf8')) as DailyFile;
 
-test('サンプルの DAILY：7件・7分野・必須フィールド・事実と解釈が分かれている', () => {
+test('サンプルの DAILY（tests/fixtures）：7件・7分野・必須フィールド・事実と解釈が分かれている', () => {
   assert.equal(sample.items.length, 7);
   assert.deepEqual(
     sample.items.map((i) => i.category),
