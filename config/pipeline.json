@@ -1,0 +1,23 @@
+{
+  "_comment": "夜間処理の上限値。無料枠を守るための安全装置。GitHub の Variables（同じ名前の大文字・例 AI_MAX_REQUESTS_PER_DAY）で上書きできる。",
+  "inactivityLimitDays": 10,
+  "collectMaxTotal": 160,
+  "candidatesForAi": 30,
+  "maxItemAgeDays": 10,
+  "dedupeLookbackDays": 180,
+  "maxPerSourceInCandidates": 4,
+  "ai": {
+    "maxRequestsPerRun": 12,
+    "maxRequestsPerDay": 20,
+    "maxRetries": 2,
+    "minIntervalMs": 6500,
+    "maxPromptChars": 14000,
+    "maxOutputTokens": 8192,
+    "articleChars": 3500
+  },
+  "fetch": {
+    "timeoutMs": 15000,
+    "maxBytes": 3000000,
+    "concurrency": 4
+  }
+}

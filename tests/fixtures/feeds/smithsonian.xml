@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>History (fixture)</title>
+<item>
+  <title>Medieval guilds kept secrets alive by making apprentices rebuild the same tools</title>
+  <link>https://example.org/history/guild-tools</link>
+  <description>Historians studying guild records found that apprentices were required to remake the master's tools from scratch every few years. Rather than writing down methods, the guilds preserved know-how by repeating the act of making.</description>
+  <pubDate>Sat, 03 Oct 2026 10:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>The board game that taught Victorian children to navigate railways</title>
+  <link>https://example.org/history/railway-game</link>
+  <description>A 19th-century board game simplified the British railway network into a few rules about connections and transfers. Players learned the network's structure by playing, not by memorizing timetables, a design that discarded accuracy for teachability.</description>
+  <pubDate>Sun, 04 Oct 2026 10:00:00 GMT</pubDate>
+</item>
+</channel></rss>

@@ -1,0 +1,33 @@
+{
+  "_comment": "情報源の一覧。enabled を false にすると使わない。category は既定の分野（nature/tech/science/mind/build/culture/foreign）。classify=true の情報源は本文のキーワードで分野を振り分け直す。foreign=true は「異物」の候補。どれか一つが失敗しても全体は止まらない。",
+  "sources": [
+    { "id": "arxiv-self-organizing", "name": "arXiv（自己組織化・適応系）", "type": "rss", "url": "https://rss.arxiv.org/rss/nlin.AO", "category": "science", "max": 12, "weight": 1.1 },
+    { "id": "arxiv-populations", "name": "arXiv（個体群・進化）", "type": "rss", "url": "https://rss.arxiv.org/rss/q-bio.PE", "category": "nature", "max": 10 },
+    { "id": "arxiv-multiagent", "name": "arXiv（マルチエージェント）", "type": "rss", "url": "https://rss.arxiv.org/rss/cs.MA", "category": "tech", "max": 10 },
+    { "id": "arxiv-physics-society", "name": "arXiv（物理と社会）", "type": "rss", "url": "https://rss.arxiv.org/rss/physics.soc-ph", "category": "mind", "max": 10 },
+    { "id": "hacker-news", "name": "Hacker News", "type": "hn", "category": "tech", "classify": true, "minPoints": 120, "max": 30, "allowShort": true },
+    { "id": "github-rising", "name": "GitHub（最近伸びているリポジトリ）", "type": "github", "category": "tech", "max": 15, "allowShort": true },
+    { "id": "phys-org-biology", "name": "Phys.org Biology", "type": "rss", "url": "https://phys.org/rss-feed/biology-news/", "category": "nature", "max": 15 },
+    { "id": "phys-org-physics", "name": "Phys.org Physics", "type": "rss", "url": "https://phys.org/rss-feed/physics-news/", "category": "science", "max": 15 },
+    { "id": "phys-org-tech", "name": "Phys.org Technology", "type": "rss", "url": "https://phys.org/rss-feed/technology-news/", "category": "tech", "classify": true, "max": 12 },
+    { "id": "sciencedaily-animals", "name": "ScienceDaily Plants & Animals", "type": "rss", "url": "https://www.sciencedaily.com/rss/plants_animals.xml", "category": "nature", "max": 12 },
+    { "id": "sciencedaily-mind", "name": "ScienceDaily Mind & Brain", "type": "rss", "url": "https://www.sciencedaily.com/rss/mind_brain.xml", "category": "mind", "max": 12 },
+    { "id": "sciencedaily-matter", "name": "ScienceDaily Matter & Energy", "type": "rss", "url": "https://www.sciencedaily.com/rss/matter_energy.xml", "category": "science", "classify": true, "max": 12 },
+    { "id": "quanta", "name": "Quanta Magazine", "type": "rss", "url": "https://www.quantamagazine.org/feed/", "category": "science", "classify": true, "max": 10, "weight": 1.2 },
+    { "id": "knowable", "name": "Knowable Magazine", "type": "rss", "url": "https://knowablemagazine.org/rss", "category": "science", "classify": true, "max": 10, "weight": 1.1 },
+    { "id": "psypost", "name": "PsyPost", "type": "rss", "url": "https://www.psypost.org/feed/", "category": "mind", "max": 12 },
+    { "id": "mit-news", "name": "MIT News", "type": "rss", "url": "https://news.mit.edu/rss/research", "category": "tech", "classify": true, "max": 12 },
+    { "id": "dezeen", "name": "Dezeen", "type": "rss", "url": "https://www.dezeen.com/feed/", "category": "build", "max": 12 },
+    { "id": "designboom", "name": "designboom", "type": "rss", "url": "https://www.designboom.com/feed/", "category": "build", "max": 12 },
+    { "id": "archdaily", "name": "ArchDaily", "type": "rss", "url": "https://www.archdaily.com/feed", "category": "build", "max": 10 },
+    { "id": "hackaday", "name": "Hackaday", "type": "rss", "url": "https://hackaday.com/blog/feed/", "category": "build", "classify": true, "max": 12 },
+    { "id": "smithsonian", "name": "Smithsonian Magazine", "type": "rss", "url": "https://www.smithsonianmag.com/rss/latest_articles/", "category": "culture", "classify": true, "max": 12 },
+    { "id": "public-domain-review", "name": "The Public Domain Review", "type": "rss", "url": "https://publicdomainreview.org/rss.xml", "category": "culture", "foreign": true, "evergreen": true, "max": 8, "weight": 1.1 },
+    { "id": "atlas-obscura", "name": "Atlas Obscura", "type": "rss", "url": "https://www.atlasobscura.com/feeds/latest", "category": "foreign", "foreign": true, "max": 12, "weight": 1.1 },
+    { "id": "wikipedia-featured", "name": "Wikipedia（今日の記事・今日は何の日）", "type": "wikipedia", "category": "foreign", "foreign": true, "evergreen": true, "max": 8 },
+    { "id": "reddit-everything-science", "name": "Reddit r/EverythingScience", "type": "rss", "url": "https://www.reddit.com/r/EverythingScience/top/.rss?t=day", "category": "science", "classify": true, "max": 10 },
+    { "id": "nazology", "name": "ナゾロジー", "type": "rss", "url": "https://nazology.kusuguru.co.jp/feed", "category": "science", "classify": true, "lang": "ja", "max": 10 },
+    { "id": "karapaia", "name": "カラパイア", "type": "rss", "url": "https://karapaia.com/index.rdf", "category": "foreign", "classify": true, "foreign": true, "lang": "ja", "max": 10 },
+    { "id": "gigazine", "name": "GIGAZINE", "type": "rss", "url": "https://gigazine.net/news/rss_2.0/", "category": "tech", "classify": true, "lang": "ja", "max": 12, "weight": 0.9 }
+  ]
+}

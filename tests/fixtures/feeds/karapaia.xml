@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel rdf:about="https://example.org/karapaia"><title>不思議ニュース（テスト）</title></channel>
+<item rdf:about="https://example.org/karapaia/sand-dunes">
+  <title>砂丘が「歌う」仕組み、砂粒の大きさがそろうと音程が決まる</title>
+  <link>https://example.org/karapaia/sand-dunes</link>
+  <description>砂丘の斜面を砂が流れ落ちるとき、低い音が鳴り響くことがある。研究によると、砂粒の大きさがそろっているほど、粒同士がそろって動き、特定の音程が生まれるという。粒の大きさがばらばらだと音は鳴らない。</description>
+  <dc:date>2026-10-04T09:00:00+09:00</dc:date>
+</item>
+<item rdf:about="https://example.org/karapaia/bees-vote">
+  <title>ミツバチの群れは「多数決」ではなく「先に一定数集まった方」で引っ越し先を決める</title>
+  <link>https://example.org/karapaia/bees-vote</link>
+  <description>巣分かれしたミツバチは、偵察バチが候補地に一定数集まった時点で決定する。全員の意見を集めず、しきい値に達した瞬間に決めることで、速さと正確さのバランスを取っていると考えられている。</description>
+  <dc:date>2026-10-03T20:00:00+09:00</dc:date>
+</item>
+</rdf:RDF>

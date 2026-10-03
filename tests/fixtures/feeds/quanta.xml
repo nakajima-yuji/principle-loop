@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<title>Quanta (fixture)</title>
+<entry>
+  <title>Why random shaking sorts mixed particles by size</title>
+  <link rel="alternate" href="https://example.org/quanta/random-shaking" />
+  <updated>2026-10-03T08:00:00Z</updated>
+  <summary type="html">&lt;p&gt;Physicists revisit the puzzle of granular segregation. Random vibration plus a one-way asymmetry, where small grains can fall into gaps but large ones cannot, appears to be enough to produce order without any sorting decision.&lt;/p&gt;</summary>
+</entry>
+<entry>
+  <title>A mathematician proves that greedy algorithms are optimal for a surprising class of puzzles</title>
+  <link rel="alternate" href="https://example.org/quanta/greedy-proof" />
+  <updated>2026-10-04T08:00:00Z</updated>
+  <summary>The proof explains why discarding look-ahead, a seemingly reckless shortcut, gives exactly the best answer when the puzzle has a particular exchange structure. Outside that structure, the same shortcut fails badly.</summary>
+</entry>
+<entry>
+  <title>The geometry of crumpled paper follows a simple rule</title>
+  <link rel="alternate" href="https://example.org/quanta/crumpled-paper" />
+  <updated>2026-10-02T08:00:00Z</updated>
+  <summary>When a sheet is crumpled again and again, the total length of its creases grows logarithmically. Researchers model each new crease as fragmenting existing facets, a rule that ignores the sheet's history beyond its current facets.</summary>
+</entry>
+</feed>

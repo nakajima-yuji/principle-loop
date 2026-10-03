@@ -1,0 +1,37 @@
+{
+  "name": "principle-loop",
+  "private": true,
+  "version": "0.1.0",
+  "description": "PRINCIPLE LOOP — 世界の現象から転用可能な原理を見つけ、分解し、保存し、試すための思考装置",
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json",
+    "test": "node --test \"tests/**/*.test.ts\"",
+    "check": "npm run typecheck && npm test && npm run build && node scripts/check-dist.ts",
+    "collect": "node scripts/run.ts --mode=collect",
+    "generate": "node scripts/run.ts --mode=generate",
+    "mail": "node scripts/run.ts --mode=mail",
+    "mail:test": "node scripts/run.ts --mode=mail-test",
+    "status": "node scripts/run.ts --mode=status"
+  },
+  "dependencies": {
+    "nodemailer": "^10.0.13",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "@types/nodemailer": "^8.0.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2"
+  }
+}

@@ -1,0 +1,7 @@
+{"hits":[
+ {"title":"Show HN: My weekend project","url":"https://example.org/hn/show","points":300,"created_at":"2026-10-04T10:00:00Z","objectID":"1"},
+ {"title":"Why our cache got faster when we made it forget more","url":"https://example.org/hn/cache-forgetting","points":420,"created_at":"2026-10-04T08:00:00Z","objectID":"2"},
+ {"title":"A database that never updates in place, only appends","url":"https://example.org/hn/append-only","points":260,"created_at":"2026-10-04T05:00:00Z","objectID":"3"},
+ {"title":"Company X raises $200M in funding round led by investors","url":"https://example.org/hn/funding","points":180,"created_at":"2026-10-04T06:00:00Z","objectID":"4"},
+ {"title":"The physics of why bike wheels stay upright","url":"https://example.org/hn/bike-physics","points":350,"created_at":"2026-10-04T07:00:00Z","objectID":"5"}
+]}

@@ -1,0 +1,5 @@
+{"items":[
+ {"full_name":"example/tiny-crdt","description":"A 300-line CRDT that lets every device edit offline and merge later without a server","html_url":"https://github.com/example/tiny-crdt","stargazers_count":1200,"language":"TypeScript","topics":["crdt","local-first"],"created_at":"2026-10-01T00:00:00Z","fork":false},
+ {"full_name":"example/boids-in-one-file","description":"Flocking simulation where each bird sees only 3 neighbors","html_url":"https://github.com/example/boids-in-one-file","stargazers_count":800,"language":"JavaScript","topics":["simulation","emergence"],"created_at":"2026-09-30T00:00:00Z","fork":false},
+ {"full_name":"example/no-desc","description":null,"html_url":"https://github.com/example/no-desc","stargazers_count":900,"created_at":"2026-09-30T00:00:00Z","fork":false}
+]}

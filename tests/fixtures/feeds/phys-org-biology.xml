@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+<title>Biology News (fixture)</title>
+<item>
+  <title>Ants build living bridges by following one local rule: stop when someone walks over you</title>
+  <link>https://example.org/news/ant-bridges?utm_source=rss&amp;utm_medium=feed</link>
+  <description><![CDATA[<p>Army ants form bridges out of their own bodies to shorten their path across gaps. Researchers found that each ant follows a simple rule: if it feels traffic passing over it, it freezes in place; when traffic drops, it leaves. The bridge grows and shrinks without any ant knowing the overall shape, trading workers for shorter travel time.</p>]]></description>
+  <pubDate>Sat, 03 Oct 2026 14:00:00 GMT</pubDate>
+  <media:thumbnail url="https://example.org/img/ants.jpg" />
+</item>
+<item>
+  <title>Ants build living bridges by following one local rule (duplicate copy)</title>
+  <link>https://example.org/news/ant-bridges/</link>
+  <description>Duplicate entry of the same story with a slightly different URL and enough text to pass the weak filter easily for testing.</description>
+  <pubDate>Sat, 03 Oct 2026 14:05:00 GMT</pubDate>
+</item>
+<item>
+  <title>How fungal networks decide which tree gets the nutrients</title>
+  <link>https://example.org/news/fungal-networks</link>
+  <description>Underground fungal threads connect trees across a forest. A new study suggests the network routes more carbon toward connections that are used more often, and lets unused threads wither, a pattern similar to self-organizing transport networks.</description>
+  <pubDate>Sun, 04 Oct 2026 09:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Sponsored: The best lab microscope deals of the week</title>
+  <link>https://example.org/deals/microscopes</link>
+  <description>Save 30% off on selected microscopes. Limited time offer for readers. Buy now and get a free sample kit with every order placed this week.</description>
+  <pubDate>Sun, 04 Oct 2026 10:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Octopus arms make decisions without asking the brain</title>
+  <link>https://example.org/news/octopus-arms</link>
+  <description>Two thirds of an octopus's neurons sit in its arms. Experiments show each arm can explore and grab food using local sensing, reporting to the central brain only occasionally. The animal trades central control for fast parallel exploration.</description>
+  <pubDate>Sun, 04 Oct 2026 12:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Short</title>
+  <link>https://example.org/news/short</link>
+  <description>Too short.</description>
+  <pubDate>Sun, 04 Oct 2026 12:30:00 GMT</pubDate>
+</item>
+</channel>
+</rss>

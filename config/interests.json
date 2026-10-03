@@ -1,0 +1,14 @@
+{
+  "_comment": "あなたの興味のキーワード。合う記事の点数を少し上げる（70〜80%は興味に近いもの）。ただし「異物」と探索枠で20〜30%は未知の領域を残す。日本語・英語どちらでも書ける。",
+  "keywords": [
+    "ゲーム", "game", "遊び", "play",
+    "AI", "machine learning", "学習", "learning",
+    "設計", "design", "シミュレーション", "simulation",
+    "自己組織化", "self-organ", "emergence", "創発",
+    "効率", "efficient", "最適化", "optimiz",
+    "群れ", "swarm", "collective",
+    "身体", "スポーツ", "sport", "running"
+  ],
+  "maxBoost": 2.0,
+  "exploreRatio": 0.25
+}

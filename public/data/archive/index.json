@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "updatedAt": "2026-10-03T10:15:29.274Z",
+  "days": [
+    {
+      "date": "2026-10-03",
+      "principleOfTheDay": "20261003-01",
+      "sample": true,
+      "items": [
+        {
+          "id": "20261003-01",
+          "date": "2026-10-03",
+          "category": "nature",
+          "title": "脳のない粘菌が、首都圏の鉄道網に似た路線図を引いた",
+          "hook": "関東の地図の形に寒天を敷き、都市の位置にエサを置く。東京の位置に粘菌を置くと、粘菌は全体に広がったあと、都市どうしを結ぶ管だけを残していった。できあがった網は、実際の首都圏の鉄道網とよく似ていた。粘菌には脳も設計図もない。",
+          "principleCandidate": "使われるほど強化し、使われないものを減衰させるだけで、中央の設計なしに効率と冗長性のバランスが取れたネットワークが育つ",
+          "minimumStructure": "多数の経路候補 + 流量に応じて強化・減衰するルール + 使われない経路の消滅",
+          "sourceTitle": "Rules for Biologically Inspired Adaptive Network Design",
+          "sourceUrl": "https://doi.org/10.1126/science.1177894",
+          "sourceName": "Science",
+          "tags": [
+            "自己組織化",
+            "ネットワーク",
+            "フィードバック",
+            "分散"
+          ]
+        },
+        {
+          "id": "20261003-02",
+          "date": "2026-10-03",
+          "category": "tech",
+          "title": "1024台のロボットは、全体を見ないまま星の形に並んだ",
+          "hook": "1000台を超える小さなロボットが机の上に集まっている。どの一台も、全体がどんな形になろうとしているのかを見ていない。見えているのは近くにいる数台との距離だけ。それなのに数時間後、ロボットたちは星の形に並んでいる。",
+          "principleCandidate": "全体を見る者がいなくても、全員が同じ目標と近傍の情報を持てば全体の形は組み上がる。ただし遅さと誤差を受け入れる必要がある",
+          "minimumStructure": "複数個体 + 近傍情報 + 共有された完成図 + 単純な共通ルール",
+          "sourceTitle": "Programmable self-assembly in a thousand-robot swarm",
+          "sourceUrl": "https://doi.org/10.1126/science.1254295",
+          "sourceName": "Science",
+          "tags": [
+            "群れ",
+            "分散制御",
+            "スケール",
+            "ロボット"
+          ]
+        },
+        {
+          "id": "20261003-03",
+          "date": "2026-10-03",
+          "category": "science",
+          "title": "振ると大きい粒が上に来る――重いのに沈まない「ブラジルナッツ効果」",
+          "hook": "ミックスナッツの缶を振ると、なぜか一番大きなブラジルナッツが上に集まってくる。重いものは下に沈むはずなのに。誰も選り分けていないのに、缶の中では並び替えが起きている。",
+          "principleCandidate": "ランダムな撹乱に一方向の非対称（通れる／通れない）を組み合わせると、判断なしに選別が起こる",
+          "minimumStructure": "大きさの違う要素 + ランダムな撹乱 + 小さいものだけが通れる一時的なすき間 + 一方向の力（重力）",
+          "sourceTitle": "Why the Brazil nuts are on top: Size segregation of particulate matter by shaking",
+          "sourceUrl": "https://doi.org/10.1103/PhysRevLett.58.1038",
+          "sourceName": "Physical Review Letters",
+          "tags": [
+            "粒体",
+            "選別",
+            "ランダム",
+            "非対称"
+          ]
+        },
+        {
+          "id": "20261003-04",
+          "date": "2026-10-03",
+          "category": "mind",
+          "title": "臓器提供の同意率が12%と99%に分かれた理由は、申込書の「初期設定」だった",
+          "hook": "隣り合うヨーロッパの国で、臓器提供に同意している人の割合が、片方は約12%、もう片方は99%を超えていた。文化も言語も近い。違っていたのは、何もしなかったときにどうなるか、という申込書の初期設定だった。",
+          "principleCandidate": "判断にコストがかかる場面では、選択肢そのものより「何もしないとどうなるか」の設計が結果を左右する",
+          "minimumStructure": "選択肢 + 何もしなかったときの既定値 + 変更コスト",
+          "sourceTitle": "Do Defaults Save Lives?",
+          "sourceUrl": "https://doi.org/10.1126/science.1091721",
+          "sourceName": "Science",
+          "tags": [
+            "行動経済学",
+            "選択設計",
+            "既定値",
+            "ナッジ"
+          ]
+        },
+        {
+          "id": "20261003-05",
+          "date": "2026-10-03",
+          "category": "build",
+          "title": "電気を使わずに部屋に風を通す、砂漠の町の「風の塔」",
+          "hook": "イランの砂漠の町ヤズドでは、屋根から四角い塔がいくつも突き出ている。モーターも電気もない。それでも塔の下の部屋には風が通り、外より涼しく感じられる。",
+          "principleCandidate": "エネルギーを足すのではなく、すでにある勾配に通り道を与えると、制御なしで流れが生まれる",
+          "minimumStructure": "環境にすでにある勾配（風・温度差・高さ） + それを通す経路 + 向きと開口の固定設計",
+          "sourceTitle": "Historic City of Yazd",
+          "sourceUrl": "https://whc.unesco.org/en/list/1544",
+          "sourceName": "UNESCO World Heritage Centre",
+          "tags": [
+            "パッシブ設計",
+            "気流",
+            "勾配",
+            "省エネ"
+          ]
+        },
+        {
+          "id": "20261003-06",
+          "date": "2026-10-03",
+          "category": "culture",
+          "title": "1300年続く神社は、20年ごとに建て替えて「作り方」を残してきた",
+          "hook": "1300年以上続く建物がある。ただし、その建物は20年より古くならない。20年ごとに隣の敷地にまったく同じ社殿を建て、古い方を解体するからだ。",
+          "principleCandidate": "知識を残したいなら、成果物を保存するより「作る行為」を定期的に繰り返す方が途切れにくい",
+          "minimumStructure": "定期的な作り直し + 前回と同じ仕様 + 新旧の世代が一緒に作る期間",
+          "sourceTitle": "神宮式年遷宮",
+          "sourceUrl": "https://ja.wikipedia.org/wiki/%E7%A5%9E%E5%AE%AE%E5%BC%8F%E5%B9%B4%E9%81%B7%E5%AE%AE",
+          "sourceName": "Wikipedia",
+          "tags": [
+            "継承",
+            "周期",
+            "知識",
+            "保存"
+          ]
+        },
+        {
+          "id": "20261003-07",
+          "date": "2026-10-03",
+          "category": "foreign",
+          "title": "灯台のレンズは、ガラスの「中身」を捨てて軽くなった",
+          "hook": "灯台の光を遠くまで届けるには、巨大で分厚いレンズが要る。でもそんなガラスは重すぎて、作るのも支えるのも難しい。19世紀のフランスで、ある物理学者はレンズの「中身」を捨てることにした。",
+          "principleCandidate": "機能が表面（境界）で生まれているなら、中身を捨てて表面だけを並べ直しても機能は保てる",
+          "minimumStructure": "機能を生む部分（表面の傾き） + 機能に寄与しない部分（厚み）の除去 + 残りの並べ直し",
+          "sourceTitle": "Fresnel lens",
+          "sourceUrl": "https://en.wikipedia.org/wiki/Fresnel_lens",
+          "sourceName": "Wikipedia",
+          "tags": [
+            "軽量化",
+            "光学",
+            "機能の分離",
+            "削る"
+          ]
+        }
+      ]
+    }
+  ]
+}
