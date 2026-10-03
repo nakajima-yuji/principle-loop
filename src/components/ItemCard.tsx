@@ -2,6 +2,7 @@ import { markActive } from '../data/heartbeat.ts';
 import { toggleSaved } from '../data/store.ts';
 import { toast } from '../data/toast.ts';
 import { href } from '../router.ts';
+import { FAILED_LABEL, isAnalysisFailed } from '../shared/item-status.ts';
 import { formatDotDate } from '../shared/time.ts';
 import type { DailyItem } from '../shared/types.ts';
 import { CategoryChip } from './common.tsx';
@@ -27,12 +28,14 @@ export function ItemCard({
   highlight?: boolean;
   saved: boolean;
 }) {
+  const failed = isAnalysisFailed(item);
   return (
-    <article className={`card ${compact ? 'compact' : ''} ${highlight ? 'potd' : ''}`} aria-labelledby={`t-${item.id}`}>
+    <article className={`card ${compact ? 'compact' : ''} ${highlight && !failed ? 'potd' : ''} ${failed ? 'failed' : ''}`} aria-labelledby={`t-${item.id}`}>
       <div className="card-top">
-        <span className={`num-badge ${highlight ? 'blue' : ''}`}>{index}</span>
+        <span className={`num-badge ${highlight && !failed ? 'blue' : ''}`}>{index}</span>
         <CategoryChip category={item.category} />
-        {highlight && (
+        {failed && <span className="fail-badge">{FAILED_LABEL}</span>}
+        {highlight && !failed && (
           <span className="small muted" title="PRINCIPLE OF THE DAY">
             <Icon name="crown" size={14} />
           </span>
@@ -43,7 +46,14 @@ export function ItemCard({
           <h2 className="card-title" id={`t-${item.id}`}>
             <a href={href('/read', { id: item.id })}>{item.title}</a>
           </h2>
-          <p className="card-hook">{item.hook}</p>
+          {failed ? (
+            <p className="card-hook">
+              <span className="fail-note">AI の分析を作れませんでした（{item.failReason || '理由不明'}）。</span>
+              {item.hook}
+            </p>
+          ) : (
+            <p className="card-hook">{item.hook}</p>
+          )}
         </div>
         <Thumb category={item.category} seed={item.id} image={item.image} />
       </div>
@@ -52,7 +62,7 @@ export function ItemCard({
         <span>{formatDotDate(item.sourceDate || item.date)}</span>
       </div>
       <div className="card-actions">
-        <a className={`btn ${highlight ? 'primary' : ''}`} href={href('/read', { id: item.id })}>
+        <a className={`btn ${highlight && !failed ? 'primary' : ''}`} href={href('/read', { id: item.id })}>
           <Icon name="read" size={16} /> 読む
         </a>
         <a className="btn" href={href('/deep', { id: item.id })}>

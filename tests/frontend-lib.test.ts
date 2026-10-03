@@ -10,13 +10,14 @@ import { searchAll } from '../src/lib/search.ts';
 import { emptyArchive, upsertArchiveDay } from '../src/shared/archive.ts';
 import { CATEGORY_IDS } from '../src/shared/categories.ts';
 import { CORE_QUESTIONS } from '../src/shared/questions.ts';
+import { withFailureFlags } from '../src/shared/item-status.ts';
 import { dateFromItemId, formatJaDate, makeItemId } from '../src/shared/time.ts';
 import type { DailyFile, DiaryEntry } from '../src/shared/types.ts';
 import { ROOT } from '../scripts/lib/paths.ts';
 
-const sample = JSON.parse(await readFile(path.join(ROOT, 'public/data/daily/2026-10-03.json'), 'utf8')) as DailyFile;
+const sample = JSON.parse(await readFile(path.join(ROOT, 'tests/fixtures/sample-daily.json'), 'utf8')) as DailyFile;
 
-test('サンプルの DAILY：7件・7分野・必須フィールド・事実と解釈が分かれている', () => {
+test('サンプルの DAILY（tests/fixtures）：7件・7分野・必須フィールド・事実と解釈が分かれている', () => {
   assert.equal(sample.items.length, 7);
   assert.deepEqual(
     sample.items.map((i) => i.category),
@@ -108,4 +109,18 @@ test('archive：本物の DAILY ができたらサンプルの日を外す', () 
     idx.days.map((d) => d.date),
     ['2026-10-05'],
   );
+});
+
+test('作成中止：古い形式の仮テンプレートにも印を付け、仮の文章は消して事実だけ残す', () => {
+  const legacy = { ...sample, sample: false, provider: 'gemini', items: sample.items.map((it, i) => (i === 1 ? { ...it, aiProvider: 'mock', minimumStructure: '（未分析）要素 + 関係 + ルール' } : it)) };
+  const flagged = withFailureFlags(legacy);
+  const it = flagged.items[1];
+  assert.equal(it.analysisFailed, true);
+  assert.equal(it.failReason, '理由は記録されていません');
+  assert.equal(it.minimumStructure, '');
+  assert.equal(it.story, '');
+  assert.equal(it.observation, sample.items[1].observation, '事実（情報源の要約）は残す');
+  assert.equal(flagged.items[0].analysisFailed, undefined, '成功した記事はそのまま');
+  const allMock = { ...legacy, provider: 'mock' };
+  assert.equal(withFailureFlags(allMock), allMock, 'AI 未設定の日（全部 mock）は作成中止にしない');
 });

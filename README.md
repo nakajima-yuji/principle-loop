@@ -17,7 +17,7 @@ PRINCIPLE LOOP は、たくさんコードを書く装置ではなく、**「何
 1. [セットアップ](#1-セットアップ)
 2. [GitHub Pages（アプリの公開）](#2-github-pagesアプリの公開)
 3. [AI の無料枠を設定する](#3-ai-の無料枠を設定する)
-4. [Yahoo!メール（SMTP）を設定する](#4-yahooメールsmtpを設定する)
+4. [メール（SMTP）を設定する](#4-メールsmtpを設定する)
 5. [GitHub Secrets と Variables](#5-github-secrets-と-variables)
 6. [GitHub Actions（自動運転）](#6-github-actions自動運転)
 7. [メールのテスト](#7-メールのテスト)
@@ -47,7 +47,7 @@ GitHub Pages（アプリ）  ←  public/data/*.json（DAILY・索引・activity
         ↑ 公開
 GitHub Actions（月〜土の深夜と朝だけ動く）
   00:30 収集 → 重複除去 → 分類 → 候補抽出 → 原理分析（無料枠の AI）→ 7件選定 → ストーリー化 → 保存
-  07:00〜08:00 Yahoo!メールで配信
+  07:00〜08:00 メールで配信（受け取りは Yahoo!メールなど）
 ```
 
 - 有料のデータベース・常時動くサーバー・有料バックエンドは使いません。
@@ -59,11 +59,11 @@ GitHub Actions（月〜土の深夜と朝だけ動く）
 
 ## 1. セットアップ
 
-必要なもの：GitHub アカウント、Google アカウント（AI の無料枠用）、Yahoo!メールのアドレス。
+必要なもの：GitHub アカウント、Google アカウント（AI の無料枠用・メール送信用）、受け取るメールアドレス（Yahoo!メールなど）。
 
 1. このリポジトリの変更を `main` ブランチに取り込みます（Pull Request をマージ）。
 2. [2. GitHub Pages](#2-github-pagesアプリの公開) を設定します → アプリが開けるようになります（最初はサンプルの7件）。
-3. [3. AI](#3-ai-の無料枠を設定する) と [4. Yahoo!メール](#4-yahooメールsmtpを設定する) の準備をします。
+3. [3. AI](#3-ai-の無料枠を設定する) と [4. メール](#4-メールsmtpを設定する) の準備をします。
 4. [5. Secrets](#5-github-secrets-と-variables) に値を登録します。
 5. [7. メールのテスト](#7-メールのテスト) で動作を確認します。
 6. スマホやパソコンでアプリを開き、**設定 → GitHub 連携** をします（[8. 10日自動停止](#8-10日自動停止の仕組み)。これをしないと10日後に止まります）。
@@ -127,23 +127,37 @@ npm run check        # 型チェック・テスト・ビルド・公開ファイ
 
 ---
 
-## 4. Yahoo!メール（SMTP）を設定する
+## 4. メール（SMTP）を設定する
 
-既定は **Yahoo! JAPAN の Yahoo!メール** です（`smtp.mail.yahoo.co.jp`・ポート 465・SSL）。
+受け取り先（`MAIL_TO`）は Yahoo!メールのアドレスで大丈夫です。**送信**は次のどちらかで行います。
+
+> **注意（2026年の実際の結果）**：Yahoo! JAPAN は不正ログイン対策として、メールソフトなどで**海外から**ログインすることを制限しています。GitHub Actions はアメリカのサーバーで動くため、Yahoo!メールからの送信はログインを断られる（`535 authorization failed`）ことがあります。その場合は **A. Gmail から送る** を使ってください。
+
+### A. Gmail から送る（おすすめ・確実）
+
+1. Google アカウントで **2段階認証プロセス** を有効にします。
+2. [アプリ パスワード](https://myaccount.google.com/apppasswords) を作ります（名前は `principle-loop` など）。16 文字のパスワードが表示されます。
+3. GitHub に登録します。
+
+| 種類 | 名前 | 入れる値 |
+| --- | --- | --- |
+| Secret | `MAIL_USERNAME` | Gmail のアドレス |
+| Secret | `MAIL_PASSWORD` | 2. のアプリ パスワード（16 文字） |
+| Secret | `MAIL_TO` | 受け取るアドレス（Yahoo!メールでも OK。カンマ区切りで最大 5 件） |
+| Variable | `MAIL_HOST` | `smtp.gmail.com` |
+
+### B. Yahoo!メールから送る
+
+既定の送信先は Yahoo! JAPAN の Yahoo!メールです（`smtp.mail.yahoo.co.jp`・ポート 465・SSL）。
 
 1. パソコンのブラウザで Yahoo!メールを開き、**設定・利用規約 → メールの設定 → IMAP/POP/SMTPアクセスとメール転送** を開きます。
-2. **「Yahoo! JAPAN公式サービス以外からのアクセスも有効にする」** を有効にし、**SMTP** を「有効にする」にして保存します。
-3. Yahoo! JAPAN ID に**パスワードが設定されている**ことを確認します（パスワードなしでログインする設定の ID では、外部からの送信ができません）。
-4. 次の値を GitHub Secrets に登録します。
+2. **「許可する」**（Yahoo! JAPAN公式サービス以外からのアクセスも有効にする）を選び、**IMAP（または POP）と SMTP の両方**を「利用する」にして保存します（SMTP だけでは送れません）。
+3. Yahoo! JAPAN ID に**パスワードが設定されている**ことを確認します。
+4. 「海外からのアクセス制限」が有効だと GitHub Actions からは送れません。無効にすると海外からの不正ログインを防ぐ仕組みが弱くなるので、A の Gmail をおすすめします。
+5. Secrets に `MAIL_USERNAME`（Yahoo!メールのアドレス、または Yahoo! JAPAN ID）・`MAIL_PASSWORD`（Yahoo! JAPAN ID のパスワード）・`MAIL_TO` を登録します。
 
-| Secret | 入れる値 |
-| --- | --- |
-| `MAIL_USERNAME` | Yahoo!メールのアドレス（例：`taro@yahoo.co.jp`）。うまくいかないときは `@` より前（Yahoo! JAPAN ID）だけにしてみる |
-| `MAIL_PASSWORD` | Yahoo! JAPAN ID のパスワード |
-| `MAIL_TO` | 受け取るアドレス（自分のアドレスで OK。カンマ区切りで最大 5 件） |
-
-- 送信元は自分の Yahoo!メールのアドレスになります（Yahoo!の決まり）。違うときは Variables の `MAIL_FROM` に送信元アドレスを書きます。
-- 海外版 Yahoo Mail（yahoo.com）を使う場合は、Variables に `MAIL_HOST=smtp.mail.yahoo.com` を入れ、パスワードには Yahoo のアカウント設定で作る **アプリ パスワード**を使います。
+- 失敗した送信は自動で再試行しません（ログイン失敗を重ねてアカウントがロックされないようにするため）。
+- 送信元は `MAIL_USERNAME` のアドレスになります。違うときは Variables の `MAIL_FROM` に送信元アドレスを書きます。
 - 件名は `PRINCIPLE LOOP DAILY｜今日の7つの原理`。各記事に **「DEEPで掘る」** リンクが付きます。
 
 ---
@@ -157,7 +171,7 @@ npm run check        # 型チェック・テスト・ビルド・公開ファイ
 | 名前 | 必須 | 内容 |
 | --- | --- | --- |
 | `AI_API_KEY` | ほぼ必須 | AI の API キー（無いと仮のテンプレートで動く） |
-| `MAIL_USERNAME` | メールに必須 | Yahoo!メールのアドレス |
+| `MAIL_USERNAME` | メールに必須 | 送信に使うメールアドレス（Gmail おすすめ） |
 | `MAIL_PASSWORD` | メールに必須 | パスワード |
 | `MAIL_TO` | メールに必須 | 送り先 |
 
@@ -170,7 +184,8 @@ npm run check        # 型チェック・テスト・ビルド・公開ファイ
 | `AI_BASE_URL` | `https://api.groq.com/openai/v1` | OpenAI 互換のときの URL |
 | `AI_MAX_REQUESTS_PER_DAY` | `20` | 1 日の AI 上限 |
 | `INACTIVITY_LIMIT_DAYS` | `10` | 何日無反応で止めるか |
-| `MAIL_FROM` / `MAIL_HOST` / `MAIL_PORT` | | メールの細かい設定 |
+| `MAIL_HOST` | `smtp.gmail.com` | 送信サーバー（空なら Yahoo!メール） |
+| `MAIL_FROM` / `MAIL_PORT` | | メールの細かい設定 |
 | `APP_URL` | `https://example.github.io/principle-loop/` | メール内リンクの URL（独自ドメインのとき） |
 
 **守っていること**
@@ -301,10 +316,12 @@ GitHub Pages は読み取り専用なので、ブラウザから直接ファイ�
 | Pages の公開が「Get Pages site failed」で失敗 | Pages がまだ有効になっていません。Source を「GitHub Actions」にしてから再実行 |
 | DAILY が更新されない | Actions → PRINCIPLE LOOP Daily の履歴。日曜？ 一時停止中？（アプリのベルに点が付く）。`mode=status` で状態を確認 |
 | 「AI未設定のため仮のテンプレート」と出る | `AI_API_KEY` が登録されているか。名前の打ち間違い |
+| 記事に「作成中止」と出る | AI の分析を作れなかった記事です（AI の混雑・1日の上限・返答が途中で切れた など。理由は画面とメールに出ます）。仮の文章では埋めず、情報源の要約だけを表示します。その場で 1 回頼み直し、それでもだめなら 03:10 の再試行で作り直します。手動で直すときは Actions → PRINCIPLE LOOP Daily を `mode=generate` で実行（生成済みの日は作成中止の記事だけを作り直します） |
 | AI のエラー 429 | 無料枠の回数制限。少し待てば回復します。続くなら `AI_MODEL` を無料枠の別モデルに |
 | AI のエラー 404 / 400 | モデル名が古い可能性。[モデル一覧](https://ai.google.dev/gemini-api/docs/models) で無料枠のモデル名を確認して `AI_MODEL` に |
 | 「候補が○件しかありません」 | 情報源の取得に失敗。`mode=collect` で各情報源の ✓/✗ を確認し、`config/sources.json` を直す |
-| メールが届かない | `mail-test` のログ。認証エラー（535 など）なら、Yahoo!側の「公式サービス以外からのアクセス」「SMTP 有効」、`MAIL_USERNAME` をアドレス／ID のどちらで試したか、パスワード。迷惑メールフォルダ |
+| メールが届かない（535 authorization failed） | Yahoo!メールから送っている場合は、海外からのアクセス制限で断られている可能性が高いです。[4-A](#a-gmail-から送るおすすめ確実) の Gmail に切り替えてください。Gmail で失敗する場合は、アプリ パスワードと `MAIL_HOST=smtp.gmail.com` を確認 |
+| メールが届かない（エラーなし） | 迷惑メールフォルダ。`MAIL_TO` のアドレス |
 | 「メールの Secrets が未設定」 | `MAIL_USERNAME`・`MAIL_PASSWORD`・`MAIL_TO` の 3 つすべてが必要 |
 | アプリの「接続テスト」が失敗 | 401：トークンの期限切れ・貼り間違い。403：Actions の Read and write が付いていない。404：リポジトリ名の違い、または activity.yml が main にない |
 | 反応しているのに止まった | GitHub 連携の設定がこの端末にあるか（端末ごとに必要）。設定画面の「活動通知」がオンか |
@@ -327,7 +344,7 @@ GitHub Pages は読み取り専用なので、ブラウザから直接ファイ�
 | BUILD / EXPERIMENT DESIGN | ✅ | `src/views/Build.tsx`, `src/lib/experiment.ts` |
 | Claude Code 用・Codex 用プロンプト出力（自動実行なし） | ✅ | コピーのみ |
 | 日常運転で Claude Code / Codex を使わない | ✅ | Actions ＋ Node.js ＋ 無料枠 AI |
-| Yahoo!メール配信 | ✅ | `scripts/mail/` |
+| メール配信（Yahoo!メール宛て。送信は Gmail か Yahoo!） | ✅ | `scripts/mail/` |
 | GitHub Pages・GitHub Actions 対応 | ✅ | `.github/workflows/` |
 | 無料運用・AI Provider 交換可能・Secrets 管理 | ✅ | `src/ai/`, Secrets |
 | レスポンシブ（PC は左サイドバー・スマホは下部タブ） | ✅ | `src/styles/global.css` |

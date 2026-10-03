@@ -14,7 +14,7 @@ import { DAILY_SUBJECT, appLink, buildDailyEmail, buildPauseEmail, escapeHtml } 
 import { MONDAY, SUNDAY, tempData } from './helpers.ts';
 import type { EmailContent } from '../scripts/mail/template.ts';
 
-const sample = JSON.parse(await readFile(path.join(ROOT, 'public/data/daily/2026-10-03.json'), 'utf8')) as DailyFile;
+const sample = JSON.parse(await readFile(path.join(ROOT, 'tests/fixtures/sample-daily.json'), 'utf8')) as DailyFile;
 const APP = 'https://nakajima-yuji.github.io/principle-loop/';
 
 function recorder() {
@@ -59,6 +59,24 @@ test('HTML に入る文字はエスケープする', () => {
   assert.doesNotMatch(m.html, /<script>alert/);
   assert.doesNotMatch(m.html, /href="javascript:/);
   assert.equal(escapeHtml(`<a href="x">'&`), '&lt;a href=&quot;x&quot;&gt;&#39;&amp;');
+});
+
+test('作成中止の記事はメールでもはっきり分かる（仮の文章も DEEP ボタンも出さない）', () => {
+  const daily = {
+    ...sample,
+    provider: 'gemini',
+    principleOfTheDay: sample.items[0].id,
+    items: sample.items.map((it, i) =>
+      i === 0 ? { ...it, analysisFailed: true, failReason: 'AI が混み合っていた・つながらなかったため' } : i === 1 ? { ...it, aiProvider: 'mock' } : it,
+    ),
+  };
+  const m = buildDailyEmail(daily, APP);
+  assert.equal((m.html.match(/>作成中止</g) ?? []).length, 2, '印のある 1 件 + 古い形式の 1 件');
+  assert.equal((m.html.match(/>DEEPで掘る</g) ?? []).length, 5);
+  assert.match(m.html, /7 件のうち 2 件は「作成中止」/);
+  assert.match(m.html, /AI が混み合っていた/);
+  assert.doesNotMatch(m.html, /この原理を深く掘る/, 'POTD が作成中止なら出さない');
+  assert.match(m.text, /1\. \[作成中止\]/);
 });
 
 test('停止のお知らせの文面', () => {

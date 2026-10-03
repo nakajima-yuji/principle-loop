@@ -44,8 +44,11 @@ export interface DailyItem {
   invert?: string;
   tags?: string[];
   transferability?: number; // 0〜1。他分野へ飛ばしやすさ（PRINCIPLE OF THE DAY の選定に使う）
-  aiProvider?: string; // "gemini" / "mock" / "sample" など
+  aiProvider?: string; // "gemini" / "mock" / "failed" / "sample" など
   sample?: boolean;
+  /** AI の分析を作れなかった（作成中止）。仮の文章では埋めず、情報源の要約だけを持つ */
+  analysisFailed?: boolean;
+  failReason?: string; // 例：「AI が混み合っていたため」
 }
 
 export interface DailyFile {

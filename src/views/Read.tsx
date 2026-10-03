@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { AiBox, CategoryChip, ErrorBox, ExternalLink, FactBox, Loading } from '../components/common.tsx';
+import { AiBox, CategoryChip, ErrorBox, ExternalLink, FactBox, FailedNotice, Loading } from '../components/common.tsx';
 import { Icon } from '../components/Icon.tsx';
 import { onToggleSave } from '../components/ItemCard.tsx';
 import { Thumb } from '../components/Thumb.tsx';
@@ -43,10 +43,10 @@ export function ReadView({ id }: { id: string | null }) {
             {it.sample && <span className="tag">サンプル</span>}
           </div>
           <h1>{it.title}</h1>
-          {it.aiProvider === 'mock' && (
-            <p className="small" style={{ color: 'var(--amber)', margin: '-8px 0 14px' }}>
-              この記事は AI で分析できなかったため、仮のテンプレートです。DEEP で自分の言葉で分解してください。
-            </p>
+          {it.analysisFailed && (
+            <div style={{ margin: '-6px 0 16px' }}>
+              <FailedNotice reason={it.failReason}>元の記事を読むか、DEEP で自分の言葉で分解できます。</FailedNotice>
+            </div>
           )}
           <Thumb className="wide" category={it.category} seed={it.id} image={it.image} />
           <p className="lead" style={{ marginTop: 20 }}>

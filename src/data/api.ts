@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { normalizeActivity } from '../shared/activity.ts';
+import { withFailureFlags } from '../shared/item-status.ts';
 import type { Activity, ArchiveIndex, DailyFile, DailyItem } from '../shared/types.ts';
 import { dateFromItemId } from '../shared/time.ts';
 import { getPersonal } from './store.ts';
@@ -31,7 +32,7 @@ export function loadDaily(date: string): Promise<DailyFile> {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return Promise.reject(new Error('日付の形式が正しくありません'));
   let p = dailyCache.get(date);
   if (!p) {
-    p = getJson<DailyFile>(`daily/${date}.json`).catch((e) => {
+    p = getJson<DailyFile>(`daily/${date}.json`).then(withFailureFlags).catch((e) => {
       dailyCache.delete(date);
       throw e;
     });

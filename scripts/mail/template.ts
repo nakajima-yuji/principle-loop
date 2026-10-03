@@ -1,6 +1,7 @@
 // HTML メール。メールソフトで崩れにくいよう、表組み＋インライン CSS で書く。
 
 import { categoryOf } from '../../src/shared/categories.ts';
+import { FAILED_LABEL, isAnalysisFailed, withFailureFlags } from '../../src/shared/item-status.ts';
 import { formatJaDate } from '../../src/shared/time.ts';
 import type { DailyFile, DailyItem } from '../../src/shared/types.ts';
 
@@ -50,7 +51,27 @@ const CAT_COLOR: Record<string, [string, string]> = {
 
 const FONT = `-apple-system,'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic',Meiryo,sans-serif`;
 
+function failedBlock(it: DailyItem, n: number, appUrl: string): string {
+  const read = appLink(appUrl, '/read', { id: it.id });
+  return `
+<tr><td style="padding:0 0 14px 0;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fffafa;border:1px dashed #e3b9be;border-radius:14px;">
+    <tr><td style="padding:16px 20px;font-family:${FONT};">
+      <div style="font-size:12px;color:${C.ink3};">
+        <span style="display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:11px;background:#b4bccb;color:#fff;font-weight:700;">${n}</span>
+        <span style="display:inline-block;margin-left:6px;padding:2px 8px;border-radius:6px;background:#fdecee;color:#c2414b;font-weight:800;">${FAILED_LABEL}</span>
+        <span style="margin-left:6px;">${escapeHtml(categoryOf(it.category).short)}</span>
+      </div>
+      <p style="margin:10px 0 6px 0;font-size:14px;line-height:1.7;color:#c2414b;font-weight:700;">AI の分析を作れませんでした（${escapeHtml(it.failReason || '理由不明')}）。</p>
+      <p style="margin:0 0 8px 0;font-size:13px;line-height:1.7;color:${C.ink3};">元の記事：<a href="${escapeHtml(safeUrl(it.sourceUrl))}" style="color:${C.ink3};">${escapeHtml(it.sourceTitle || it.title)}</a>（${escapeHtml(it.sourceName || '')}）</p>
+      <a href="${escapeHtml(read)}" style="font-size:12px;color:${C.blue};">アプリで要約を見る・自分で掘る</a>
+    </td></tr>
+  </table>
+</td></tr>`;
+}
+
 function itemBlock(it: DailyItem, n: number, appUrl: string): string {
+  if (isAnalysisFailed(it)) return failedBlock(it, n, appUrl);
   const [fg, bg] = CAT_COLOR[it.category] ?? [C.ink2, C.bg];
   const deep = appLink(appUrl, '/deep', { id: it.id });
   const read = appLink(appUrl, '/read', { id: it.id });
@@ -87,8 +108,11 @@ ${inner}
 </table></td></tr></table></body></html>`;
 }
 
-export function buildDailyEmail(daily: DailyFile, appUrl: string): EmailContent {
-  const potd = daily.items.find((i) => i.id === daily.principleOfTheDay) ?? daily.items[0];
+export function buildDailyEmail(input: DailyFile, appUrl: string): EmailContent {
+  const daily = withFailureFlags(input);
+  const potdItem = daily.items.find((i) => i.id === daily.principleOfTheDay) ?? daily.items[0];
+  const potd = potdItem && !isAnalysisFailed(potdItem) ? potdItem : undefined;
+  const failedCount = daily.items.filter(isAnalysisFailed).length;
   const header = `
 <tr><td style="padding:0 0 18px 0;font-family:${FONT};">
   <div style="font-size:13px;font-weight:800;letter-spacing:.12em;color:${C.blue};">PRINCIPLE LOOP DAILY</div>
@@ -107,9 +131,12 @@ export function buildDailyEmail(daily: DailyFile, appUrl: string): EmailContent 
 </td></tr>`
     : '';
   const notice =
-    daily.provider === 'mock'
+    (daily.provider === 'mock'
       ? `<tr><td style="padding:0 0 14px 0;font-family:${FONT};font-size:12px;color:#8c5d00;">※ AI の設定がまだのため、分析は仮のテンプレートです。</td></tr>`
-      : '';
+      : '') +
+    (failedCount > 0
+      ? `<tr><td style="padding:0 0 14px 0;font-family:${FONT};font-size:12px;color:#c2414b;">※ ${daily.items.length} 件のうち ${failedCount} 件は「${FAILED_LABEL}」です（AI の分析を作れませんでした）。</td></tr>`
+      : '');
   const footer = `
 <tr><td style="padding:8px 4px 0 4px;font-family:${FONT};font-size:12px;line-height:1.8;color:${C.ink3};">
   <a href="${escapeHtml(appLink(appUrl, '/daily'))}" style="color:${C.blue};">アプリで開く</a> ・
@@ -124,14 +151,24 @@ export function buildDailyEmail(daily: DailyFile, appUrl: string): EmailContent 
     formatJaDate(daily.date),
     '',
     ...(potd ? [`■ PRINCIPLE OF THE DAY`, potd.principleCandidate, appLink(appUrl, '/deep', { id: potd.id }), ''] : []),
-    ...daily.items.flatMap((it, i) => [
+    ...(failedCount > 0 ? [`※ ${daily.items.length} 件のうち ${failedCount} 件は「${FAILED_LABEL}」です（AI の分析を作れませんでした）。`, ''] : []),
+    ...daily.items.flatMap((it, i) =>
+      isAnalysisFailed(it)
+        ? [
+            `${i + 1}. [${FAILED_LABEL}] ${categoryOf(it.category).short}`,
+            `AI の分析を作れませんでした（${it.failReason || '理由不明'}）。`,
+            `元の記事：${it.sourceTitle || it.title} ${it.sourceUrl}`,
+            '',
+          ]
+        : [
       `${i + 1}. [${categoryOf(it.category).short}] ${it.title}`,
       it.hook,
       `原理候補（仮説）：${it.principleCandidate}`,
       `出典：${it.sourceName || it.sourceTitle} ${it.sourceUrl}`,
       `DEEPで掘る：${appLink(appUrl, '/deep', { id: it.id })}`,
       '',
-    ]),
+          ],
+    ),
     `アプリ：${appLink(appUrl, '/daily')}`,
     'メールを受け取っただけでは「反応」に数えません。10日間アプリでの反応がないと自動で一時停止します。',
   ].join('\n');

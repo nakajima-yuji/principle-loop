@@ -8,6 +8,7 @@ import { useServerActivity } from '../data/server-activity.ts';
 import { usePersonal } from '../data/store.ts';
 import { href } from '../router.ts';
 import { daysUntilPause } from '../shared/activity.ts';
+import { FAILED_LABEL, isAnalysisFailed } from '../shared/item-status.ts';
 import { CORE_QUESTIONS, SELECTION_CRITERIA } from '../shared/questions.ts';
 import { formatDotDate, formatJaDate, isSundayJst, jstDateString } from '../shared/time.ts';
 import type { ArchiveIndex, DailyFile } from '../shared/types.ts';
@@ -35,7 +36,9 @@ export function DailyView({ date }: { date: string | null }) {
   const latest = index.days[0]?.date;
   const isLatest = daily.date === latest;
   const titleText = daily.date === today ? '今日の7つの原理' : isLatest ? '最新の7つの原理' : `${formatJaDate(daily.date).replace(/（.）$/, '')}の原理`;
-  const potd = daily.items.find((i) => i.id === daily.principleOfTheDay) ?? daily.items[0];
+  const potdCandidate = daily.items.find((i) => i.id === daily.principleOfTheDay) ?? daily.items[0];
+  const potd = potdCandidate && !isAnalysisFailed(potdCandidate) ? potdCandidate : undefined;
+  const failedCount = daily.items.filter(isAnalysisFailed).length;
   const paused = server.activity?.paused === true;
   const recentDiary = personal.diary.slice(0, 3);
   const dayIdx = index.days.findIndex((d) => d.date === daily.date);
@@ -66,6 +69,12 @@ export function DailyView({ date }: { date: string | null }) {
       {daily.provider === 'mock' && (
         <Notice kind="warn" icon="info">
           AI の設定がまだのため、分析は<strong>仮のテンプレート</strong>です。AI_API_KEY を設定すると本来の分析に変わります（README 参照）。
+        </Notice>
+      )}
+      {failedCount > 0 && (
+        <Notice kind="warn" icon="info">
+          この日の {daily.items.length} 件のうち <strong>{failedCount} 件は「{FAILED_LABEL}」</strong>です（AI の分析を作れませんでした）。
+          深夜の処理で失敗した場合は、03:10 にもう一度作り直しを試します。作成中止の記事も、元の記事を読んだり自分で掘ったりできます。
         </Notice>
       )}
       {isSundayJst(now) && isLatest && !paused && (

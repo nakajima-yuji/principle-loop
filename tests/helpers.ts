@@ -30,9 +30,10 @@ export async function tempData(opts: { activity?: Partial<Activity>; state?: Par
 }
 
 /** 本物の AI のように JSON を返す偽物。呼ばれた回数と内容を記録する。 */
-export function fakeAI(opts: { failAnalyze?: boolean; failTimes?: number } = {}) {
+export function fakeAI(opts: { failAnalyze?: boolean; failAnalyzeTimes?: number; failTimes?: number } = {}) {
   const calls: AIRequest[] = [];
   let failures = 0;
+  let analyzeFailures = 0;
   const provider: AIProvider = {
     name: 'gemini',
     model: 'fake',
@@ -49,7 +50,11 @@ export function fakeAI(opts: { failAnalyze?: boolean; failTimes?: number } = {})
           text: '```json\n' + JSON.stringify({ picks: keys.map((k, i) => ({ key: k.key, category: k.category, scores: { structure: 5 - (i % 3), transfer: 4 }, seed: 'たね', reason: '理由' })) }) + '\n```',
         };
       }
-      if (opts.failAnalyze) throw new Error('壊れた応答');
+      // 実際に起きた形：JSON が途中で切れている
+      if (opts.failAnalyze || (opts.failAnalyzeTimes && analyzeFailures < opts.failAnalyzeTimes)) {
+        analyzeFailures++;
+        return { text: '{"title": "途中で切れ' };
+      }
       return {
         text: JSON.stringify({
           title: 'テストの見出し',

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-03T14:08:03.972Z",
+  "updatedAt": "2026-10-03T14:27:50.362Z",
   "days": [
     {
       "date": "2026-10-03",
@@ -28,14 +28,19 @@
           "id": "20261003-02",
           "date": "2026-10-03",
           "category": "tech",
-          "title": "firelex/jeff: Millisecond decisions, any domain: a 0.8B open",
-          "hook": "jeffhub. ai · Hugging Face · Adapters · Quick start · Changelog\nCommunity preview: Jeff v1.",
-          "principleCandidate": "GitHub・技術の現象から：まだ原理候補はありません",
-          "minimumStructure": "（未分析）要素 + 関係 + ルール",
+          "title": "巨大なAIを「判断」の最終防衛線にする：Jeffのモデル構造",
+          "hook": "インボックスの整理やラベル付けといった些細な判断に、わざわざ巨大なAIを動かしていませんか。GitHubで公開された「Jeff」は、わずか0.8Bのモデルで高速に判断を下し、自信がない時だけ巨大モデルに助けを求めます。なぜ、あえて小さなAIを先に走らせるのでしょうか。",
+          "principleCandidate": "複雑な課題を解く際、まず軽量なモデルで「確実な判断」を済ませ、残った例外のみを高度なリソースに委ねることで全体の負荷を下げる。",
+          "minimumStructure": "軽量な判断モデル + 特定タスク用アダプター + 巨大な判断モデルへのエスカレーション経路",
           "sourceTitle": "firelex/jeff: Millisecond decisions, any domain: a 0.8B open \"System 1\" model that picks between your options with calibrated probabilities. One base, swappable LoRA adapters, on your own hardware.",
           "sourceUrl": "https://github.com/firelex/jeff",
           "sourceName": "GitHub（最近伸びているリポジトリ）",
-          "tags": []
+          "tags": [
+            "AI",
+            "アーキテクチャ",
+            "最適化",
+            "GitHub"
+          ]
         },
         {
           "id": "20261003-03",
@@ -59,14 +64,19 @@
           "id": "20261003-04",
           "date": "2026-10-03",
           "category": "mind",
-          "title": "Surprisingly Complex Waves Reveal the Brain’s Inner Workings",
-          "hook": "I get out of bed. I walk through the dimly lit hallway, thinking of what’s in my fridge and what I should have for breakfast.",
-          "principleCandidate": "心理・人間行動の現象から：まだ原理候補はありません",
-          "minimumStructure": "（未分析）要素 + 関係 + ルール",
+          "title": "脳内の「波」が示す、リアルタイムな情報処理の設計図",
+          "hook": "朝、目が覚めて冷蔵庫の中身を思い浮かべながら歩くとき、脳は瞬時に環境を把握し、記憶を呼び出し、身体の状態を整えている。この一連の動作には、膨大な計算が必要なはずだが、私たちは何の努力も感じない。なぜ脳は、これほど複雑な処理をいとも簡単にやってのけるのか。",
+          "principleCandidate": "動的な干渉パターンが、物理的接続を介さずに広域的な状態遷移を制御する。",
+          "minimumStructure": "多数の独立した振動体 + 伝播媒体 + 干渉によるパターン形成",
           "sourceTitle": "Surprisingly Complex Waves Reveal the Brain’s Inner Workings",
           "sourceUrl": "https://www.quantamagazine.org/surprisingly-complex-waves-reveal-the-brains-inner-workings-20260930/",
           "sourceName": "Quanta Magazine",
-          "tags": []
+          "tags": [
+            "脳科学",
+            "動的システム",
+            "干渉パターン",
+            "自己組織化"
+          ]
         },
         {
           "id": "20261003-05",

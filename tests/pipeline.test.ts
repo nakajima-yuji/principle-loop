@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { test } from 'node:test';
 import { createMockProvider } from '../src/ai/mock.ts';
 import type { DailyFile } from '../src/shared/types.ts';
 import { runGenerate } from '../scripts/generate/pipeline.ts';
 import { readActivity, readState } from '../scripts/lib/state.ts';
+import { ROOT } from '../scripts/lib/paths.ts';
 import { MONDAY, SUNDAY, context, fakeAI, tempData } from './helpers.ts';
 
 const readDaily = async (dir: string, date: string) => JSON.parse(await readFile(path.join(dir, `${date}.json`), 'utf8')) as DailyFile;
@@ -101,18 +102,80 @@ test('1回の実行の上限を超えて AI を呼ばない（再試行も数え
   const r = await runGenerate(ctx);
   assert.ok(ai.calls.length <= ctx.config.pipeline.ai.maxRequestsPerRun, `呼び出し ${ai.calls.length} 回`);
   assert.equal(r.status, 'generated');
-  assert.equal((await readDaily(paths.dailyDir, '2026-10-05')).provider, 'mock', '全部失敗したら仮のテンプレート');
+  const daily = await readDaily(paths.dailyDir, '2026-10-05');
+  assert.ok(daily.items.every((i) => i.analysisFailed), '全部失敗したら全部「作成中止」');
   assert.equal((await readState(paths)).aiUsage.requests, ai.calls.length);
 });
 
-test('分析が壊れていても、その1件だけ仮のテンプレートにして7件そろえる', async () => {
+test('分析に失敗した記事は「作成中止」：仮の文章で埋めず、理由と情報源の要約だけを持つ', async () => {
   const paths = await tempData();
   const ai = fakeAI({ failAnalyze: true });
   const r = await runGenerate(await context(paths, { createProvider: () => ai.provider }));
   assert.equal(r.status, 'generated');
+  assert.match(r.message, /作成中止 7 件/);
   const daily = await readDaily(paths.dailyDir, '2026-10-05');
   assert.equal(daily.items.length, 7);
-  assert.ok(daily.items.every((i) => i.aiProvider === 'mock'));
+  for (const it of daily.items) {
+    assert.equal(it.analysisFailed, true);
+    assert.equal(it.aiProvider, 'failed');
+    assert.match(it.failReason ?? '', /途中で切れていた/);
+    assert.equal(it.principleCandidate, '');
+    assert.equal(it.story, '');
+    assert.equal(it.minimumStructure, '');
+    assert.doesNotMatch(it.hook, /未分析|AI未設定/);
+    assert.match(it.sourceUrl, /^https:\/\/example\.org\//);
+  }
+});
+
+test('分析が1回失敗しても、予算の範囲でもう1回頼んで直す', async () => {
+  const paths = await tempData();
+  const ai = fakeAI({ failAnalyzeTimes: 1 });
+  const r = await runGenerate(await context(paths, { createProvider: () => ai.provider }));
+  assert.equal(r.status, 'generated');
+  assert.equal(ai.calls.length, 1 + 7 + 1);
+  const daily = await readDaily(paths.dailyDir, '2026-10-05');
+  assert.equal(daily.items.filter((i) => i.analysisFailed).length, 0);
+});
+
+test('03:10 の再試行：作成中止の記事だけを作り直す（古い形式の仮テンプレートも対象）', async () => {
+  const sample = JSON.parse(await readFile(path.join(ROOT, 'tests/fixtures/sample-daily.json'), 'utf8')) as DailyFile;
+  const paths = await tempData({ state: { lastGeneratedDate: '2026-10-05', aiUsage: { date: '2026-10-05', requests: 9 } } });
+  const items = sample.items.map((it, i) =>
+    i === 0
+      ? { ...it, analysisFailed: true, aiProvider: 'failed', failReason: 'AI が混み合っていた・つながらなかったため', principleCandidate: '' }
+      : i === 3
+        ? { ...it, aiProvider: 'mock' } // 古いデータ：印は無いが仮のテンプレート
+        : it,
+  );
+  const stored: DailyFile = { ...sample, date: '2026-10-05', sample: false, provider: 'gemini', principleOfTheDay: items[0].id, items };
+  await writeFile(path.join(paths.dailyDir, '2026-10-05.json'), JSON.stringify(stored));
+
+  const ai = fakeAI();
+  const r = await runGenerate(await context(paths, { createProvider: () => ai.provider }));
+  assert.equal(r.status, 'repaired', r.message);
+  assert.equal(ai.calls.length, 2, '直すのは 2 件だけ');
+  const daily = await readDaily(paths.dailyDir, '2026-10-05');
+  assert.equal(daily.items.filter((i) => i.analysisFailed).length, 0);
+  assert.equal(daily.items[0].sourceUrl, sample.items[0].sourceUrl, '出典はそのまま');
+  assert.equal(daily.items[1].title, sample.items[1].title, '成功していた記事は触らない');
+  assert.equal((await readState(paths)).aiUsage.requests, 11);
+  const archive = JSON.parse(await readFile(paths.archiveFile, 'utf8'));
+  assert.equal(archive.days[0].items[0].principleCandidate, '少ない判断で全体が動く');
+
+  const again = await runGenerate(await context(paths, { createProvider: () => fakeAI().provider }));
+  assert.equal(again.status, 'already', '直すものが無ければ何もしない');
+});
+
+test('03:10 の再試行：AI の 1 日の上限に達していたら作り直さない', async () => {
+  const sample = JSON.parse(await readFile(path.join(ROOT, 'tests/fixtures/sample-daily.json'), 'utf8')) as DailyFile;
+  const paths = await tempData({ state: { lastGeneratedDate: '2026-10-05', aiUsage: { date: '2026-10-05', requests: 20 } } });
+  const items = sample.items.map((it, i) => (i === 0 ? { ...it, analysisFailed: true, aiProvider: 'failed' } : it));
+  await writeFile(path.join(paths.dailyDir, '2026-10-05.json'), JSON.stringify({ ...sample, date: '2026-10-05', provider: 'gemini', items }));
+  const ai = fakeAI();
+  const r = await runGenerate(await context(paths, { createProvider: () => ai.provider }));
+  assert.equal(r.status, 'already');
+  assert.match(r.message, /上限/);
+  assert.equal(ai.calls.length, 0);
 });
 
 test('AI 未設定（mock）でも通しで動き、無料枠を数えない', async () => {
