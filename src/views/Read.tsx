@@ -43,6 +43,11 @@ export function ReadView({ id }: { id: string | null }) {
             {it.sample && <span className="tag">サンプル</span>}
           </div>
           <h1>{it.title}</h1>
+          {it.aiProvider === 'mock' && (
+            <p className="small" style={{ color: 'var(--amber)', margin: '-8px 0 14px' }}>
+              この記事は AI で分析できなかったため、仮のテンプレートです。DEEP で自分の言葉で分解してください。
+            </p>
+          )}
           <Thumb className="wide" category={it.category} seed={it.id} image={it.image} />
           <p className="lead" style={{ marginTop: 20 }}>
             {it.hook}

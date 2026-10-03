@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>Curious places (fixture)</title>
+<item>
+  <title>The lighthouse keepers who timed fog signals by counting their own breath</title>
+  <link>https://example.org/curious/fog-signals</link>
+  <description>Before clockwork, keepers at remote lighthouses spaced fog signals by counting breaths. The method was imprecise but needed no equipment and could not break, a reliability bought by giving up exact timing.</description>
+  <pubDate>Sat, 03 Oct 2026 06:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>A village where every roof drains into one shared cistern</title>
+  <link>https://example.org/curious/shared-cistern</link>
+  <description>In a dry mountain village, roofs are tilted so that rain from every house flows into a single communal cistern. No one manages the water; the slope does. The cost is that one broken gutter affects everyone downstream.</description>
+  <pubDate>Sun, 04 Oct 2026 06:00:00 GMT</pubDate>
+</item>
+</channel></rss>

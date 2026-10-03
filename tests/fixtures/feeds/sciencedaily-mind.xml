@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"><channel><title>Mind (fixture)</title>
+<item>
+  <title>People follow the queue that looks longest, even when it moves slower</title>
+  <link>https://example.org/mind/queues</link>
+  <description>In a field experiment at food stalls, customers used queue length as a signal of quality and joined longer lines, a shortcut that saves the effort of judging food directly but can amplify random early differences into lasting popularity.</description>
+  <pubDate>Sat, 03 Oct 2026 11:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Why deadlines make small tasks disappear first</title>
+  <link>https://example.org/mind/deadlines</link>
+  <description>A study of workplace task lists shows that near a deadline people clear small items first. The habit reduces the number of open decisions quickly but leaves large important tasks for last, a trade-off between visible progress and impact.</description>
+  <pubDate>Sun, 04 Oct 2026 11:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>CEO says company earnings will beat estimates this quarter</title>
+  <link>https://example.org/mind/earnings</link>
+  <description>The chief executive told investors that quarterly revenue and earnings would exceed analyst expectations, sending shares higher in early trading on Monday morning.</description>
+  <pubDate>Sun, 04 Oct 2026 13:00:00 GMT</pubDate>
+</item>
+</channel></rss>

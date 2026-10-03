@@ -1,0 +1,95 @@
+# アプリからの「反応があった（heartbeat）」「再開（resume）」を受け取って public/data/activity.json を更新する。
+# アプリは、ユーザーが作った「このリポジトリの Actions だけ動かせるトークン」でこのワークフローを起動する。
+# トークンを設定していない場合は、GitHub の Actions 画面から「Run workflow」で手動実行してもよい。
+
+name: PRINCIPLE LOOP Activity
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'heartbeat = 使っている（継続） / resume = 一時停止から再開'
+        type: choice
+        options: [heartbeat, resume]
+        default: heartbeat
+      run_now:
+        description: '再開後すぐに今日の生成とメール配信を試す（日曜は実行しない）'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # activity.json を保存する
+      actions: write # 再開時に毎日のワークフローを有効に戻す
+    concurrency:
+      group: principle-loop-data
+      cancel-in-progress: false
+    outputs:
+      deploy: ${{ steps.commit.outputs.deploy }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: activity.json を更新する
+        env:
+          ACTION: ${{ inputs.action }}
+        run: |
+          case "$ACTION" in
+            heartbeat|resume) ;;
+            *) echo "::error::不明な操作: $ACTION"; exit 1 ;;
+          esac
+          node scripts/activity.ts --action="$ACTION"
+
+      - name: 保存する
+        id: commit
+        env:
+          ACTION: ${{ inputs.action }}
+        run: |
+          git config user.name "principle-loop-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data state
+          if git diff --cached --quiet; then
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "deploy=true" >> "$GITHUB_OUTPUT"
+          git commit -m "activity: $ACTION"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            sleep $((i * 5))
+            git pull --rebase
+          done
+          echo "::error::保存（git push）に失敗しました"
+          exit 1
+
+      - name: 再開：毎日のワークフローを有効に戻す
+        if: inputs.action == 'resume'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow enable principle-loop-daily.yml --repo "$GITHUB_REPOSITORY" \
+            || echo "::warning::有効にできませんでした。Actions 画面で PRINCIPLE LOOP Daily を Enable workflow してください。"
+
+      - name: 再開：すぐにテスト実行する
+        if: inputs.action == 'resume' && inputs.run_now
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run principle-loop-daily.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" -f mode=all
+
+  deploy:
+    needs: update
+    if: needs.update.outputs.deploy == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml

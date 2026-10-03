@@ -1,0 +1,4 @@
+{"tfa":{"titles":{"normalized":"Fresnel lens (fixture)"},"extract":"A Fresnel lens is a type of composite compact lens which reduces the amount of material required compared to a conventional lens by dividing the lens into a set of concentric annular sections.","content_urls":{"desktop":{"page":"https://example.org/wiki/Fresnel_lens"}},"thumbnail":{"source":"https://example.org/img/fresnel.jpg"}},
+ "onthisday":[
+  {"text":"The first public library opened in a small town using an honor system for borrowing.","year":1850,"pages":[{"titles":{"normalized":"Honor system library (fixture)"},"extract":"An honor system library lends books without guards or fines, relying on borrowers to return them. It removes enforcement costs but depends on community trust.","content_urls":{"desktop":{"page":"https://example.org/wiki/Honor_library"}}}]}
+ ]}

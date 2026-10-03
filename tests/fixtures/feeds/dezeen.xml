@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel><title>Design (fixture)</title>
+<item>
+  <title>Brick facade breathes without fans by using the sun-warmed cavity behind it</title>
+  <link>https://example.org/design/breathing-facade</link>
+  <description>An office building in a hot climate pulls fresh air through a perforated brick screen. Sun heats the cavity, warm air rises and exits at the top, and cool air is drawn in at the bottom. There are no moving parts, but the effect is weak on calm cloudy days.</description>
+  <pubDate>Sat, 03 Oct 2026 07:00:00 GMT</pubDate>
+  <media:content url="https://example.org/img/facade.jpg" medium="image" />
+</item>
+<item>
+  <title>Factory replaces its central scheduler with machines that bid for jobs</title>
+  <link>https://example.org/design/factory-bidding</link>
+  <description>Instead of planning the whole production day in advance, each machine in the plant announces when it is free and bids for the next job. The plant loses a globally optimal plan but recovers from breakdowns within minutes.</description>
+  <pubDate>Sun, 04 Oct 2026 07:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Timber bridge uses its own weight to lock its joints</title>
+  <link>https://example.org/design/timber-bridge</link>
+  <description>A reciprocal frame bridge is made of short beams that each rest on the next. No nails or glue are needed: gravity tightens every joint, so the bridge gets stiffer under load. Removing a single beam, however, collapses the span.</description>
+  <pubDate>Sun, 04 Oct 2026 08:00:00 GMT</pubDate>
+</item>
+</channel></rss>

@@ -1,0 +1,60 @@
+# GitHub Pages へ公開する。main への push・手動・他のワークフローからの呼び出しで動く。
+# 事前に Settings → Pages → Build and deployment → Source を「GitHub Actions」にしておくこと。
+
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # 呼び出し元がデータを保存した直後でも、ブランチの最新を取り込む
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: ビルド
+        env:
+          VITE_GITHUB_REPOSITORY: ${{ github.repository }}
+          VITE_DEFAULT_BRANCH: ${{ github.ref_name }}
+        run: npm run build
+
+      - name: 公開ファイルに秘密情報が無いことを確かめる
+        run: node scripts/check-dist.ts
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

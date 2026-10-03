@@ -1,0 +1,136 @@
+# PRINCIPLE LOOP の毎日の自動運転（収集 → AI 生成 → 保存 → サイト更新 → 朝のメール）
+#
+# cron は UTC で書く決まり。日本時間 = UTC + 9 時間。
+# 曜日 0-5（UTC の日〜金）＝ 日本時間の月〜土。日本時間の日曜は動かない（完全休止）。
+# スクリプト側でも「日本時間で日曜か」をもう一度確かめる。
+#
+# この処理では Claude Code / Codex は一切使わない。AI は無料枠の API（既定は Gemini）だけ。
+
+name: PRINCIPLE LOOP Daily
+
+on:
+  schedule:
+    - cron: '30 15 * * 0-5' # 日本時間 00:30 収集・AI 生成
+    - cron: '10 18 * * 0-5' # 日本時間 03:10 生成の再試行（済んでいれば何もしない）
+    - cron: '5 22 * * 0-5' # 日本時間 07:05 メール配信
+    - cron: '35 22 * * 0-5' # 日本時間 07:35 配信の再試行（済んでいれば何もしない）
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '実行する処理（status=状態を見るだけ / generate=生成 / mail=配信 / all=生成して配信 / mail-test=テストメール / collect=収集だけ）'
+        type: choice
+        options: [status, generate, mail, all, mail-test, collect]
+        default: status
+      force:
+        description: 'テスト用：日曜・一時停止中・生成済みでも実行する'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write # 生成したデータを保存する
+      actions: write # 一時停止したとき、このワークフロー自体を無効にする
+    concurrency:
+      group: principle-loop-data
+      cancel-in-progress: false
+    outputs:
+      deploy: ${{ steps.commit.outputs.deploy }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: 依存パッケージを入れる
+        run: npm ci --no-audit --no-fund
+
+      - name: 実行する処理を決める
+        id: mode
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          INPUT_MODE: ${{ inputs.mode }}
+        run: |
+          case "$SCHEDULE" in
+            "30 15 * * 0-5"|"10 18 * * 0-5") MODE=generate ;;
+            "5 22 * * 0-5"|"35 22 * * 0-5") MODE=mail ;;
+            *) MODE="${INPUT_MODE:-status}" ;;
+          esac
+          case "$MODE" in
+            status|generate|mail|all|mail-test|collect) ;;
+            *) echo "::error::不明な処理: $MODE"; exit 1 ;;
+          esac
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+
+      - name: PRINCIPLE LOOP を実行
+        id: run
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+          FORCE: ${{ inputs.force && '--force' || '' }}
+          # --- 秘密の値（Settings → Secrets and variables → Actions → Secrets）---
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          # --- 秘密でない設定（同じ画面の Variables。空なら既定値）---
+          AI_PROVIDER: ${{ vars.AI_PROVIDER }}
+          AI_MODEL: ${{ vars.AI_MODEL }}
+          AI_BASE_URL: ${{ vars.AI_BASE_URL }}
+          AI_MAX_REQUESTS_PER_RUN: ${{ vars.AI_MAX_REQUESTS_PER_RUN }}
+          AI_MAX_REQUESTS_PER_DAY: ${{ vars.AI_MAX_REQUESTS_PER_DAY }}
+          INACTIVITY_LIMIT_DAYS: ${{ vars.INACTIVITY_LIMIT_DAYS }}
+          MAIL_FROM: ${{ vars.MAIL_FROM }}
+          MAIL_HOST: ${{ vars.MAIL_HOST }}
+          MAIL_PORT: ${{ vars.MAIL_PORT }}
+          APP_URL: ${{ vars.APP_URL }}
+          # GitHub の公開リポジトリ検索（情報源の一つ）の回数制限をゆるめるため
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/run.ts --mode="$MODE" $FORCE
+
+      - name: 結果を保存する
+        id: commit
+        if: always() && steps.mode.outcome == 'success'
+        env:
+          MODE: ${{ steps.mode.outputs.mode }}
+        run: |
+          git config user.name "principle-loop-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data state
+          if git diff --cached --quiet; then
+            echo "変更はありません"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git diff --cached --quiet -- public; then echo "deploy=false" >> "$GITHUB_OUTPUT"; else echo "deploy=true" >> "$GITHUB_OUTPUT"; fi
+          git commit -m "data: $MODE $(TZ=Asia/Tokyo date +%F)"
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            sleep $((i * 5))
+            git pull --rebase
+          done
+          echo "::error::保存（git push）に失敗しました"
+          exit 1
+
+      - name: 一時停止したので、深夜の自動運転を止める
+        if: steps.run.outputs.disable_workflow == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow disable principle-loop-daily.yml --repo "$GITHUB_REPOSITORY" \
+            || echo "::warning::ワークフローを無効にできませんでした。停止中は毎回すぐ終了するので、費用はかかりません。"
+
+  deploy:
+    needs: run
+    if: always() && needs.run.outputs.deploy == 'true'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
