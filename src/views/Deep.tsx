@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { CategoryChip, ErrorBox, ExternalLink, FactBox, Loading, PageHead, SectionLabel, StateSelect } from '../components/common.tsx';
+import { CategoryChip, ErrorBox, ExternalLink, FactBox, FailedNotice, Loading, PageHead, SectionLabel, StateSelect } from '../components/common.tsx';
 import { Icon } from '../components/Icon.tsx';
 import { Thumb } from '../components/Thumb.tsx';
 import { loadItem, loadLatestDaily, useAsync } from '../data/api.ts';
@@ -224,6 +224,12 @@ function DeepWorkspace({ item }: { item: DailyItem }) {
               </p>
             </div>
           </section>
+
+          {item.analysisFailed && (
+            <div style={{ marginTop: 14 }}>
+              <FailedNotice reason={item.failReason}>AI の下書きはありません。7つの質問を自分で埋めてみてください。</FailedNotice>
+            </div>
+          )}
 
           <SectionLabel kicker="CORE" title="7つの中心質問" />
           <p className="small muted" style={{ margin: '-4px 0 12px' }}>

@@ -316,6 +316,7 @@ GitHub Pages は読み取り専用なので、ブラウザから直接ファイ�
 | Pages の公開が「Get Pages site failed」で失敗 | Pages がまだ有効になっていません。Source を「GitHub Actions」にしてから再実行 |
 | DAILY が更新されない | Actions → PRINCIPLE LOOP Daily の履歴。日曜？ 一時停止中？（アプリのベルに点が付く）。`mode=status` で状態を確認 |
 | 「AI未設定のため仮のテンプレート」と出る | `AI_API_KEY` が登録されているか。名前の打ち間違い |
+| 記事に「作成中止」と出る | AI の分析を作れなかった記事です（AI の混雑・1日の上限・返答が途中で切れた など。理由は画面とメールに出ます）。仮の文章では埋めず、情報源の要約だけを表示します。その場で 1 回頼み直し、それでもだめなら 03:10 の再試行で作り直します。手動で直すときは Actions → PRINCIPLE LOOP Daily を `mode=generate` で実行（生成済みの日は作成中止の記事だけを作り直します） |
 | AI のエラー 429 | 無料枠の回数制限。少し待てば回復します。続くなら `AI_MODEL` を無料枠の別モデルに |
 | AI のエラー 404 / 400 | モデル名が古い可能性。[モデル一覧](https://ai.google.dev/gemini-api/docs/models) で無料枠のモデル名を確認して `AI_MODEL` に |
 | 「候補が○件しかありません」 | 情報源の取得に失敗。`mode=collect` で各情報源の ✓/✗ を確認し、`config/sources.json` を直す |

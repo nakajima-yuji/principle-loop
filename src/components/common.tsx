@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { categoryOf } from '../shared/categories.ts';
+import { FAILED_LABEL } from '../shared/item-status.ts';
 import { PRINCIPLE_STATES } from '../shared/questions.ts';
 import type { CategoryId, PrincipleState } from '../shared/types.ts';
 import { Icon, type IconName } from './Icon.tsx';
@@ -124,5 +125,15 @@ export function ExternalLink({ href, children }: { href: string; children: React
     <a href={href} target="_blank" rel="noopener noreferrer">
       {children} <Icon name="external" size={13} />
     </a>
+  );
+}
+
+/** 作成中止（AI の分析を作れなかった記事）のお知らせ */
+export function FailedNotice({ reason, children }: { reason?: string; children?: ReactNode }) {
+  return (
+    <Notice kind="paused" icon="x">
+      <strong>{FAILED_LABEL}</strong> — AI の分析を作れませんでした（{reason || '理由不明'}）。
+      下は情報源の要約（事実）だけです。{children}
+    </Notice>
   );
 }

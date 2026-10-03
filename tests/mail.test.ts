@@ -61,6 +61,24 @@ test('HTML に入る文字はエスケープする', () => {
   assert.equal(escapeHtml(`<a href="x">'&`), '&lt;a href=&quot;x&quot;&gt;&#39;&amp;');
 });
 
+test('作成中止の記事はメールでもはっきり分かる（仮の文章も DEEP ボタンも出さない）', () => {
+  const daily = {
+    ...sample,
+    provider: 'gemini',
+    principleOfTheDay: sample.items[0].id,
+    items: sample.items.map((it, i) =>
+      i === 0 ? { ...it, analysisFailed: true, failReason: 'AI が混み合っていた・つながらなかったため' } : i === 1 ? { ...it, aiProvider: 'mock' } : it,
+    ),
+  };
+  const m = buildDailyEmail(daily, APP);
+  assert.equal((m.html.match(/>作成中止</g) ?? []).length, 2, '印のある 1 件 + 古い形式の 1 件');
+  assert.equal((m.html.match(/>DEEPで掘る</g) ?? []).length, 5);
+  assert.match(m.html, /7 件のうち 2 件は「作成中止」/);
+  assert.match(m.html, /AI が混み合っていた/);
+  assert.doesNotMatch(m.html, /この原理を深く掘る/, 'POTD が作成中止なら出さない');
+  assert.match(m.text, /1\. \[作成中止\]/);
+});
+
 test('停止のお知らせの文面', () => {
   const m = buildPauseEmail(APP, 10);
   assert.match(m.text, /PRINCIPLE LOOPを一時停止しました。\n再開したい場合はアプリから再開できます。/);

@@ -84,3 +84,61 @@ export function toDailyItem(
 export function isUsable(item: DailyItem): boolean {
   return Boolean(item.title && item.hook && item.principleCandidate && item.minimumStructure);
 }
+
+/**
+ * 作成中止の 1 件。それらしい仮の文章では埋めず、情報源のタイトルと要約（事実）だけを残す。
+ * 読む・掘る・保存はできるので、ユーザーが自分で分解することはできる。
+ */
+export function toFailedItem(c: Candidate, meta: { id: string; date: string; category: CategoryId; image?: string }, reason: string): DailyItem {
+  const summary = c.summary.replace(/\s+/g, ' ').trim();
+  return {
+    id: meta.id,
+    date: meta.date,
+    category: meta.category,
+    title: c.title.slice(0, 120),
+    hook: summary.slice(0, 220),
+    story: '',
+    sourceTitle: c.title,
+    sourceUrl: c.url,
+    sourceDate: c.published ? c.published.slice(0, 10) : '',
+    sourceName: c.sourceName,
+    image: meta.image ?? c.image,
+    observation: summary.slice(0, 500),
+    input: '',
+    transformation: '',
+    why: '',
+    speed: '',
+    discard: '',
+    tradeoff: '',
+    minimumStructure: '',
+    removePurpose: '',
+    principleCandidate: '',
+    counterexample: '',
+    transferIdeas: [],
+    tags: [],
+    transferability: 0,
+    aiProvider: 'failed',
+    analysisFailed: true,
+    failReason: reason,
+    saved: false,
+  };
+}
+
+/** 作り直し用：保存済みの 1 件から、AI に渡す材料（候補）を組み立て直す */
+export function candidateFromItem(it: DailyItem): Candidate {
+  return {
+    key: it.id,
+    sourceId: 'repair',
+    sourceName: it.sourceName ?? '',
+    category: it.category,
+    foreign: it.category === 'foreign',
+    title: it.sourceTitle || it.title,
+    url: it.sourceUrl,
+    summary: it.observation || it.hook,
+    published: it.sourceDate,
+    image: it.image,
+    lang: '',
+    score: 0,
+    interest: 0,
+  };
+}
