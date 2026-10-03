@@ -1,6 +1,9 @@
 {
-  "lastGeneratedDate": "",
-  "lastMailedDate": "",
+  "lastGeneratedDate": "2026-10-03",
+  "lastMailedDate": "2026-10-03",
   "pauseNoticePending": false,
-  "aiUsage": { "date": "", "requests": 0 }
+  "aiUsage": {
+    "date": "2026-10-03",
+    "requests": 10
+  }
 }
