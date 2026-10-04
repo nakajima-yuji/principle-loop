@@ -1,7 +1,141 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-03T14:27:50.362Z",
+  "updatedAt": "2026-10-04T18:43:31.471Z",
   "days": [
+    {
+      "date": "2026-10-05",
+      "principleOfTheDay": "20261005-02",
+      "items": [
+        {
+          "id": "20261005-01",
+          "date": "2026-10-05",
+          "category": "nature",
+          "title": "9700万年前の化石に刻まれた「体内GPS」の構造",
+          "hook": "9700万年前の海底堆積物から、槍や針の形をした微小な化石が見つかった。かつては身を守るための棘と考えられていたこの構造が、実は地球の磁場を読み取る高度なナビゲーションシステムだった可能性が浮上している。なぜ、古代の生物は体内にコンパスを組み込んだのか。",
+          "principleCandidate": "特定の物理場を幾何学的形状によって受動的に解釈するインターフェース。",
+          "minimumStructure": "磁性材料 + 特定の幾何学的形状 + 空間配置",
+          "sourceTitle": "97-million-year-old fossils reveal the earliest known animal “GPS”",
+          "sourceUrl": "https://www.sciencedaily.com/releases/2026/09/260930020329.htm",
+          "sourceName": "ScienceDaily Plants & Animals",
+          "tags": [
+            "生物模倣",
+            "磁気受容",
+            "進化生物学",
+            "センサー技術"
+          ]
+        },
+        {
+          "id": "20261005-02",
+          "date": "2026-10-05",
+          "category": "tech",
+          "title": "掴んだまま回す：ソフトロボットが手に入れた「持ち替え」の自由",
+          "hook": "アヒルのおもちゃやドライバーを、離すことなく指先でくるくると回して位置を調整するロボットの指がある。従来のロボットは「掴む」ことがゴールだったが、この機構は「掴んだ後」の操作を前提としている。なぜ、柔らかい指先だけで複雑な動作が可能なのか。",
+          "principleCandidate": "接触面の柔軟性と多自由度な運動を組み合わせることで、保持の安定性と姿勢の可変性を両立できる可能性がある。",
+          "minimumStructure": "独立して回転・屈曲する複数の接触面による物体の包囲と回転",
+          "sourceTitle": "Rubber ducks and screwdrivers put dexterous new soft robotic gripper to the test",
+          "sourceUrl": "https://techxplore.com/news/2026-10-rubber-ducks-screwdrivers-dexterous-soft.html",
+          "sourceName": "Phys.org Technology",
+          "tags": [
+            "ソフトロボティクス",
+            "把持機構",
+            "適応制御",
+            "工学"
+          ]
+        },
+        {
+          "id": "20261005-03",
+          "date": "2026-10-05",
+          "category": "science",
+          "title": "「空っぽの空間」を設計して物質の性能を底上げする",
+          "hook": "超伝導物質の温度を上げるには、材料そのものを加工するのが常識でした。しかし、最新の研究では物質そのものではなく、その周囲にある「何もないはずの空間」を設計することで、超伝導性能が向上することが示されました。なぜ真空が物質の性質を変えるのでしょうか。",
+          "principleCandidate": "対象物そのものを加工するのではなく、対象物が占有する空間の物理的背景を設計することで、対象物の状態を制御できる。",
+          "minimumStructure": "特定の周波数に共鳴する場 ＋ その場に配置された対象物",
+          "sourceTitle": "Scientists just made a superconductor stronger using “empty space”",
+          "sourceUrl": "https://www.sciencedaily.com/releases/2026/09/260930225456.htm",
+          "sourceName": "ScienceDaily Matter & Energy",
+          "tags": [
+            "量子力学",
+            "超伝導",
+            "真空",
+            "環境設計",
+            "物理学"
+          ]
+        },
+        {
+          "id": "20261005-04",
+          "date": "2026-10-05",
+          "category": "mind",
+          "title": "腸内細菌が告げる「脳の老化速度」：遠い場所の代謝が脳を定義する",
+          "hook": "記憶力や思考力の衰えを感じるずっと前、私たちの脳内では「老化」が密かに進行しているかもしれません。UCLAの研究チームは、驚くべきことに、脳そのものではなく腸内の細菌の状態が、脳の老化速度を予測する鍵である可能性を示唆しました。なぜ、離れた臓器の状態が脳という司令塔の経年変化を映し出すのでしょうか。",
+          "principleCandidate": "中心部の状態は、周辺環境の代謝物から先行して観測できる。",
+          "minimumStructure": "システムの状態を、その構成要素ではなく、システムを維持する環境の代謝物質から推測する構造。",
+          "sourceTitle": "Your gut bacteria may reveal how fast your brain is aging",
+          "sourceUrl": "https://www.sciencedaily.com/releases/2026/10/261001214106.htm",
+          "sourceName": "ScienceDaily Mind & Brain",
+          "tags": [
+            "脳科学",
+            "腸内細菌",
+            "老化",
+            "システム理論",
+            "先行指標"
+          ]
+        },
+        {
+          "id": "20261005-05",
+          "date": "2026-10-05",
+          "category": "build",
+          "title": "「美術館」という形式を借りた体験の再構築",
+          "hook": "美術館の展示室に、歴史的なコレクションではなく、錯視やカラフルな遊具だけが並んでいる場所がある。来訪者は熱心に自撮りをし、その写真をSNSへ投稿する。なぜ、私たちは「展示を見る」こと以上に「展示の中で自分がどう映るか」を優先するのだろうか。",
+          "principleCandidate": "場所を「鑑賞の対象」から「参加と記録のためのインターフェース」へと転換する原理",
+          "minimumStructure": "特定の身体動作を要求する背景 ＋ 記録装置",
+          "sourceTitle": "when exhibitions become formats, what happens to the experience of art?",
+          "sourceUrl": "https://www.designboom.com/art/exhibitions-formats-experience-art-museums-interactive-immersive/",
+          "sourceName": "designboom",
+          "tags": [
+            "体験設計",
+            "空間インターフェース",
+            "参加型デザイン",
+            "メディア"
+          ]
+        },
+        {
+          "id": "20261005-06",
+          "date": "2026-10-05",
+          "category": "culture",
+          "title": "専用機という幻想：PS5で過去のゲームを動かす構造",
+          "hook": "最新のゲーム機であるPS5上で、数十年前に発売されたPS2やXboxのゲームが動作している。本来、互換性のないはずのハードウェアで、なぜ過去の資産をそのまま動かせるのだろうか。",
+          "principleCandidate": "特定の物理基盤をソフトウェア層でラップすることで、実行環境の依存性を切り離すことができる。",
+          "minimumStructure": "特定の仕様を持つデータ + それを解釈する翻訳層 + 実行可能な汎用基盤",
+          "sourceTitle": "Play PlayStation 2 and XBox 1 Games on Your Jailbroken PS5",
+          "sourceUrl": "https://hackaday.com/2026/10/03/play-playstation-2-and-xbox-1-games-on-your-jailbroken-ps5/",
+          "sourceName": "Hackaday",
+          "tags": [
+            "エミュレーション",
+            "レガシーシステム",
+            "互換性",
+            "抽象化"
+          ]
+        },
+        {
+          "id": "20261005-07",
+          "date": "2026-10-05",
+          "category": "foreign",
+          "title": "辺境の岩山に立つ孤高の塔が、数世紀を生き抜く理由",
+          "hook": "ベトナムの標高779メートル、険しい岩山の頂に「ホン・チュオン塔」と呼ばれる小さな遺跡が佇んでいる。周囲から隔絶されたこの塔は、何世紀もの間、風雨にさらされながらもその形状を保ち続けている。なぜ、人の手も届かない場所で、この構造体は崩壊せずに存在し続けられるのだろうか。",
+          "principleCandidate": "システムが環境の制約を部品化し、外部との接点を最小化することで、介入なしの永続性を確保する。",
+          "minimumStructure": "極小の物体 + 強固な基盤 + 外部介入の遮断",
+          "sourceTitle": "Ancient Hon Chuong Cham Tower in De Gi, Vietnam",
+          "sourceUrl": "https://www.atlasobscura.com/places/ancient-hon-chuong-cham-tower",
+          "sourceName": "Atlas Obscura",
+          "tags": [
+            "構造",
+            "永続性",
+            "孤立",
+            "ミニマリズム"
+          ]
+        }
+      ]
+    },
     {
       "date": "2026-10-03",
       "principleOfTheDay": "20261003-01",
