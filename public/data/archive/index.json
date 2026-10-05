@@ -1,7 +1,136 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-04T18:43:31.471Z",
+  "updatedAt": "2026-10-05T22:07:13.832Z",
   "days": [
+    {
+      "date": "2026-10-06",
+      "principleOfTheDay": "20261006-01",
+      "items": [
+        {
+          "id": "20261006-01",
+          "date": "2026-10-06",
+          "category": "nature",
+          "title": "地理的な壁がなくても種は分かれるのか",
+          "hook": "生物の種分化は、山や海のような物理的な障壁がなければ起こらないと考えられがちです。しかし、近場での交配と移動の制限だけで、環境が均一であっても別の種が生まれる可能性が示唆されています。距離と適応は、どのように多様性を生み出すのでしょうか。",
+          "principleCandidate": "個体間の相互作用の確率と、環境への適合圧力が重なることで生じる分離プロセスかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Speciation by local adaptation and isolation by distance in extended environments",
+          "sourceUrl": "https://arxiv.org/abs/2508.06719",
+          "sourceName": "arXiv（個体群・進化）",
+          "tags": [
+            "進化生物学",
+            "数理モデル",
+            "自己組織化"
+          ]
+        },
+        {
+          "id": "20261006-02",
+          "date": "2026-10-06",
+          "category": "tech",
+          "title": "見た目は完璧でも動かないWeb UIを自動判定する仕組み",
+          "hook": "AIが生成したWeb画面は、表示が正しくても操作すると機能しないことがある。このギャップを、エージェントが実際に操作して検証する手法が提案されている。",
+          "principleCandidate": "静的な評価指標が、実行を通じた動的なフィードバックループへと置き換わっている。",
+          "minimumStructure": "",
+          "sourceTitle": "WebUIProof: Benchmarking WebUI Code Generators with UI-Agent Execution Harness",
+          "sourceUrl": "https://arxiv.org/abs/2610.02617",
+          "sourceName": "arXiv（マルチエージェント）",
+          "tags": [
+            "AI",
+            "UI",
+            "ベンチマーク",
+            "自動検証"
+          ]
+        },
+        {
+          "id": "20261006-03",
+          "date": "2026-10-06",
+          "category": "science",
+          "title": "同期を最適化すると現れる「二部グラフ」と「単系性」の奇妙な構造",
+          "hook": "バラバラな個体が集まって同期するネットワークを最適化すると、なぜか極端な偏りを持つ構造が浮かび上がります。直感に反して、なぜ特定の配置が効率を生むのでしょうか。",
+          "principleCandidate": "多様な要素を繋ぐ際、あえて類似者同士の隔離が全体効率を高める可能性。",
+          "minimumStructure": "",
+          "sourceTitle": "Emergent Topology of Optimal Networks for Synchrony",
+          "sourceUrl": "https://arxiv.org/abs/2509.18279",
+          "sourceName": "arXiv（自己組織化・適応系）",
+          "tags": [
+            "ネットワーク理論",
+            "自己組織化",
+            "同期現象"
+          ]
+        },
+        {
+          "id": "20261006-04",
+          "date": "2026-10-06",
+          "category": "mind",
+          "title": "都市政策の効果は、物理的な距離ではなく人の移動で決まる",
+          "hook": "都市政策の効果を測る際、私たちは「近さ」という地図上の距離を基準にしがちです。しかし、政策の影響は空間の隣接性よりも、人々の移動網に沿って伝播している可能性があります。",
+          "principleCandidate": "システムの変容は物理的な配置ではなく、ノード間の動的な接続頻度によって左右されるのかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Human mobility shapes how urban policy effects spread across cities",
+          "sourceUrl": "https://arxiv.org/abs/2610.02639",
+          "sourceName": "arXiv（物理と社会）",
+          "tags": [
+            "都市計画",
+            "ネットワーク分析",
+            "行動経済学"
+          ]
+        },
+        {
+          "id": "20261006-05",
+          "date": "2026-10-06",
+          "category": "build",
+          "title": "「顔」を消すための鏡面マスクが、かえって視線を呼び寄せる理由",
+          "hook": "鏡で顔を覆い、周囲の風景を反射させることで「自撮り」の対極を目指したアート作品がある。しかし、装着者は透明になるどころか、かえって周囲から強い注目を集める存在になってしまった。",
+          "principleCandidate": "個人の境界を環境に溶け込ませる試みが、逆に個を「観測対象」として強く浮き彫りにしているかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "freddie yauner on what his mirror mask reveals about looking",
+          "sourceUrl": "https://www.designboom.com/art/freddie-yauner-mirror-mask-looking-interview/",
+          "sourceName": "designboom",
+          "tags": [
+            "知覚",
+            "鏡",
+            "アイデンティティ",
+            "反転"
+          ]
+        },
+        {
+          "id": "20261006-06",
+          "date": "2026-10-06",
+          "category": "culture",
+          "title": "古代ローマの「ホットピンク」が示す権力の正体",
+          "hook": "現代では特定の性別や文脈と結び付けられがちな「ピンク色」の服。しかし、古代ローマの皇帝はこれを権威と神聖さの象徴として身に纏っていたかもしれません。色彩が持つ社会的意味は、時代とともにいかに変容するのでしょうか。",
+          "principleCandidate": "希少資源の消費コストが、その所有者の社会的優位性を可視化する指標として機能しているかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "A New Exhibition Reveals How Hot Pink Togas and Floral Perfumes Conveyed Power in the Roman Empire",
+          "sourceUrl": "https://www.smithsonianmag.com/smart-news/a-new-exhibition-reveals-how-hot-pink-togas-and-floral-perfumes-conveyed-power-in-the-roman-empire-180989615/",
+          "sourceName": "Smithsonian Magazine",
+          "tags": [
+            "歴史",
+            "色彩",
+            "権力構造",
+            "感性"
+          ]
+        },
+        {
+          "id": "20261006-07",
+          "date": "2026-10-06",
+          "category": "foreign",
+          "title": "海を模したモザイク画が語る、沈黙の記憶",
+          "hook": "キプロスの小学校の壁に、色鮮やかな深海模様のモザイクがある。しかし添えられた銘板を読むと、その装飾的な模様は一転して、虐殺で失われた子供たちへの追悼の記へと変貌する。",
+          "principleCandidate": "視覚的な情報と、後から与えられる言語的なコンテキストの対立によって、体験者の認識を書き換える仕組みかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "‘Deep Silent Gaze’ in Limassol, Cyprus",
+          "sourceUrl": "https://www.atlasobscura.com/places/deep-silent-gaze",
+          "sourceName": "Atlas Obscura",
+          "tags": [
+            "モザイク",
+            "記憶",
+            "文脈",
+            "公共アート"
+          ]
+        }
+      ]
+    },
     {
       "date": "2026-10-05",
       "principleOfTheDay": "20261005-02",
