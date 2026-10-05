@@ -7,6 +7,7 @@ import { formatDotDate } from '../shared/time.ts';
 import type { DailyItem } from '../shared/types.ts';
 import { CategoryChip } from './common.tsx';
 import { Icon } from './Icon.tsx';
+import { LightDeepLines } from './LightDeep.tsx';
 import { Thumb } from './Thumb.tsx';
 
 export function onToggleSave(item: DailyItem) {
@@ -57,6 +58,15 @@ export function ItemCard({
         </div>
         <Thumb category={item.category} seed={item.id} image={item.image} />
       </div>
+      {/* 3行DEEP（AI が付けたものだけ。古い日のデータには無い）。カードを重くしないよう、開いたときだけ見せる */}
+      {!failed && item.deep && (
+        <details className="card-deep">
+          <summary>
+            DEEP <span>3行で少しだけ照らす</span>
+          </summary>
+          <LightDeepLines deep={item.deep} compact />
+        </details>
+      )}
       <div className="card-meta">
         <span className="src">{item.sourceName || item.sourceTitle}</span>
         <span>{formatDotDate(item.sourceDate || item.date)}</span>

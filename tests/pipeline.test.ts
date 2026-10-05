@@ -37,6 +37,7 @@ test('月曜：収集 → 絞り込み → AI で7件 → 保存（AI は選定1
   assert.deepEqual(it.inputTypes, ['情報', '時間'], '選択肢にないものは捨てる');
   assert.deepEqual(it.tags, ['タグ', 'テスト']);
   assert.deepEqual(it.boundary, [{ probe: '10倍なら？', answer: '遅くなる' }]);
+  assert.deepEqual(it.deep, { why: '少ない判断で動いている', principle: '局所ルールが全体をつくる', next: '別分野にも同型があるかもしれない', by: 'ai' }, '3行DEEP');
   assert.equal(it.saved, false);
 
   const archive = JSON.parse(await readFile(paths.archiveFile, 'utf8'));

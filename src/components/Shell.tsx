@@ -14,7 +14,7 @@ interface NavDef {
 export const MAIN_NAV: readonly NavDef[] = [
   { path: '/daily', label: 'DAILY', sub: '今日の原理', icon: 'sun' },
   { path: '/deep', label: 'DEEP', sub: '原理を深く分解', icon: 'search' },
-  { path: '/diary', label: 'DIARY', sub: '保存した原理', icon: 'book' },
+  { path: '/diary', label: 'DIARY', sub: '観測日記', icon: 'book' },
   { path: '/connect', label: 'CONNECT', sub: '原理をつなげる', icon: 'connect' },
   { path: '/build', label: 'BUILD', sub: '試してつくる', icon: 'cube' },
 ];

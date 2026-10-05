@@ -36,7 +36,8 @@ export type IconName =
   | 'spark'
   | 'shuffle'
   | 'user'
-  | 'heart';
+  | 'heart'
+  | 'pen';
 
 const PATHS: Record<IconName, ReactNode> = {
   sun: (
@@ -164,6 +165,7 @@ const PATHS: Record<IconName, ReactNode> = {
     </>
   ),
   heart: <path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z" />,
+  pen: <path d="M4.5 19.5h4l10.2-10.2a2.1 2.1 0 0 0-3-3L5.5 16.5zM14.2 7.8l3 3" />,
 };
 
 export function Icon({ name, size = 20, stroke = 1.7, className }: { name: IconName; size?: number; stroke?: number; className?: string }) {

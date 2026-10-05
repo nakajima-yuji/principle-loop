@@ -1,6 +1,7 @@
 // 内部 AI への指示。PRINCIPLE LOOP の文章の方針はここで決まる。
 
 import { CATEGORIES, categoryOf } from '../../src/shared/categories.ts';
+import { LIGHT_DEEP_RULES } from '../../src/shared/deep.ts';
 import { BOUNDARY_PROBES, CORE_QUESTIONS } from '../../src/shared/questions.ts';
 import type { CategoryId } from '../../src/shared/types.ts';
 import type { Candidate } from '../filter/filter.ts';
@@ -87,7 +88,12 @@ ${(articleText || c.summary).trim()}
   "boundary": ${JSON.stringify(BOUNDARY_PROBES.map((p) => ({ probe: p, answer: '1〜2文' })))},
   "invert": "原理を逆転した構造と、その使い道",
   "transferIdeas": ["遠い分野への転用案を 3 つ（それぞれ 50字以内）"],
+  "deep": {"why": "なぜ気になった？（1行）", "principle": "どこが原理？（1行）", "next": "次は？（1行）"},
   "tags": ["短いタグを 3〜5 個"],
   "transferability": 0.0〜1.0 の数値（他分野へ飛ばしやすいほど高い）
-}`;
+}
+
+"deep" は「3行DEEP」です。深掘りではなく、深掘りする価値がありそうな方向を少しだけ照らすための軽いコメントです。
+${LIGHT_DEEP_RULES.map((r) => `- ${r}`).join('\n')}
+例：{"why": "見えない対象を痕跡から推測する構造がある。", "principle": "対象そのものより、残された情報が探索欲を生む。", "next": "ゲーム・絵本・建築など別分野にも同型があるかもしれない。"}`;
 }

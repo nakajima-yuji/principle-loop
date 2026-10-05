@@ -2,6 +2,7 @@
 // データ層はここに閉じ込めてあるので、将来の同期はこのファイルの保存先を替えれば済む。
 
 import { useSyncExternalStore } from 'react';
+import { createNoteEntry, diarySource, withNoteSource, withNoteText, type NoteSource } from '../lib/note.ts';
 import type {
   ConnectionResult,
   DailyItem,
@@ -9,6 +10,7 @@ import type {
   DiaryEntry,
   DiaryKind,
   ExperimentDesign,
+  LightDeep,
   PrincipleState,
 } from '../shared/types.ts';
 import { browserStorage, createStore, readJson, type KeyValueStorage } from './storage.ts';
@@ -81,6 +83,7 @@ export function saveToDiary(item: DailyItem, kind: DiaryKind = 'daily', state: P
   const entry: DiaryEntry = {
     id: item.id,
     kind,
+    source: diarySource({ kind, item }),
     state,
     item: { ...item, saved: true },
     memo: '',
@@ -113,6 +116,31 @@ export function toggleSaved(item: DailyItem): boolean {
   }
   saveToDiary(item);
   return true;
+}
+
+// ---------------- Memo / 気づき（DIARY の 1 件として保存する） ----------------
+
+/** PRINCIPLE LOOP へ送った Memo / 気づきを、そのまま DIARY に保存する（AI の分析はしない） */
+export function saveNote(input: { text: string; source: NoteSource; tags?: string[] }): DiaryEntry {
+  const entry = createNoteEntry(input, new Date(), newId(input.source));
+  const data = store.get();
+  commit({ ...data, diary: [entry, ...data.diary] });
+  return entry;
+}
+
+/** Memo / 気づきの本文・種類を直す */
+export function updateNote(id: string, patch: { text?: string; source?: NoteSource }) {
+  const entry = store.get().diary.find((d) => d.id === id);
+  if (!entry) return;
+  let item = entry.item;
+  if (patch.text !== undefined) item = withNoteText(item, patch.text);
+  if (patch.source) item = withNoteSource(item, patch.source);
+  updateDiary(id, { item, ...(patch.source ? { source: patch.source } : {}) });
+}
+
+/** 3行DEEP を付ける・直す（undefined で消す） */
+export function setEntryDeep(id: string, deep: LightDeep | undefined) {
+  updateDiary(id, { deep: deep ? { ...deep, by: 'user', updatedAt: nowIso() } : undefined });
 }
 
 // ---------------- DEEP notes ----------------

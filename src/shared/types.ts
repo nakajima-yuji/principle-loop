@@ -8,6 +8,19 @@ export interface BoundaryProbe {
   answer: string;
 }
 
+/**
+ * 3行DEEP：深掘りする価値がありそうな方向を「少しだけ照らす」軽いコメント。
+ * 答えを完成させない。各行 1 文・5〜15 秒で読める長さ。本格的な深掘り（FullDeepRun）とは別物。
+ */
+export interface LightDeep {
+  why: string; // なぜ気になった？
+  principle: string; // どこが原理？（原理候補は 1 つだけ）
+  next: string; // 次は？
+  /** ai = 夜間処理の AI / user = 自分で書いた・AI チャットから貼った / derived = 古いデータの分析から抜き出した（保存しない） */
+  by?: 'ai' | 'user' | 'derived';
+  updatedAt?: string;
+}
+
 /** DAILY の 1 件。仕様の最低限フィールド + 任意の拡張フィールド。 */
 export interface DailyItem {
   id: string; // 例: "20261005-03"（日付 + 番号。メールの DEEP リンクにも使う）
@@ -49,6 +62,8 @@ export interface DailyItem {
   /** AI の分析を作れなかった（作成中止）。仮の文章では埋めず、情報源の要約だけを持つ */
   analysisFailed?: boolean;
   failReason?: string; // 例：「AI が混み合っていたため」
+  /** 3行DEEP（2026-10 以降の DAILY に付く。古いデータには無い） */
+  deep?: LightDeep;
 }
 
 export interface DailyFile {
@@ -119,18 +134,53 @@ export interface DeepNotes {
   updatedAt: string;
 }
 
+/** どうやって DIARY に入ったか（作り方）。daily = DAILY から保存 / manual = 自分で追加 / connect = CONNECT から */
 export type DiaryKind = 'daily' | 'manual' | 'connect';
 
+/**
+ * DIARY の情報源（SOURCE / TYPE）＝ 誰が見つけたか。
+ * daily = AI・自動収集（DAILY）/ memo = 自分が PRINCIPLE LOOP へ送ったメモ / insight = 自分の気づき・観察・違和感
+ */
+export type DiarySource = 'daily' | 'memo' | 'insight';
+
+/** 本格DEEP で使う思考エンジン。今後増える前提で文字列も受け付ける */
+export type DeepEngineId = 'okada' | 'ochiai' | (string & {});
+
+/**
+ * 本格DEEP の 1 回分（将来用）。3行DEEP を見て人間が選んだものだけを、思考エンジンで深く掘った結果をためる。
+ * 今回は型だけ用意している（まだ画面からは作らない）。
+ */
+export interface FullDeepRun {
+  id: string;
+  engine: DeepEngineId;
+  /** エンジンの問いと答え（問いはエンジン側の定義をそのまま写す） */
+  steps: { question: string; answer: string }[];
+  /** 構造抽出 → 原理候補 → 異分野移植 → 最小実験 の結果（あるものだけ） */
+  structure?: string;
+  principleCandidate?: string;
+  transfers?: string[];
+  experiment?: string;
+  by: 'ai' | 'user';
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface DiaryEntry {
-  id: string; // DAILY の id、または manual-xxx / connect-xxx
+  id: string; // DAILY の id、または manual-xxx / connect-xxx / memo-xxx / insight-xxx
   kind: DiaryKind;
   state: PrincipleState;
-  item: DailyItem; // 保存時点のスナップショット（元データが消えても残る）
+  item: DailyItem; // 保存時点のスナップショット（元データが消えても残る）。Memo / 気づきは本文を hook に持つ
   memo: string;
   tags: string[];
   experiments: string[]; // 実験案（自由記述）
   createdAt: string;
   updatedAt: string;
+  /** 情報源。古いデータには無いので diarySource() で kind から判定する */
+  source?: DiarySource;
+  /** 3行DEEP（自分で書いた・直したもの）。DAILY の AI 版は item.deep にある */
+  deep?: LightDeep;
+  /** 本格DEEP の結果（将来用） */
+  fullDeep?: FullDeepRun[];
 }
 
 export interface ConnectionResult {

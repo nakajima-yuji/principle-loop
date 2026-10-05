@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { CategoryChip, ErrorBox, ExternalLink, FactBox, FailedNotice, Loading, PageHead, SectionLabel, StateSelect } from '../components/common.tsx';
 import { Icon } from '../components/Icon.tsx';
+import { ItemThumb, LightDeepCard, SourceBadge } from '../components/LightDeep.tsx';
 import { Thumb } from '../components/Thumb.tsx';
 import { loadItem, loadLatestDaily, useAsync } from '../data/api.ts';
 import { markActive } from '../data/heartbeat.ts';
-import { emptyNotes, newId, notesProgress, saveToDiary, setNotes, updateDiary, usePersonal } from '../data/store.ts';
+import { emptyNotes, newId, notesProgress, saveToDiary, setEntryDeep, setNotes, updateDiary, usePersonal } from '../data/store.ts';
 import { toast } from '../data/toast.ts';
 import { createManualItem, isHttpUrl } from '../lib/manual.ts';
+import { diarySource, isNoteItem } from '../lib/note.ts';
 import { href, navigate } from '../router.ts';
 import { CATEGORIES } from '../shared/categories.ts';
+import { DEEP_ENGINES, lightDeepOf } from '../shared/deep.ts';
 import { BOUNDARY_PROBES, CORE_QUESTIONS, EXTRA_STEPS, type CoreQuestion, type ExtraStep } from '../shared/questions.ts';
 import { formatDotDate } from '../shared/time.ts';
 import type { CategoryId, DailyItem, DeepNotes } from '../shared/types.ts';
@@ -100,7 +103,7 @@ function DeepPicker() {
           <div className="picker-grid">
             {personal.diary.slice(0, 12).map((d) => (
               <a key={d.id} className="pick" href={href('/deep', { id: d.id })}>
-                <Thumb category={d.item.category} seed={d.item.id} image={d.item.image} />
+                <ItemThumb item={d.item} />
                 <span>
                   <span className="small muted">{Math.round(notesProgress(personal.notes[d.id]) * 100)}% 記入</span>
                   <span className="t">{d.item.title}</span>
@@ -179,6 +182,9 @@ function DeepWorkspace({ item }: { item: DailyItem }) {
   const entry = personal.diary.find((d) => d.id === item.id);
   const progress = notesProgress(notes);
   const set = (patch: Partial<DeepNotes>) => setNotes(item.id, patch);
+  const note = isNoteItem(item);
+  // 3行DEEP を見て「もう少し調べたい」と選んだときだけ、本格DEEP（7つの質問）を開く。書きかけなら最初から開く
+  const [fullOpen, setFullOpen] = useState(progress > 0);
 
   const onSave = () => {
     const hasCandidate = notes.principleCandidate.trim().length > 0;
@@ -197,33 +203,60 @@ function DeepWorkspace({ item }: { item: DailyItem }) {
       <div className="deep-layout">
         <div>
           <section className="panel deep-hero">
-            <Thumb category={item.category} seed={item.id} image={item.image} />
+            <ItemThumb item={item} />
             <div>
               <div className="row">
                 <span className="page-kicker" style={{ margin: 0 }}>
                   DEEP
                 </span>
-                <CategoryChip category={item.category} full />
+                {entry && <SourceBadge source={diarySource(entry)} />}
+                {!note && <CategoryChip category={item.category} full />}
               </div>
               <h1>{item.title}</h1>
-              <p className="muted" style={{ fontSize: 14, lineHeight: 1.8 }}>
+              <p className="muted" style={{ fontSize: 14, lineHeight: 1.8, whiteSpace: note ? 'pre-wrap' : undefined }}>
                 {item.hook}
               </p>
-              <p className="small" style={{ marginTop: 8 }}>
-                <ExternalLink href={item.sourceUrl}>{item.sourceName || item.sourceTitle || '情報源'}</ExternalLink>
-                {item.sourceDate && (
-                  <span className="muted" style={{ marginLeft: 10 }}>
-                    {formatDotDate(item.sourceDate)}
-                  </span>
-                )}
-                {item.story && (
-                  <a style={{ marginLeft: 12 }} href={href('/read', { id: item.id })}>
-                    ストーリーを読む
-                  </a>
-                )}
-              </p>
+              {!note && (
+                <p className="small" style={{ marginTop: 8 }}>
+                  <ExternalLink href={item.sourceUrl}>{item.sourceName || item.sourceTitle || '情報源'}</ExternalLink>
+                  {item.sourceDate && (
+                    <span className="muted" style={{ marginLeft: 10 }}>
+                      {formatDotDate(item.sourceDate)}
+                    </span>
+                  )}
+                  {item.story && (
+                    <a style={{ marginLeft: 12 }} href={href('/read', { id: item.id })}>
+                      ストーリーを読む
+                    </a>
+                  )}
+                </p>
+              )}
             </div>
           </section>
+
+          <div style={{ marginTop: 14 }}>
+            <LightDeepCard
+              deep={entry?.deep ?? lightDeepOf(item)}
+              editable={Boolean(entry)}
+              canClear={Boolean(entry?.deep)}
+              onSave={(d) => entry && setEntryDeep(entry.id, d)}
+              promptText={note ? item.hook : `${item.title}\n${item.hook}`}
+              promptKind={note ? (item.aiProvider === 'insight' ? '気づき' : 'メモ') : '現象'}
+              emptyText={entry ? '3行DEEP はまだありません。「書く」から付けられます。' : '3行DEEP はまだありません。'}
+              footer={
+                !fullOpen && (
+                  <>
+                    <button type="button" className="btn sm primary" onClick={() => setFullOpen(true)}>
+                      <Icon name="search" size={14} /> もう少し調べたい → 本格的に掘る
+                    </button>
+                    <span className="small muted">
+                      全部は掘りません。選んだものだけ、本格DEEP（7つの中心質問・反例・境界・転用）で分解します。思考エンジン（{DEEP_ENGINES.map((e) => e.label).join('・')}）は今後ここに追加します。
+                    </span>
+                  </>
+                )
+              }
+            />
+          </div>
 
           {item.analysisFailed && (
             <div style={{ marginTop: 14 }}>
@@ -231,22 +264,26 @@ function DeepWorkspace({ item }: { item: DailyItem }) {
             </div>
           )}
 
-          <SectionLabel kicker="CORE" title="7つの中心質問" />
-          <p className="small muted" style={{ margin: '-4px 0 12px' }}>
-            青い点線の枠は AI の下書き（仮説）です。正解として扱わず、自分の言葉で書き直してください。書いた内容はこの端末に自動で保存されます。
-          </p>
-          <div className="stack">
-            {CORE_QUESTIONS.map((q) => (
-              <CoreQuestionCard key={q.key} q={q} item={item} notes={notes} onChange={set} />
-            ))}
-          </div>
+          {fullOpen && (
+            <>
+              <SectionLabel kicker="FULL DEEP" title="本格DEEP：7つの中心質問" />
+              <p className="small muted" style={{ margin: '-4px 0 12px' }}>
+                青い点線の枠は AI の下書き（仮説）です。正解として扱わず、自分の言葉で書き直してください。書いた内容はこの端末に自動で保存されます。
+              </p>
+              <div className="stack">
+                {CORE_QUESTIONS.map((q) => (
+                  <CoreQuestionCard key={q.key} q={q} item={item} notes={notes} onChange={set} />
+                ))}
+              </div>
 
-          <SectionLabel kicker="FURTHER" title="追加分析" />
-          <div className="stack">
-            {EXTRA_STEPS.map((s) => (
-              <ExtraStepCard key={s.key} step={s} item={item} notes={notes} onChange={set} />
-            ))}
-          </div>
+              <SectionLabel kicker="FURTHER" title="追加分析" />
+              <div className="stack">
+                {EXTRA_STEPS.map((s) => (
+                  <ExtraStepCard key={s.key} step={s} item={item} notes={notes} onChange={set} />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <aside className="deep-side">

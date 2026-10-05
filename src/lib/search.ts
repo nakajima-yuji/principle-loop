@@ -2,6 +2,7 @@
 // 件数は多くても数千件なので、単純な部分一致＋点数づけで十分速い。
 
 import type { ArchiveIndex, DiaryEntry } from '../shared/types.ts';
+import { isNoteItem } from './note.ts';
 import { normalizeText } from './text.ts';
 
 export interface SearchHit {
@@ -74,7 +75,7 @@ export function searchAll(query: string, archive: ArchiveIndex | null, diary: re
         kind: 'diary',
         id: e.id,
         date: it.date,
-        category: it.category,
+        category: isNoteItem(it) ? '' : it.category, // Memo / 気づきは分野を持たない
         title: it.title,
         snippet: snippetAround(`${e.memo} ${it.hook}`, qs),
         principle: it.principleCandidate,

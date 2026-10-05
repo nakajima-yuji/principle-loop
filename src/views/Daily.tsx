@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { CategoryChip, ErrorBox, Loading, Notice } from '../components/common.tsx';
 import { Icon } from '../components/Icon.tsx';
 import { ItemCard } from '../components/ItemCard.tsx';
+import { ItemThumb } from '../components/LightDeep.tsx';
 import { Thumb } from '../components/Thumb.tsx';
 import { loadArchive, loadDaily, useAsync } from '../data/api.ts';
 import { useServerActivity } from '../data/server-activity.ts';
@@ -217,7 +218,7 @@ export function DailyView({ date }: { date: string | null }) {
                   {recentDiary.map((d) => (
                     <li key={d.id}>
                       <a href={href('/diary', { id: d.id })}>
-                        <Thumb category={d.item.category} seed={d.item.id} image={d.item.image} />
+                        <ItemThumb item={d.item} />
                         <span>
                           <span className="t">{d.item.title}</span>
                           <span className="d">{formatDotDate(d.createdAt.slice(0, 10))}</span>

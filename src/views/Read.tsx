@@ -2,12 +2,14 @@ import { useEffect } from 'react';
 import { AiBox, CategoryChip, ErrorBox, ExternalLink, FactBox, FailedNotice, Loading } from '../components/common.tsx';
 import { Icon } from '../components/Icon.tsx';
 import { onToggleSave } from '../components/ItemCard.tsx';
+import { LightDeepCard } from '../components/LightDeep.tsx';
 import { Thumb } from '../components/Thumb.tsx';
 import { loadItem, useAsync } from '../data/api.ts';
 import { markActive } from '../data/heartbeat.ts';
 import { usePersonal } from '../data/store.ts';
 import { paragraphs } from '../lib/text.ts';
 import { href } from '../router.ts';
+import { lightDeepOf } from '../shared/deep.ts';
 import { STORY_STAGES } from '../shared/questions.ts';
 import { formatDotDate, formatJaDate } from '../shared/time.ts';
 
@@ -24,7 +26,9 @@ export function ReadView({ id }: { id: string | null }) {
   if (item.error || !item.data) return <ErrorBox message={item.error ?? '読み込めませんでした'} />;
 
   const it = item.data;
-  const saved = personal.diary.some((d) => d.id === it.id);
+  const entry = personal.diary.find((d) => d.id === it.id);
+  const saved = Boolean(entry);
+  const deep = entry?.deep ?? lightDeepOf(it);
   const paras = paragraphs(it.story);
   const staged = paras.length === STORY_STAGES.length;
 
@@ -103,6 +107,16 @@ export function ReadView({ id }: { id: string | null }) {
               </a>
             )}
           </section>
+          {deep && (
+            <LightDeepCard
+              deep={deep}
+              footer={
+                <a className="pill-link" href={href('/deep', { id: it.id })}>
+                  もう少し調べたい → 本格的に掘る <Icon name="arrowRight" size={13} />
+                </a>
+              }
+            />
+          )}
           {it.minimumStructure && (
             <section className="panel panel-pad">
               <div className="q-label">MINIMUM STRUCTURE</div>

@@ -1,6 +1,7 @@
 // AI の出力は信用しすぎない。型・長さ・選択肢をここでそろえる。
 // 出典（URL・タイトル・日付）は AI に書かせず、収集したデータから入れる（作り話の URL を防ぐ）。
 
+import { normalizeLightDeep } from '../../src/shared/deep.ts';
 import { BOUNDARY_PROBES, CORE_QUESTIONS } from '../../src/shared/questions.ts';
 import type { BoundaryProbe, CategoryId, DailyItem } from '../../src/shared/types.ts';
 import type { Candidate } from '../filter/filter.ts';
@@ -43,6 +44,8 @@ export function toDailyItem(
 ): DailyItem {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
   const t = typeof r.transferability === 'number' && Number.isFinite(r.transferability) ? r.transferability : 0.5;
+  // 3行DEEP。3行そろっていなければ付けない（アプリ側で既存の分析から短く抜き出して補う）。仮のテンプレートには付けない
+  const deep = meta.provider === 'mock' ? undefined : normalizeLightDeep(r.deep, 'ai', { requireAll: true });
   return {
     id: meta.id,
     date: meta.date,
@@ -77,6 +80,7 @@ export function toDailyItem(
     transferability: Math.max(0, Math.min(1, Math.round(t * 100) / 100)),
     aiProvider: meta.provider,
     saved: false,
+    ...(deep ? { deep } : {}),
   };
 }
 

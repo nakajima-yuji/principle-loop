@@ -78,6 +78,7 @@ export function fakeAI(opts: { failAnalyze?: boolean; failAnalyzeTimes?: number;
           boundary: [{ probe: '10倍なら？', answer: '遅くなる' }, { probe: '知らない問い', answer: 'x' }],
           invert: '逆',
           transferIdeas: ['転用1', '転用2'],
+          deep: { why: '・なぜ気になった？ → 少ない判断で動いている', principle: '局所ルールが全体をつくる', next: '別分野にも同型があるかもしれない' },
           tags: ['#タグ', 'テスト'],
           transferability: 0.8,
           sourceUrl: 'https://evil.example/作り話',

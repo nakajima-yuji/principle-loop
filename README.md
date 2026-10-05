@@ -34,8 +34,8 @@ PRINCIPLE LOOP は、たくさんコードを書く装置ではなく、**「何
 | 画面 | やること |
 | --- | --- |
 | **DAILY** | 毎朝の「今日の7つの原理」。1分野1件 × 6分野 ＋「異物」1件。PRINCIPLE OF THE DAY つき |
-| **DEEP** | 7つの中心質問で構造を解剖する（入力／変換／なぜ速い／何を捨てた／トレードオフ／最小構造／元用途を消す）。その後、観察・仮説・反例・境界・逆転・転用・原理候補 |
-| **DIARY** | 気になった原理を保存。観察 → 仮説 → 原理候補 → 原理 → 実験済み と育てる |
+| **DEEP** | まず **3行DEEP**（なぜ気になった？／どこが原理？／次は？）で少しだけ照らす。もう少し調べたいものだけ **本格DEEP**（7つの中心質問 → 観察・仮説・反例・境界・逆転・転用・原理候補）で解剖する |
+| **DIARY** | 観測日記。AI が拾ったもの（DAILY）と、自分が送ったもの（MEMO・気づき）を同じ日付で並べる。ALL／DAILY／MEMO／気づき で切り替え。観察 → 仮説 → 原理候補 → 原理 → 実験済み と育てる |
 | **CONNECT** | 遠い原理 × 遠い原理 をぶつけて、新しい構造・用途・最小実験を考える |
 | **BUILD** | EXPERIMENT DESIGN。コードではなく実験を設計し、本当に作りたいときだけ Claude Code / Codex 用プロンプトを**コピー**する（自動実行しない） |
 | ACTIVITY / SETTINGS | 稼働状況・10日自動停止・再開・GitHub 連携・バックアップ |
@@ -52,8 +52,59 @@ GitHub Actions（月〜土の深夜と朝だけ動く）
 
 - 有料のデータベース・常時動くサーバー・有料バックエンドは使いません。
 - 日々の処理で **Claude Code / Codex は一切使いません**（GitHub Actions ＋ Node.js ＋ 無料枠の AI だけ）。
-- 個人データ（DIARY・DEEP のメモ・CONNECT・BUILD）は**ブラウザの中**（localStorage）に保存します。
+- 個人データ（DIARY・Memo／気づき・DEEP のメモ・CONNECT・BUILD）は**ブラウザの中**（localStorage）に保存します。
 - AI の鍵・メールのパスワードは **GitHub Secrets** にだけ置き、アプリ（ブラウザ）には出しません。
+
+### DIARY：世界の観測 ＋ 自分の Memo／気づき
+
+```
+【世界側】DAILY（AI が広く拾う）──────┐
+                                       ├→ DIARY → 3行DEEP → 人間が選ぶ → 本格DEEP（岡田エンジン／落合エンジン…）
+【人間側】日常の観察 → Memo／気づき ──┘                                   → 構造抽出 → 原理候補 → 異分野移植 → 最小実験
+```
+
+全部を深掘りしません。**広く拾う → 残す → 少しだけ照らす → 人間が選ぶ → 選んだものだけ深く掘る**。
+
+DIARY の各項目には **SOURCE（情報源）** があります。
+
+| 表示 | 内部の値 | 中身 |
+| --- | --- | --- |
+| DAILY | `source: "daily"` | AI・自動収集で見つけたもの（DAILY から保存した原理） |
+| MEMO | `source: "memo"` | 自分が PRINCIPLE LOOP へ送ったメモ（DEEP の「URL から掘る」で入れた現象もここ） |
+| 気づき | `source: "insight"` | 自分の観察・発見・違和感・仮説 |
+
+**Memo／気づきの送り方は 2 つ**あり、どちらも DIARY の同じ時間軸に並びます。
+
+1. **アプリから**：DIARY の上の「PRINCIPLE LOOP へ送る」に書いて「送る」（MEMO／気づき を選ぶ。関連テーマは任意）。AI の分析はせず、日時つきでそのまま残します。あとから状態（観察 → 仮説 → 原理候補）を変えたり、追記したり、3行DEEP を付けたりできます。
+2. **リポジトリへ**：`diary/`・`research/`・`memo/` に Markdown（`*.md`）を置く（AI チャットから送る場合など）。main に入るとアプリが作り直され、DIARY に読み取り専用で並びます。先頭に次を書けば種類・日時・テーマを指定できます（無くても動きます。種類は `memo/` なら MEMO、それ以外は 気づき。日付はファイル名の先頭 `2026-10-05-…` からも読みます）。
+
+   ```markdown
+   ---
+   type: memo
+   date: 2026-10-05
+   time: 21:30
+   tags: 痕跡、探索
+   ---
+   # 見出し
+   本文…
+   ```
+
+   > リポジトリの Markdown は GitHub Pages のアプリにも含まれます（リポジトリと同じく公開されます）。人に見せたくないメモはアプリの「送る」を使ってください（端末の中だけに残ります）。
+
+### 3行DEEP と 本格DEEP
+
+3行DEEP は「深掘りする価値がありそうな方向を少しだけ照らす」軽いコメントです。答えを完成させません。
+
+```
+DEEP
+・なぜ気になった？ → 見えない対象を痕跡から推測する構造がある。
+・どこが原理？ → 対象そのものより、残された情報が探索欲を生む。
+・次は？ → ゲーム・絵本・建築など別分野にも同型があるかもしれない。
+```
+
+- **DAILY**：夜間の AI が、いつもの分析と同じ 1 回の呼び出しの中で 3行DEEP も作ります（AI の回数は増えません）。古い日のデータには、既存の分析から短く抜き出した 3 行を表示します。
+- **Memo／気づき**：保存した瞬間には作りません。必要になったら DIARY の「書く」から付けます。「AI に頼む文面をコピー」で Claude などに頼み、返ってきた 3 行を 1 つの欄に貼れば 3 つに分けて入ります（アプリには AI の鍵を置かないため、自動では送りません）。リポジトリの Markdown は、本文に上の 3 行を書けば表示されます。
+- **本格DEEP**：3行を読んで「もう少し調べたい」と選んだものだけ、DEEP 画面で開きます（7つの中心質問など）。岡田エンジン・落合エンジンなどの思考エンジンは、今後ここに追加します。
 
 ---
 
@@ -381,6 +432,8 @@ node scripts/run.ts --mode=generate --fixtures --date=2026-10-05 --dry-run   # �
 node scripts/run.ts --mode=status               # 状態を見る
 ```
 
-- データの形（DAILY の 1 件）は `src/shared/types.ts` の `DailyItem`。仕様の最低限のフィールドに、`inputTypes`・`boundary`・`invert`・`tags`・`transferability` などを足しています。
+- データの形（DAILY の 1 件）は `src/shared/types.ts` の `DailyItem`。仕様の最低限のフィールドに、`inputTypes`・`boundary`・`invert`・`tags`・`transferability`・`deep`（3行DEEP）などを足しています。
+- DIARY の 1 件は `DiaryEntry`。`source`（daily / memo / insight）・`deep`（自分で書いた 3行DEEP）・`fullDeep`（本格DEEP の結果。将来用）は任意で、古いデータに無くても `diarySource()`（`src/lib/note.ts`）が `kind` から判定します。Memo／気づきも `DiaryEntry`（`kind: "manual"`）として保存するので、状態・DEEP・CONNECT・BUILD・検索・バックアップがそのまま使えます。
+- 3行DEEP の決まり・読み取り・本格DEEP の思考エンジンの一覧は `src/shared/deep.ts`（`DEEP_ENGINES` に 1 件足すとエンジンが増える）。リポジトリの Markdown の読み取りは `src/lib/repo-note.ts`・`src/data/repo-notes.ts`。
 - 事実と AI の解釈を分けるため、出典の URL・タイトル・日付は AI に書かせず、収集したデータから入れています。
 - 依存パッケージは最小限です（react・react-dom・nodemailer、開発用に vite・typescript など）。RSS の読み込みも自前です。

@@ -40,7 +40,7 @@ export function App() {
       view = <DeepView key={p.get('id') ?? ''} id={p.get('id')} />;
       break;
     case '/diary':
-      view = <DiaryView id={p.get('id')} state={p.get('state')} tag={p.get('tag')} />;
+      view = <DiaryView id={p.get('id')} state={p.get('state')} tag={p.get('tag')} src={p.get('src')} />;
       break;
     case '/connect':
       view = <ConnectView a={p.get('a')} b={p.get('b')} id={p.get('id')} />;
