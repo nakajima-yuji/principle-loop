@@ -3,11 +3,13 @@ import { CategoryChip, PageHead } from '../components/common.tsx';
 import { Icon } from '../components/Icon.tsx';
 import { loadLatestDaily, useAsync } from '../data/api.ts';
 import { markActive } from '../data/heartbeat.ts';
-import { newId, removeConnection, saveConnection, saveToDiary, usePersonal } from '../data/store.ts';
+import { newId, removeConnection, saveConnection, saveToDiary, updateDiary, usePersonal } from '../data/store.ts';
 import { copyText, toast } from '../data/toast.ts';
 import { collisionQuestions, connectChatPrompt, distanceLabel, draftConnection, principleDistance, suggestFarPair } from '../lib/connect.ts';
-import { toPrincipleSource, type PrincipleSource } from '../lib/principle.ts';
+import { ENGINES, NONE_ENGINE_ID } from '../engines/index.ts';
+import { engineToSource, mediumToSource, toPrincipleSource, type PrincipleSource } from '../lib/principle.ts';
 import { href, navigate } from '../router.ts';
+import { MEDIA } from '../shared/loop.ts';
 import { jstDateString } from '../shared/time.ts';
 import type { ConnectionResult, DailyItem } from '../shared/types.ts';
 
@@ -15,17 +17,22 @@ export function ConnectView({ a, b, id }: { a: string | null; b: string | null; 
   const personal = usePersonal();
   const latest = useAsync(loadLatestDaily, []);
 
-  // ぶつける候補：DIARY の原理（自分の言葉を優先）＋ 最新の DAILY
-  const sources = useMemo(() => {
+  // ぶつける候補：DIARY（自分の言葉を優先）＋ 最新の DAILY ＋ 思考エンジン ＋ メディア
+  const observed = useMemo(() => {
     const map = new Map<string, PrincipleSource>();
     personal.diary
-      .filter((d) => d.kind !== 'connect')
-      .forEach((d) => map.set(d.id, toPrincipleSource(d.item, personal.notes[d.id])));
+      .filter((d) => d.kind !== 'connect' && d.userDecision !== 'ARCHIVE')
+      .forEach((d) => map.set(d.id, toPrincipleSource(d.item, personal.notes[d.id], d.lightDeep)));
     (latest.data?.items ?? []).forEach((it) => {
       if (!map.has(it.id)) map.set(it.id, toPrincipleSource(it, personal.notes[it.id]));
     });
     return [...map.values()];
   }, [personal.diary, personal.notes, latest.data]);
+  const extras = useMemo(
+    () => [...ENGINES.filter((e) => e.id !== NONE_ENGINE_ID).map(engineToSource), ...MEDIA.map(mediumToSource)],
+    [],
+  );
+  const sources = useMemo(() => [...observed, ...extras], [observed, extras]);
 
   const savedConn = id ? personal.connections.find((c) => c.id === id) : undefined;
   const left = sources.find((s) => s.id === (savedConn?.leftId ?? a)) ?? null;
@@ -51,7 +58,7 @@ export function ConnectView({ a, b, id }: { a: string | null; b: string | null; 
   };
 
   const suggest = () => {
-    const pair = suggestFarPair(sources, seed);
+    const pair = suggestFarPair(observed, seed);
     setSeed((s) => s + 1);
     if (pair) navigate('/connect', { a: pair[0].id, b: pair[1].id });
   };
@@ -75,6 +82,8 @@ export function ConnectView({ a, b, id }: { a: string | null; b: string | null; 
       rightTitle: right.title,
       leftPrinciple: left.principle,
       rightPrinciple: right.principle,
+      leftKind: left.node,
+      rightKind: right.node,
       ...result,
       createdAt: savedConn?.createdAt ?? now,
       updatedAt: now,
@@ -111,8 +120,9 @@ export function ConnectView({ a, b, id }: { a: string | null; b: string | null; 
         tags: ['CONNECT'],
         aiProvider: 'connect',
       };
-      saveToDiary(item, 'connect', 'HYPOTHESIS');
-      toast('CONNECT を保存し、DIARY にも追加しました');
+      saveToDiary(item, { kind: 'connect', type: 'IDEA', state: 'PATTERN', source: 'CONNECT' });
+      updateDiary(conn.id, { derivedFrom: [left.id, right.id].filter((x) => personal.diary.some((d) => d.id === x)) });
+      toast('CONNECT を保存し、DIARY にアイデアとして追加しました');
     } else {
       toast('CONNECT を保存しました');
     }
@@ -125,17 +135,17 @@ export function ConnectView({ a, b, id }: { a: string | null; b: string | null; 
     <div className="page stack">
       <PageHead
         kicker="CONNECT"
-        title="原理同士をぶつける"
-        sub="似たものを探すのではなく、遠い原理 × 遠い原理を優先します。AI は使わず、問いと下書きを足場に自分で考えます。"
+        title="遠いものをぶつける"
+        sub="似たものではなく、遠いもの同士を優先します。観察・原理候補だけでなく、思考エンジンやメディア（絵本・空間など）ともぶつけられます。AI は使わず、問いと下書きを足場に自分で考えます。"
         right={
-          <button type="button" className="btn primary" onClick={suggest} disabled={sources.length < 2}>
+          <button type="button" className="btn primary" onClick={suggest} disabled={observed.length < 2}>
             <Icon name="shuffle" size={16} /> 遠い組み合わせを提案
           </button>
         }
       />
 
       <div className="connect-stage">
-        <Slot label="原理 A" source={left} sources={sources} otherId={right?.id} onChange={(v) => setSide('a', v)} />
+        <Slot label="A" source={left} sources={sources} otherId={right?.id} onChange={(v) => setSide('a', v)} />
         <div className="connect-x">
           <div>
             <span>×</span>
@@ -148,7 +158,7 @@ export function ConnectView({ a, b, id }: { a: string | null; b: string | null; 
             )}
           </div>
         </div>
-        <Slot label="原理 B" source={right} sources={sources} otherId={left?.id} onChange={(v) => setSide('b', v)} />
+        <Slot label="B" source={right} sources={sources} otherId={left?.id} onChange={(v) => setSide('b', v)} />
       </div>
 
       {left && right && (
@@ -199,10 +209,10 @@ export function ConnectView({ a, b, id }: { a: string | null; b: string | null; 
               disabled={!result.newStructure.trim()}
               onClick={() => {
                 const c = save(false);
-                if (c) navigate('/build', { from: 'connect', id: c.id });
+                if (c) navigate('/experiment', { from: 'connect', id: c.id });
               }}
             >
-              <Icon name="flask" size={16} /> BUILD で実験を設計
+              <Icon name="flask" size={16} /> EXPERIMENT で小さく試す
             </button>
           </div>
         </>
@@ -227,8 +237,8 @@ export function ConnectView({ a, b, id }: { a: string | null; b: string | null; 
                   </div>
                 </a>
                 <span className="row">
-                  <a className="btn sm" href={href('/build', { from: 'connect', id: c.id })}>
-                    BUILD
+                  <a className="btn sm" href={href('/experiment', { from: 'connect', id: c.id })}>
+                    EXPERIMENT
                   </a>
                   <button
                     type="button"
@@ -267,21 +277,31 @@ function Slot({
     <section className="panel connect-slot" aria-label={label}>
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <span className="q-label">{label}</span>
-        {source && <CategoryChip category={source.category} />}
+        {source && (source.node === 'engine' || source.node === 'medium' ? <span className="chip">{source.node === 'engine' ? 'ENGINE' : 'MEDIUM'}</span> : <CategoryChip category={source.category} />)}
       </div>
       <select className="select" value={source?.id ?? ''} onChange={(e) => onChange(e.target.value)} aria-label={`${label}を選ぶ`}>
-        <option value="">原理を選ぶ…</option>
-        {sources.map((s) => (
-          <option key={s.id} value={s.id} disabled={s.id === otherId}>
-            {s.title}
-          </option>
+        <option value="">ぶつけるものを選ぶ…</option>
+        {(
+          [
+            ['観察・原理候補', (s: PrincipleSource) => !s.node || s.node === 'observation' || s.node === 'principle'],
+            ['思考エンジン', (s: PrincipleSource) => s.node === 'engine'],
+            ['メディア', (s: PrincipleSource) => s.node === 'medium'],
+          ] as const
+        ).map(([group, match]) => (
+          <optgroup key={group} label={group}>
+            {sources.filter(match).map((s) => (
+              <option key={s.id} value={s.id} disabled={s.id === otherId}>
+                {s.title}
+              </option>
+            ))}
+          </optgroup>
         ))}
       </select>
       {source ? (
         <>
           <p className="principle">{source.principle || '（原理候補が未記入）'}</p>
           <p className="small muted">
-            <strong>最小構造：</strong>
+            <strong>{source.node === 'engine' ? '処理手順：' : '最小構造：'}</strong>
             {source.minimumStructure || '—'}
           </p>
           {source.discard && (
@@ -292,7 +312,7 @@ function Slot({
           )}
         </>
       ) : (
-        <div className="empty">左右に原理を置くか、「遠い組み合わせを提案」を押してください。</div>
+        <div className="empty">左右に置くか、「遠い組み合わせを提案」を押してください。</div>
       )}
     </section>
   );

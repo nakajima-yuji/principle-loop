@@ -12,15 +12,17 @@ interface NavDef {
 }
 
 export const MAIN_NAV: readonly NavDef[] = [
-  { path: '/daily', label: 'DAILY', sub: '今日の原理', icon: 'sun' },
-  { path: '/deep', label: 'DEEP', sub: '原理を深く分解', icon: 'search' },
-  { path: '/diary', label: 'DIARY', sub: '保存した原理', icon: 'book' },
-  { path: '/connect', label: 'CONNECT', sub: '原理をつなげる', icon: 'connect' },
-  { path: '/build', label: 'BUILD', sub: '試してつくる', icon: 'cube' },
+  { path: '/daily', label: 'DAILY', sub: '今日の観察', icon: 'sun' },
+  { path: '/diary', label: 'DIARY', sub: '観察のログ', icon: 'book' },
+  { path: '/deep', label: 'DEEP', sub: '軽く掘って選ぶ', icon: 'search' },
+  { path: '/connect', label: 'CONNECT', sub: '遠いものをぶつける', icon: 'connect' },
+  { path: '/experiment', label: 'EXPERIMENT', sub: '小さく試す', icon: 'flask' },
+  { path: '/engines', label: 'ENGINES', sub: '考え方を借りる', icon: 'layers' },
 ];
 
 function activeSection(path: string): string {
   if (path === '/' || path === '/daily' || path === '/read') return '/daily';
+  if (path === '/build') return '/experiment';
   return path;
 }
 
@@ -54,7 +56,7 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
           <Logo size={44} />
           <span className="brand-name">PRINCIPLE LOOP</span>
         </a>
-        <span className="brand-tagline">あらゆる現象から、原理を見つけ、分解し、保存し、試す。</span>
+        <span className="brand-tagline">集めて、選んで、借りて、小さく試し、また観察へ戻す。</span>
         <span className="header-spacer" />
         <form className="search-box" role="search" onSubmit={onSearch}>
           <Icon name="search" size={17} />
@@ -62,12 +64,15 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
             type="search"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="原理・タグ・キーワードで検索…"
+            placeholder="観察・メモ・タグで検索…"
             aria-label="検索"
           />
         </form>
         <a className="icon-btn mobile-only" href={href('/search')} aria-label="検索">
           <Icon name="search" />
+        </a>
+        <a className="icon-btn" href={href('/diary')} aria-label="メモを書く（DIARY）" title="メモ・気づきを書く">
+          <Icon name="pen" />
         </a>
         <a
           className="icon-btn"
@@ -105,9 +110,9 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
           <span>設定</span>
         </a>
         <div className="sidebar-quote">
-          日常にひそむ原理が、
+          作るのは速く、
           <br />
-          次のアイデアをつくる。
+          決めるのは遅く。
           <svg viewBox="0 0 200 56" preserveAspectRatio="none" aria-hidden="true">
             <path d="M0 30 C 40 14, 70 40, 110 26 S 170 12, 200 24 L200 56 L0 56Z" fill="#dfe8f4" />
             <path d="M0 40 C 50 26, 90 50, 130 36 S 180 28, 200 34 L200 56 L0 56Z" fill="#cfdcee" />

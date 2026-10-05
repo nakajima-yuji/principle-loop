@@ -148,7 +148,7 @@ export function SettingsView() {
         <div className="stack">
           <section className="panel panel-pad stack" aria-label="データ">
             <div className="panel-title">
-              <Icon name="book" size={18} /> 個人データ（DIARY・DEEP・CONNECT・BUILD）
+              <Icon name="book" size={18} /> 個人データ（DIARY・DEEP・CONNECT・EXPERIMENT）
             </div>
             <p className="small muted">
               個人データはこの端末のブラウザ（localStorage）に保存されています。ブラウザのデータを消すと失われるので、ときどきバックアップしてください。別の端末へはバックアップを読み込むと移せます。
@@ -182,7 +182,7 @@ export function SettingsView() {
                 type="button"
                 className="btn ghost danger"
                 onClick={() => {
-                  if (confirm('この端末の DIARY・DEEP のメモ・CONNECT・BUILD をすべて削除します。よろしいですか？')) {
+                  if (confirm('この端末の DIARY・DEEP のメモ・CONNECT・EXPERIMENT をすべて削除します。よろしいですか？')) {
                     clearPersonal();
                     toast('削除しました');
                   }

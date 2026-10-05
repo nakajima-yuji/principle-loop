@@ -19,6 +19,9 @@ test('月曜：収集 → 絞り込み → AI で7件 → 保存（AI は選定1
   assert.equal(ai.calls.length, 8);
   assert.equal(ai.calls[0].task, 'select');
   assert.match(ai.calls[1].system, /単純なニュース要約をしない/);
+  assert.match(ai.calls[1].system, /考え切らない/);
+  assert.match(ai.calls[1].prompt, /"lightDeep"/);
+  assert.doesNotMatch(ai.calls[1].prompt, /"story"|"boundary"/, '毎朝7件の長い分析は作らない');
 
   const daily = await readDaily(paths.dailyDir, '2026-10-05');
   assert.equal(daily.items.length, 7);
@@ -34,9 +37,11 @@ test('月曜：収集 → 絞り込み → AI で7件 → 保存（AI は選定1
   const it = daily.items[0];
   assert.notEqual(it.sourceUrl, 'https://evil.example/作り話', '出典 URL は AI ではなく収集データから入れる');
   assert.match(it.sourceUrl, /^https:\/\/example\.org\//);
-  assert.deepEqual(it.inputTypes, ['情報', '時間'], '選択肢にないものは捨てる');
+  assert.deepEqual(it.lightDeep, { odd: '止まらずに流れているのが妙', structure: '少ない判断で全体が動く', transfer: '群衆の避難誘導' });
+  assert.equal(it.principleCandidate, '少ない判断で全体が動く', '索引・検索用に「構造」の行を原理候補として持つ');
+  assert.deepEqual(it.transferIdeas, ['群衆の避難誘導']);
+  assert.equal(it.story, '');
   assert.deepEqual(it.tags, ['タグ', 'テスト']);
-  assert.deepEqual(it.boundary, [{ probe: '10倍なら？', answer: '遅くなる' }]);
   assert.equal(it.saved, false);
 
   const archive = JSON.parse(await readFile(paths.archiveFile, 'utf8'));
@@ -44,6 +49,19 @@ test('月曜：収集 → 絞り込み → AI で7件 → 保存（AI は選定1
   const state = await readState(paths);
   assert.equal(state.lastGeneratedDate, '2026-10-05');
   assert.deepEqual(state.aiUsage, { date: '2026-10-05', requests: 8 });
+});
+
+test('古い形（長い分析）で返ってきても受け取り、3行を補う', async () => {
+  const paths = await tempData();
+  const ai = fakeAI({ legacy: true });
+  const r = await runGenerate(await context(paths, { createProvider: () => ai.provider }));
+  assert.equal(r.status, 'generated', r.message);
+  const it = (await readDaily(paths.dailyDir, '2026-10-05')).items[0];
+  assert.deepEqual(it.inputTypes, ['情報', '時間'], '選択肢にないものは捨てる');
+  assert.deepEqual(it.boundary, [{ probe: '10倍なら？', answer: '遅くなる' }]);
+  assert.equal(it.lightDeep?.structure, '少ない判断で全体が動く');
+  assert.equal(it.lightDeep?.transfer, '転用1');
+  assert.match(it.lightDeep?.odd ?? '', /なぜだろう/);
 });
 
 test('日曜：収集もAIも保存もしない', async () => {

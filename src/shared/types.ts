@@ -49,6 +49,15 @@ export interface DailyItem {
   /** AI の分析を作れなかった（作成中止）。仮の文章では埋めず、情報源の要約だけを持つ */
   analysisFailed?: boolean;
   failReason?: string; // 例：「AI が混み合っていたため」
+  /** LIGHT DEEP：AI はここで止まる（3行だけ）。古いデータには無いので getLightDeep() で補う */
+  lightDeep?: LightDeep;
+}
+
+/** LIGHT DEEP の3行。結論ではなく「人間が選ぶための材料」 */
+export interface LightDeep {
+  odd: string; // 何が妙・面白い？
+  structure: string; // 構造・原理候補（まだ候補）
+  transfer: string; // どこへ飛ばせそう？
 }
 
 export interface DailyFile {
@@ -98,7 +107,56 @@ export interface Activity {
 
 // ---------------- 個人データ（ブラウザ内に保存） ----------------
 
-export type PrincipleState = 'OBSERVATION' | 'HYPOTHESIS' | 'PRINCIPLE_CANDIDATE' | 'PRINCIPLE' | 'EXPERIMENTED';
+/**
+ * 原理の育ち方（段階）。AI は段階を上げない。人間が実験を通して動かす。
+ * OBSERVATION → PATTERN → STRUCTURE → PRINCIPLE_CANDIDATE → TESTING → VALIDATED
+ */
+export type PrincipleState = 'OBSERVATION' | 'PATTERN' | 'STRUCTURE' | 'PRINCIPLE_CANDIDATE' | 'TESTING' | 'VALIDATED';
+
+/** v1（〜2026-10-05）の段階。移行時に legacyState として残す */
+export type LegacyPrincipleState = 'OBSERVATION' | 'HYPOTHESIS' | 'PRINCIPLE_CANDIDATE' | 'PRINCIPLE' | 'EXPERIMENTED';
+
+/** DIARY に入るものの種類。DIARY は全部が時系列に並ぶ中心のログ */
+export type EntryType =
+  | 'DAILY'
+  | 'MEMO'
+  | 'INSIGHT' // 気づき
+  | 'OBSERVATION'
+  | 'IDEA'
+  | 'HYPOTHESIS'
+  | 'LIGHT_DEEP'
+  | 'PRINCIPLE_CANDIDATE'
+  | 'EXPERIMENT'
+  | 'RESULT'
+  | 'TOOLCHAIN'
+  | 'CAPABILITY';
+
+/** HUMAN SELECT：人間の判断。AI の点数（transferability など）とは混ぜない */
+export type UserDecision = 'INBOX' | 'INTERESTING' | 'DEEP' | 'BUILD' | 'HOLD' | 'ARCHIVE';
+
+/** 出力先のメディア（ゲームだけに最適化しない） */
+export type MediumId =
+  | 'GAME'
+  | 'PICTURE_BOOK'
+  | 'STORY'
+  | 'FILM'
+  | 'DRAMA'
+  | 'VIDEO'
+  | 'TOY'
+  | 'SPACE'
+  | 'INSTALLATION'
+  | 'WEB'
+  | 'PHYSICAL_PRODUCT'
+  | 'EXPERIMENT';
+
+/** CORE LOCK：何を守れば大胆に壊せるか（逆側の道具） */
+export interface CoreLock {
+  remove: string; // 何を消したら成立しなくなる？
+  core: string; // 名前を変えても残る核は？
+  protect: string; // 何を守れば大胆に壊せる？
+  changeable: string; // どこまでは変更できる？
+  updatedAt: string;
+}
 
 export interface DeepNotes {
   input: string;
@@ -119,19 +177,38 @@ export interface DeepNotes {
   updatedAt: string;
 }
 
-export type DiaryKind = 'daily' | 'manual' | 'connect';
+/** v1 からある大まかな出どころ。新しいデータでは type を使う */
+export type DiaryKind = 'daily' | 'manual' | 'connect' | 'memo' | 'experiment';
 
 export interface DiaryEntry {
-  id: string; // DAILY の id、または manual-xxx / connect-xxx
+  id: string; // DAILY の id、または manual-xxx / connect-xxx / memo-xxx / exp-xxx / result-xxx
   kind: DiaryKind;
+  type: EntryType;
   state: PrincipleState;
-  item: DailyItem; // 保存時点のスナップショット（元データが消えても残る）
+  legacyState?: LegacyPrincipleState; // v1 から移行したときの元の段階
+  userDecision: UserDecision;
+  item: DailyItem; // 保存時点のスナップショット（元データが消えても残る）。メモでは本文から作る
+  body: string; // メモ・気づき・実験結果などの本文（DAILY では空）
+  source: string; // 出どころ（'DAILY' / 'memo' / URL / 'EXPERIMENT' など）
   memo: string;
   tags: string[];
   experiments: string[]; // 実験案（自由記述）
+  lightDeep?: LightDeep; // 自分の言葉で書き直した3行（あれば AI の3行より優先）
+  engineIds: string[]; // 借りる思考エンジン（自動では使わない。選んだものだけ）
+  coreLock?: CoreLock;
+  media: MediumId[];
+  tools: string[]; // TOOLCHAIN / CAPABILITY の部品（例：Tripo3D、Blender）
+  // 系譜（どこから来て、どこへ戻ったか）
+  parentId?: string;
+  sourceId?: string;
+  derivedFrom: string[];
+  experimentId?: string;
   createdAt: string;
   updatedAt: string;
 }
+
+/** CONNECT でぶつけられるものの種類（土台。全部を実装しているわけではない） */
+export type NodeKind = 'observation' | 'principle' | 'engine' | 'tool' | 'medium' | 'experiment';
 
 export interface ConnectionResult {
   id: string;
@@ -144,6 +221,8 @@ export interface ConnectionResult {
   newStructure: string;
   newUse: string;
   minimumExperiment: string;
+  leftKind?: NodeKind;
+  rightKind?: NodeKind;
   createdAt: string;
   updatedAt: string;
 }
@@ -153,6 +232,11 @@ export interface ExperimentDesign {
   sourceType: 'principle' | 'connect' | 'idea';
   sourceId?: string;
   sourceLabel: string;
+  question: string; // 何を確かめたいか（一番上に置く）
+  formats: string[]; // 最小実験の形（紙カード5枚、30秒動画 など）
+  media: MediumId[];
+  result: string; // やってみて起きたこと（DIARY に OBSERVATION として戻す）
+  resultEntryIds: string[]; // 戻した DIARY の id
   principle: string;
   hypothesis: string;
   minimumStructure: string;
@@ -173,5 +257,5 @@ export interface ExperimentDesign {
 
 export type ExperimentField = Exclude<
   keyof ExperimentDesign,
-  'id' | 'sourceType' | 'sourceId' | 'sourceLabel' | 'done' | 'createdAt' | 'updatedAt'
+  'id' | 'sourceType' | 'sourceId' | 'sourceLabel' | 'done' | 'createdAt' | 'updatedAt' | 'question' | 'formats' | 'media' | 'result' | 'resultEntryIds'
 >;

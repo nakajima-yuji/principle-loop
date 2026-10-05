@@ -8,6 +8,7 @@ import { ConnectView } from './views/Connect.tsx';
 import { DailyView } from './views/Daily.tsx';
 import { DeepView } from './views/Deep.tsx';
 import { DiaryView } from './views/Diary.tsx';
+import { EnginesView } from './views/Engines.tsx';
 import { ReadView } from './views/Read.tsx';
 import { SearchView } from './views/Search.tsx';
 import { SettingsView } from './views/Settings.tsx';
@@ -37,16 +38,20 @@ export function App() {
       view = <ReadView id={p.get('id')} />;
       break;
     case '/deep':
-      view = <DeepView key={p.get('id') ?? ''} id={p.get('id')} />;
+      view = <DeepView key={`${p.get('id') ?? ''}-${p.get('mode') ?? ''}`} id={p.get('id')} mode={p.get('mode')} />;
       break;
     case '/diary':
-      view = <DiaryView id={p.get('id')} state={p.get('state')} tag={p.get('tag')} />;
+      view = <DiaryView id={p.get('id')} type={p.get('type')} decision={p.get('decision')} tag={p.get('tag')} />;
       break;
     case '/connect':
       view = <ConnectView a={p.get('a')} b={p.get('b')} id={p.get('id')} />;
       break;
-    case '/build':
+    case '/experiment':
+    case '/build': // 旧 BUILD（古いリンク・ブックマーク用に残す）
       view = <BuildView from={p.get('from')} id={p.get('id')} design={p.get('design')} />;
+      break;
+    case '/engines':
+      view = <EnginesView id={p.get('id')} />;
       break;
     case '/activity':
       view = <ActivityView />;

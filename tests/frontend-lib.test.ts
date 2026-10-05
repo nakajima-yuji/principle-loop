@@ -4,6 +4,7 @@ import path from 'node:path';
 import { test } from 'node:test';
 import { collisionQuestions, draftConnection, principleDistance, suggestFarPair } from '../src/lib/connect.ts';
 import { claudeCodePrompt, codexPrompt, draftFromPrinciple, readiness } from '../src/lib/experiment.ts';
+import { normalizeEntry } from '../src/lib/diary-model.ts';
 import { createManualItem, hostLabel, isHttpUrl } from '../src/lib/manual.ts';
 import { toPrincipleSource } from '../src/lib/principle.ts';
 import { searchAll } from '../src/lib/search.ts';
@@ -93,9 +94,10 @@ test('検索：DAILY の過去分・DIARY・タグを横断し、AND で絞る',
   const hits = searchAll('フィードバック', archive, []);
   assert.ok(hits.some((h) => h.id === '20261003-01'));
   assert.equal(searchAll('粘菌 レンズ', archive, []).length, 0);
-  const diary: DiaryEntry[] = [
-    { id: sample.items[1].id, kind: 'daily', state: 'HYPOTHESIS', item: sample.items[1], memo: 'ゲームの群衆AIに使えそう', tags: ['群衆'], experiments: [], createdAt: '', updatedAt: '' },
-  ];
+  // v1 の形で保存されていたもの（移行して読む）
+  const diary = [
+    normalizeEntry({ id: sample.items[1].id, kind: 'daily', state: 'HYPOTHESIS', item: sample.items[1], memo: 'ゲームの群衆AIに使えそう', tags: ['群衆'], experiments: [], createdAt: '', updatedAt: '' }),
+  ].filter((d): d is DiaryEntry => d !== null);
   const h2 = searchAll('群衆AI', archive, diary);
   assert.equal(h2[0].kind, 'diary');
   assert.equal(searchAll('#群衆', archive, diary)[0].id, sample.items[1].id);

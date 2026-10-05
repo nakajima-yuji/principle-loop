@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
 import { AiBox, CategoryChip, ErrorBox, ExternalLink, FactBox, FailedNotice, Loading } from '../components/common.tsx';
 import { Icon } from '../components/Icon.tsx';
-import { onToggleSave } from '../components/ItemCard.tsx';
+import { DecisionBar, LightDeepLines } from '../components/loop.tsx';
 import { Thumb } from '../components/Thumb.tsx';
 import { loadItem, useAsync } from '../data/api.ts';
 import { markActive } from '../data/heartbeat.ts';
 import { usePersonal } from '../data/store.ts';
 import { paragraphs } from '../lib/text.ts';
+import { getLightDeep } from '../shared/light-deep.ts';
 import { href } from '../router.ts';
 import { STORY_STAGES } from '../shared/questions.ts';
 import { formatDotDate, formatJaDate } from '../shared/time.ts';
@@ -24,7 +25,8 @@ export function ReadView({ id }: { id: string | null }) {
   if (item.error || !item.data) return <ErrorBox message={item.error ?? '読み込めませんでした'} />;
 
   const it = item.data;
-  const saved = personal.diary.some((d) => d.id === it.id);
+  const entry = personal.diary.find((d) => d.id === it.id);
+  const light = getLightDeep(it, entry?.lightDeep);
   const paras = paragraphs(it.story);
   const staged = paras.length === STORY_STAGES.length;
 
@@ -53,6 +55,13 @@ export function ReadView({ id }: { id: string | null }) {
             {it.hook}
           </p>
 
+          {light && (
+            <div className="read-light">
+              <div className="q-label">LIGHT DEEP（AI は3行で止めています）</div>
+              <LightDeepLines value={light} />
+            </div>
+          )}
+
           {paras.length > 0 ? (
             paras.map((p, i) => (
               <section className="story-stage" key={i}>
@@ -60,8 +69,8 @@ export function ReadView({ id }: { id: string | null }) {
                 <p>{p}</p>
               </section>
             ))
-          ) : (
-            <p className="muted">ストーリーはまだありません。DEEP で自分の言葉で分解してみましょう。</p>
+          ) : light ? null : (
+            <p className="muted">ストーリーはまだありません。面白いと思ったら、DEEP で自分の言葉で分解してみましょう。</p>
           )}
 
           <div className="split-box">
@@ -91,12 +100,13 @@ export function ReadView({ id }: { id: string | null }) {
 
         <aside className="stack">
           <section className="panel panel-pad stack" style={{ gap: 12 }}>
-            <a className="btn primary lg" href={href('/deep', { id: it.id })}>
-              <Icon name="search" size={18} /> DEEP で掘る
+            <span className="panel-title">
+              <Icon name="star" size={17} /> どうする？
+            </span>
+            <DecisionBar item={it} current={entry?.userDecision} />
+            <a className="btn" href={href('/deep', { id: it.id })}>
+              <Icon name="search" size={16} /> LIGHT DEEP で選ぶ
             </a>
-            <button type="button" className={`btn lg ${saved ? 'saved' : ''}`} onClick={() => onToggleSave(it)}>
-              <Icon name={saved ? 'bookmarkFill' : 'bookmark'} size={18} /> {saved ? 'DIARY に保存済み' : 'DIARY に保存'}
-            </button>
             {/^https?:\/\//.test(it.sourceUrl) && (
               <a className="btn" href={it.sourceUrl} target="_blank" rel="noopener noreferrer">
                 <Icon name="external" size={16} /> 元の情報源を開く

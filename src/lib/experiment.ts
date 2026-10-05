@@ -1,6 +1,8 @@
-// BUILD = EXPERIMENT DESIGN。いきなりコードを書かず、
-// 原理 → 仮説 → 最小実験 → 比較条件 → 観測方法 → 成功・失敗条件 → 必要技術 → 実装プロンプト
-// の順に設計する。Claude Code / Codex は自動実行せず、プロンプトをコピーするだけ。
+// EXPERIMENT（旧 BUILD）。完成品より最小実験。
+// 「何を確かめたいか」を最初に決め、紙カード・30秒動画・1画面ゲームのような小さな形で試し、
+// 起きたことを DIARY に新しい観察として戻す。
+// 詳しい設計（仮説 → 比較 → 成功・失敗条件 → 段階）は必要なときだけ。
+// Claude Code / Codex は自動実行せず、プロンプトをコピーするだけ。
 
 import type { ExperimentDesign, ExperimentField } from '../shared/types.ts';
 import type { PrincipleSource } from './principle.ts';
@@ -37,6 +39,11 @@ export function emptyDesign(now: string, id: string): ExperimentDesign {
     id,
     sourceType: 'idea',
     sourceLabel: '',
+    question: '',
+    formats: [],
+    media: [],
+    result: '',
+    resultEntryIds: [],
     principle: '',
     hypothesis: '',
     minimumStructure: '',
@@ -122,8 +129,12 @@ export function readiness(d: Pick<ExperimentDesign, ExperimentField>): Readiness
   ];
 }
 
-function designBlock(d: Pick<ExperimentDesign, ExperimentField>): string {
+type PromptInput = Pick<ExperimentDesign, ExperimentField> & Partial<Pick<ExperimentDesign, 'question' | 'formats'>>;
+
+function designBlock(d: PromptInput): string {
   return [
+    ...(d.question?.trim() ? [`## 何を確かめたいか\n${d.question.trim()}`] : []),
+    ...(d.formats?.length ? [`## 最小実験の形\n${d.formats.join('・')}`] : []),
     `## 検証したい原理\n${d.principle}`,
     `## 仮説\n${d.hypothesis}`,
     `## 最小構造\n${d.minimumStructure}`,
@@ -138,7 +149,7 @@ function designBlock(d: Pick<ExperimentDesign, ExperimentField>): string {
   ].join('\n\n');
 }
 
-export function claudeCodePrompt(d: Pick<ExperimentDesign, ExperimentField>): string {
+export function claudeCodePrompt(d: PromptInput): string {
   return [
     '# 実験の実装依頼（PRINCIPLE LOOP / EXPERIMENT DESIGN より）',
     '',
@@ -163,7 +174,7 @@ export function claudeCodePrompt(d: Pick<ExperimentDesign, ExperimentField>): st
   ].join('\n');
 }
 
-export function codexPrompt(d: Pick<ExperimentDesign, ExperimentField>): string {
+export function codexPrompt(d: PromptInput): string {
   return [
     'Task: Build the "30-minute version" of a small experiment that tests one principle. Not a product.',
     '回答とコメントは日本語で。',

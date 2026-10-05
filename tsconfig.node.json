@@ -14,5 +14,5 @@
     "noUnusedParameters": true,
     "types": ["node"]
   },
-  "include": ["scripts", "tests", "src/shared", "src/ai", "src/lib", "vite.config.ts"]
+  "include": ["scripts", "tests", "src/shared", "src/ai", "src/lib", "src/engines", "vite.config.ts"]
 }

@@ -9,6 +9,7 @@ import { usePersonal } from '../data/store.ts';
 import { toast } from '../data/toast.ts';
 import { href } from '../router.ts';
 import { DEFAULT_INACTIVITY_LIMIT_DAYS, computeInactivityDays, daysUntilPause } from '../shared/activity.ts';
+import { DECISIONS } from '../shared/loop.ts';
 import { PRINCIPLE_STATES } from '../shared/questions.ts';
 import { formatJaDateTime, isSundayJst, jstDateString } from '../shared/time.ts';
 
@@ -31,7 +32,10 @@ export function ActivityView() {
 
   const counts = useMemo(() => {
     const c: Record<string, number> = {};
-    personal.diary.forEach((d) => (c[d.state] = (c[d.state] ?? 0) + 1));
+    personal.diary.forEach((d) => {
+      c[d.state] = (c[d.state] ?? 0) + 1;
+      c[d.userDecision] = (c[d.userDecision] ?? 0) + 1;
+    });
     return c;
   }, [personal.diary]);
 
@@ -151,16 +155,16 @@ export function ActivityView() {
           </div>
           <dl className="kv">
             <dt>00:30〜</dt>
-            <dd>情報収集 → 重複除去 → 分類 → 候補抽出 → 原理分析 → 7件選定 → ストーリー化 → 保存</dd>
+            <dd>情報収集 → 重複除去 → 分類 → 候補抽出 → 7件選定 → LIGHT DEEP（1件3行だけ） → 保存</dd>
             <dt>07:00〜08:00</dt>
-            <dd>Yahoo!メールで「今日の7つの原理」を配信</dd>
+            <dd>メール（Gmail など）で今日の7つと LIGHT DEEP の3行を配信</dd>
             <dt>日曜日</dt>
             <dd>完全休止（収集・AI・メールすべてなし）</dd>
             <dt>10日無反応</dt>
             <dd>自動で一時停止。停止の時だけ1回お知らせメール。その後は何も送りません。</dd>
           </dl>
           <p className="small muted">
-            「反応」に数えるのは、記事を開く・掘る・保存・CONNECT・BUILD・継続して使う、の操作だけです。メールが届いただけでは数えません。記録するのは <span className="code">lastActive</span>・
+            「反応」に数えるのは、記事を開く・掘る・☆面白い などを選ぶ・メモ・CONNECT・EXPERIMENT・継続して使う、の操作だけです。メールが届いただけでは数えません。記録するのは <span className="code">lastActive</span>・
             <span className="code">inactivityDays</span>・<span className="code">paused</span> の3つだけです。
           </p>
           {repo && (
@@ -184,7 +188,7 @@ export function ActivityView() {
           </div>
           <div className="stat">
             <div className="v">{personal.diary.length}</div>
-            <div className="l">DIARY に保存</div>
+            <div className="l">DIARY</div>
           </div>
           <div className="stat">
             <div className="v">{personal.connections.length}</div>
@@ -192,21 +196,31 @@ export function ActivityView() {
           </div>
           <div className="stat">
             <div className="v">{personal.builds.length}</div>
-            <div className="l">実験設計</div>
+            <div className="l">EXPERIMENT</div>
           </div>
           <div className="stat">
             <div className="v">{personal.builds.filter((b) => b.done).length}</div>
-            <div className="l">実験済み</div>
+            <div className="l">試し終わり</div>
           </div>
         </div>
         <div className="stat-row">
+          {DECISIONS.map((d) => (
+            <a key={d.id} className="stat" href={href('/diary', { decision: d.id })} style={{ color: 'inherit', textDecoration: 'none' }}>
+              <div className="v">{counts[d.id] ?? 0}</div>
+              <div className="l">
+                {d.mark} {d.ja}
+              </div>
+            </a>
+          ))}
+        </div>
+        <div className="stat-row">
           {PRINCIPLE_STATES.map((s) => (
-            <a key={s.id} className="stat" href={href('/diary', { state: s.id })} style={{ color: 'inherit', textDecoration: 'none' }}>
+            <div key={s.id} className="stat">
               <div className="v">{counts[s.id] ?? 0}</div>
               <div className="l">
                 {s.label}（{s.ja}）
               </div>
-            </a>
+            </div>
           ))}
         </div>
       </section>
