@@ -5,20 +5,23 @@ import { Thumb } from '../components/Thumb.tsx';
 import { loadItem, loadLatestDaily, useAsync } from '../data/api.ts';
 import { markActive } from '../data/heartbeat.ts';
 import { emptyNotes, newId, notesProgress, saveToDiary, setNotes, updateDiary, usePersonal } from '../data/store.ts';
-import { toast } from '../data/toast.ts';
+import { copyText, toast } from '../data/toast.ts';
 import { createManualItem, isHttpUrl } from '../lib/manual.ts';
 import { href, navigate } from '../router.ts';
 import { CATEGORIES } from '../shared/categories.ts';
 import { BOUNDARY_PROBES, CORE_QUESTIONS, EXTRA_STEPS, type CoreQuestion, type ExtraStep } from '../shared/questions.ts';
 import { formatDotDate } from '../shared/time.ts';
+import { getLightDeep } from '../shared/light-deep.ts';
 import type { CategoryId, DailyItem, DeepNotes } from '../shared/types.ts';
+import { LightDeepWorkspace } from './LightDeep.tsx';
 
-export function DeepView({ id }: { id: string | null }) {
+/** /deep?id=… は LIGHT DEEP（3行＋人間が選ぶ）。/deep?id=…&mode=full は FULL DEEP（7つの質問） */
+export function DeepView({ id, mode }: { id: string | null; mode?: string | null }) {
   if (!id) return <DeepPicker />;
-  return <DeepLoader id={id} />;
+  return <DeepLoader id={id} full={mode === 'full'} />;
 }
 
-function DeepLoader({ id }: { id: string }) {
+function DeepLoader({ id, full }: { id: string; full: boolean }) {
   const item = useAsync(() => loadItem(id), [id]);
   // 「掘る」は有効な反応として扱う
   useEffect(() => {
@@ -26,7 +29,7 @@ function DeepLoader({ id }: { id: string }) {
   }, [id]);
   if (item.loading && !item.data) return <Loading />;
   if (item.error || !item.data) return <ErrorBox message={item.error ?? '読み込めませんでした'} />;
-  return <DeepWorkspace item={item.data} />;
+  return full ? <DeepWorkspace item={item.data} /> : <LightDeepWorkspace item={item.data} />;
 }
 
 // ---------------------------------------------------------------- picker
@@ -50,7 +53,7 @@ function DeepPicker() {
       return;
     }
     const item = createManualItem({ url, title, phenomenon, category }, new Date(), newId('manual'));
-    saveToDiary(item, 'manual', 'OBSERVATION');
+    saveToDiary(item, { kind: 'manual', type: 'OBSERVATION' });
     markActive();
     navigate('/deep', { id: item.id });
   };
@@ -59,14 +62,14 @@ function DeepPicker() {
     <div className="page stack">
       <PageHead
         kicker="DEEP"
-        title="構造を解剖する"
-        sub="ニュースをさらに説明する場所ではありません。7つの質問で、現象を「転用できる構造」まで分解します。"
+        title="軽く掘って、選ぶ"
+        sub="まず LIGHT DEEP（3行）で止めて、面白いかどうかを自分で選びます。「深掘り」を選んだものだけ FULL DEEP（7つの質問）で構造まで分解します。"
       />
 
       <section className="panel panel-pad">
         <div className="panel-head">
           <span className="panel-title">
-            <Icon name="sun" size={18} /> 今日の原理から掘る
+            <Icon name="sun" size={18} /> 今日の観察から
           </span>
         </div>
         {latest.data ? (
@@ -98,11 +101,18 @@ function DeepPicker() {
             </span>
           </div>
           <div className="picker-grid">
-            {personal.diary.slice(0, 12).map((d) => (
-              <a key={d.id} className="pick" href={href('/deep', { id: d.id })}>
+            {[...personal.diary]
+              .filter((d) => d.userDecision !== 'ARCHIVE')
+              .sort((a, b) => Number(b.userDecision === 'DEEP') - Number(a.userDecision === 'DEEP'))
+              .slice(0, 12)
+              .map((d) => (
+              <a key={d.id} className="pick" href={href('/deep', { id: d.id, mode: d.userDecision === 'DEEP' ? 'full' : undefined })}>
                 <Thumb category={d.item.category} seed={d.item.id} image={d.item.image} />
                 <span>
-                  <span className="small muted">{Math.round(notesProgress(personal.notes[d.id]) * 100)}% 記入</span>
+                  <span className="small muted">
+                    {d.userDecision === 'DEEP' ? '↓深掘り中・' : ''}
+                    {Math.round(notesProgress(personal.notes[d.id]) * 100)}% 記入
+                  </span>
                   <span className="t">{d.item.title}</span>
                 </span>
               </a>
@@ -118,7 +128,7 @@ function DeepPicker() {
           </span>
         </div>
         <p className="small muted" style={{ marginBottom: 12 }}>
-          X などの中身は自動で取りに行きません（X API に依存しないため）。何が起きているかを、自分の言葉で書いてください。DIARY に「観察」として保存され、そのまま DEEP に進みます。
+          X などの中身は自動で取りに行きません（X API に依存しないため）。何が起きているかを、自分の言葉で書いてください。DIARY に「観察」として保存され、そのまま LIGHT DEEP に進みます。
         </p>
         <form className="stack" style={{ gap: 12 }} onSubmit={onCreate}>
           <div>
@@ -182,7 +192,7 @@ function DeepWorkspace({ item }: { item: DailyItem }) {
 
   const onSave = () => {
     const hasCandidate = notes.principleCandidate.trim().length > 0;
-    saveToDiary(item, item.aiProvider === 'manual' ? 'manual' : 'daily', hasCandidate ? 'PRINCIPLE_CANDIDATE' : 'HYPOTHESIS');
+    saveToDiary(item, { kind: item.aiProvider === 'manual' ? 'manual' : 'daily', state: hasCandidate ? 'PRINCIPLE_CANDIDATE' : 'PATTERN', userDecision: 'DEEP' });
     markActive();
     toast('DIARY に保存しました');
   };
@@ -190,8 +200,11 @@ function DeepWorkspace({ item }: { item: DailyItem }) {
   return (
     <div className="page">
       <div className="row" style={{ marginBottom: 12 }}>
+        <a className="btn sm ghost" href={href('/deep', { id: item.id })}>
+          <Icon name="arrowLeft" size={15} /> LIGHT DEEP に戻る
+        </a>
         <a className="btn sm ghost" href={href('/deep')}>
-          <Icon name="arrowLeft" size={15} /> 掘る対象を選ぶ
+          掘る対象を選ぶ
         </a>
       </div>
       <div className="deep-layout">
@@ -201,7 +214,7 @@ function DeepWorkspace({ item }: { item: DailyItem }) {
             <div>
               <div className="row">
                 <span className="page-kicker" style={{ margin: 0 }}>
-                  DEEP
+                  FULL DEEP
                 </span>
                 <CategoryChip category={item.category} full />
               </div>
@@ -233,7 +246,7 @@ function DeepWorkspace({ item }: { item: DailyItem }) {
 
           <SectionLabel kicker="CORE" title="7つの中心質問" />
           <p className="small muted" style={{ margin: '-4px 0 12px' }}>
-            青い点線の枠は AI の下書き（仮説）です。正解として扱わず、自分の言葉で書き直してください。書いた内容はこの端末に自動で保存されます。
+            ここは「深掘り」を選んだものだけを掘る場所です。毎朝の AI は3行で止めているので、多くの質問は自分の言葉で埋めます（古い日の記事には AI の下書き＝青い点線の枠があります。正解として扱わないでください）。書いた内容はこの端末に自動で保存されます。
           </p>
           <div className="stack">
             {CORE_QUESTIONS.map((q) => (
@@ -261,7 +274,7 @@ function DeepWorkspace({ item }: { item: DailyItem }) {
             {entry ? (
               <>
                 <span className="field-label" style={{ marginBottom: 0 }}>
-                  DIARY での状態
+                  段階（AI は上げません）
                 </span>
                 <StateSelect value={entry.state} onChange={(state) => updateDiary(entry.id, { state })} />
                 <a className="btn" href={href('/diary', { id: entry.id })}>
@@ -289,14 +302,35 @@ function DeepWorkspace({ item }: { item: DailyItem }) {
             <a className="btn" href={href('/connect', { a: item.id })}>
               <Icon name="connect" size={16} /> CONNECT でぶつける
             </a>
-            <a className="btn" href={href('/build', { from: 'item', id: item.id })}>
-              <Icon name="flask" size={16} /> BUILD で実験を設計
+            <a className="btn" href={href('/experiment', { from: 'item', id: item.id })}>
+              <Icon name="flask" size={16} /> EXPERIMENT で小さく試す
             </a>
+            <button type="button" className="btn ghost" onClick={() => void copyText(deepChatPrompt(item), 'AIチャット用の相談文をコピーしました（自動では送りません）')}>
+              <Icon name="copy" size={16} /> AIチャット用にコピー
+            </button>
+            <p className="small muted">外部の AI チャットに自分で貼るための文です。PRINCIPLE LOOP は AI を自動で呼びません。</p>
           </section>
         </aside>
       </div>
     </div>
   );
+}
+
+/** 外部の AI チャットに自分で貼る相談文（自動では送らない）。答えではなく材料を求める */
+function deepChatPrompt(item: DailyItem): string {
+  const ld = getLightDeep(item);
+  return [
+    '次の現象を、7つの質問で構造まで分解するのを手伝ってほしい。',
+    '結論や正解は出さず、質問ごとに候補を2つずつ、短く出してください。事実と推測は分けてください。',
+    '',
+    `【現象】${item.title}`,
+    item.observation || item.hook,
+    ...(ld ? ['', `【いまの3行】妙：${ld.odd} ／ 構造：${ld.structure} ／ 飛ばす：${ld.transfer}`] : []),
+    '',
+    ...CORE_QUESTIONS.map((q) => `${q.no}. ${q.question}（${q.hint}）`),
+    '',
+    '最後に、この説明が成り立たない反例を1つ挙げてください。',
+  ].join('\n');
 }
 
 function ChipPicker({ options, selected, ai, onToggle }: { options: readonly string[]; selected: string[]; ai: string[]; onToggle: (v: string) => void }) {

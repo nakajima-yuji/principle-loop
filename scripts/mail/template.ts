@@ -2,6 +2,7 @@
 
 import { categoryOf } from '../../src/shared/categories.ts';
 import { FAILED_LABEL, isAnalysisFailed, withFailureFlags } from '../../src/shared/item-status.ts';
+import { LIGHT_DEEP_LINES, getLightDeep } from '../../src/shared/light-deep.ts';
 import { formatJaDate } from '../../src/shared/time.ts';
 import type { DailyFile, DailyItem } from '../../src/shared/types.ts';
 
@@ -70,6 +71,18 @@ function failedBlock(it: DailyItem, n: number, appUrl: string): string {
 </td></tr>`;
 }
 
+/** LIGHT DEEP の3行（AI はここで止まる。面白いかどうかはアプリで選ぶ） */
+function lightDeepRows(it: DailyItem): string {
+  const ld = getLightDeep(it);
+  if (!ld) return '';
+  return LIGHT_DEEP_LINES.filter((l) => ld[l.key])
+    .map(
+      (l) =>
+        `<tr><td valign="top" style="width:52px;padding:2px 0;font-size:11px;font-weight:800;color:${C.blue};font-family:${FONT};">${escapeHtml(l.short)}</td><td style="padding:2px 0;font-size:13px;line-height:1.6;color:${C.ink2};font-family:${FONT};">${escapeHtml(ld[l.key])}</td></tr>`,
+    )
+    .join('');
+}
+
 function itemBlock(it: DailyItem, n: number, appUrl: string): string {
   if (isAnalysisFailed(it)) return failedBlock(it, n, appUrl);
   const [fg, bg] = CAT_COLOR[it.category] ?? [C.ink2, C.bg];
@@ -85,9 +98,10 @@ function itemBlock(it: DailyItem, n: number, appUrl: string): string {
       </div>
       <a href="${escapeHtml(read)}" style="display:block;margin:10px 0 8px 0;font-size:17px;line-height:1.5;font-weight:800;color:${C.ink};text-decoration:none;">${escapeHtml(it.title)}</a>
       <p style="margin:0 0 12px 0;font-size:14px;line-height:1.8;color:${C.ink2};">${escapeHtml(it.hook)}</p>
-      <p style="margin:0 0 12px 0;padding:10px 12px;background:#f3f8ff;border:1px dashed #b7cdf7;border-radius:10px;font-size:13px;line-height:1.7;color:${C.ink2};">
-        <span style="font-size:11px;font-weight:800;color:${C.blue};letter-spacing:.04em;">原理候補（仮説）</span><br>${escapeHtml(it.principleCandidate)}
-      </p>
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 12px 0;background:#f3f8ff;border:1px dashed #b7cdf7;border-radius:10px;"><tr><td style="padding:8px 12px;">
+        <div style="font-size:11px;font-weight:800;color:${C.blue};letter-spacing:.04em;font-family:${FONT};margin-bottom:2px;">LIGHT DEEP（AI は3行で止めています）</div>
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">${lightDeepRows(it)}</table>
+      </td></tr></table>
       <table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr>
         <td style="font-size:12px;color:${C.ink3};font-family:${FONT};">出典：<a href="${escapeHtml(safeUrl(it.sourceUrl))}" style="color:${C.ink3};">${escapeHtml(it.sourceName || it.sourceTitle)}</a></td>
         <td align="right"><a href="${escapeHtml(deep)}" style="display:inline-block;padding:8px 14px;border-radius:9px;background:${C.blue};color:#ffffff;font-size:13px;font-weight:700;text-decoration:none;font-family:${FONT};">DEEPで掘る</a></td>
@@ -124,8 +138,8 @@ export function buildDailyEmail(input: DailyFile, appUrl: string): EmailContent 
 <tr><td style="padding:0 0 18px 0;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${C.ink};border-radius:14px;"><tr><td style="padding:18px 20px;font-family:${FONT};">
     <div style="font-size:12px;font-weight:800;letter-spacing:.1em;color:#9fc0ff;">PRINCIPLE OF THE DAY</div>
-    <div style="font-size:17px;line-height:1.6;font-weight:800;color:#ffffff;margin:8px 0;">${escapeHtml(potd.principleCandidate)}</div>
-    <div style="font-size:12px;color:#c7d2e4;">${escapeHtml(potd.minimumStructure)}</div>
+    <div style="font-size:17px;line-height:1.6;font-weight:800;color:#ffffff;margin:8px 0;">${escapeHtml(getLightDeep(potd)?.structure || potd.principleCandidate)}</div>
+    <div style="font-size:12px;color:#c7d2e4;">飛ばす先：${escapeHtml(getLightDeep(potd)?.transfer || potd.minimumStructure)}</div>
     <a href="${escapeHtml(appLink(appUrl, '/deep', { id: potd.id }))}" style="display:inline-block;margin-top:12px;padding:8px 14px;border-radius:9px;background:#ffffff;color:${C.ink};font-size:13px;font-weight:700;text-decoration:none;">この原理を深く掘る</a>
   </td></tr></table>
 </td></tr>`
@@ -141,7 +155,7 @@ export function buildDailyEmail(input: DailyFile, appUrl: string): EmailContent 
 <tr><td style="padding:8px 4px 0 4px;font-family:${FONT};font-size:12px;line-height:1.8;color:${C.ink3};">
   <a href="${escapeHtml(appLink(appUrl, '/daily'))}" style="color:${C.blue};">アプリで開く</a> ・
   <a href="${escapeHtml(appLink(appUrl, '/activity'))}" style="color:${C.blue};">稼働状況</a><br>
-  事実（情報源）と AI の解釈（仮説）は分けて書いています。原理候補は「まだ正解ではない」ものとして読んでください。<br>
+  事実（情報源）と AI の解釈（仮説）は分けて書いています。AI は3行で止めています。面白いかどうか・掘るかどうかは、アプリで選んでください。<br>
   メールを受け取っただけでは「反応」に数えません。10日間アプリでの反応がないと、自動で一時停止します。日曜日はお休みです。
 </td></tr>`;
   const html = layout(header + potdBlock + notice + daily.items.map((it, i) => itemBlock(it, i + 1, appUrl)).join('') + footer, '今日、世界で見つけた7つの原理。');
@@ -150,7 +164,7 @@ export function buildDailyEmail(input: DailyFile, appUrl: string): EmailContent 
     '今日、世界で見つけた7つの原理。',
     formatJaDate(daily.date),
     '',
-    ...(potd ? [`■ PRINCIPLE OF THE DAY`, potd.principleCandidate, appLink(appUrl, '/deep', { id: potd.id }), ''] : []),
+    ...(potd ? [`■ PRINCIPLE OF THE DAY`, getLightDeep(potd)?.structure || potd.principleCandidate, appLink(appUrl, '/deep', { id: potd.id }), ''] : []),
     ...(failedCount > 0 ? [`※ ${daily.items.length} 件のうち ${failedCount} 件は「${FAILED_LABEL}」です（AI の分析を作れませんでした）。`, ''] : []),
     ...daily.items.flatMap((it, i) =>
       isAnalysisFailed(it)
@@ -163,7 +177,7 @@ export function buildDailyEmail(input: DailyFile, appUrl: string): EmailContent 
         : [
       `${i + 1}. [${categoryOf(it.category).short}] ${it.title}`,
       it.hook,
-      `原理候補（仮説）：${it.principleCandidate}`,
+      ...LIGHT_DEEP_LINES.map((l) => `${l.short}：${getLightDeep(it)?.[l.key] ?? ''}`),
       `出典：${it.sourceName || it.sourceTitle} ${it.sourceUrl}`,
       `DEEPで掘る：${appLink(appUrl, '/deep', { id: it.id })}`,
       '',

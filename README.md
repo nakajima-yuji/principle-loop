@@ -1,19 +1,45 @@
 # PRINCIPLE LOOP
 
-**世界の現象から「転用できる原理」を見つけ、分解し、保存し、別分野へ接続し、実験まで設計する思考装置。**
+> **PRINCIPLE LOOPはAIに答えを出させる装置ではない。AIで探索範囲を広げ、人間が面白いものを選び、必要な思考エンジンを借り、小さく試し、現実の反応を次の観察へ戻す装置である。**
 
 ```
-現象 → 構造 → 原理候補 → 深掘り → 反証 → 保存 → 別原理との接続 → 実験設計
+INPUT
+  ↓
+DIARY
+  ↓
+LIGHT DEEP
+  ↓
+HUMAN SELECT
+  ↓
+ENGINE
+  ↓
+TRANSFORM
+  ↓
+EXPERIMENT
+  ↓
+TEST
+  ↓
+OBSERVE
+  └→ DIARY
 ```
 
-ニュースを読むためのアプリではありません。増やしたいのは「知識の量」ではなく「構造理解の深さ」です。
-PRINCIPLE LOOP は、たくさんコードを書く装置ではなく、**「何を作る価値があるのか」を見つけるための装置**です。
+世界・人間・技術・作品・自分自身の観察を集め、人間が面白いものを選び、思考エンジンを借り、小さく試し、その結果をまた観察に戻す ——「創造OS」です。
+
+- **作るのは速く、決めるのは遅く。**
+- AI に考え切らせない。毎朝の AI は **3行（LIGHT DEEP）で止まります**。
+- 「面白い／もっと掘る／作る／保留／捨てる」を選ぶのは人間です（HUMAN SELECT）。
+- 思考エンジン（OKADA・OCHIAI・MATSUOKA・KONDO）は**選んだときだけ**借ります。何も借りないことも選べます。
+- 完成品より**最小実験**（紙カード5枚・30秒動画・1画面ゲーム・子どもに1分触ってもらう…）。
+- 実験の結果は DIARY に**新しい観察として戻します**。そこからまた選び直します。
+- ゲームだけに最適化しません。絵本・物語・映像・おもちゃ・空間・インスタレーション・Web・モノ…も出口です。
 
 ---
 
 ## 目次
 
 0. [全体の仕組み](#0-全体の仕組み)
+   - [コンセプトと例：『サッカー、なのに。』](#コンセプトと例サッカーなのに)
+   - [個人データと互換性](#個人データと互換性)
 1. [セットアップ](#1-セットアップ)
 2. [GitHub Pages（アプリの公開）](#2-github-pagesアプリの公開)
 3. [AI の無料枠を設定する](#3-ai-の無料枠を設定する)
@@ -24,7 +50,7 @@ PRINCIPLE LOOP は、たくさんコードを書く装置ではなく、**「何
 8. [10日自動停止の仕組み](#8-10日自動停止の仕組み)
 9. [再開のしかた](#9-再開のしかた)
 10. [トラブル対応](#10-トラブル対応)
-11. [v0.1 の完了条件](#11-v01-の完了条件)
+11. [完了条件](#11-完了条件)
 12. [開発者向けメモ](#12-開発者向けメモ)
 
 ---
@@ -33,12 +59,20 @@ PRINCIPLE LOOP は、たくさんコードを書く装置ではなく、**「何
 
 | 画面 | やること |
 | --- | --- |
-| **DAILY** | 毎朝の「今日の7つの原理」。1分野1件 × 6分野 ＋「異物」1件。PRINCIPLE OF THE DAY つき |
-| **DEEP** | 7つの中心質問で構造を解剖する（入力／変換／なぜ速い／何を捨てた／トレードオフ／最小構造／元用途を消す）。その後、観察・仮説・反例・境界・逆転・転用・原理候補 |
-| **DIARY** | 気になった原理を保存。観察 → 仮説 → 原理候補 → 原理 → 実験済み と育てる |
-| **CONNECT** | 遠い原理 × 遠い原理 をぶつけて、新しい構造・用途・最小実験を考える |
-| **BUILD** | EXPERIMENT DESIGN。コードではなく実験を設計し、本当に作りたいときだけ Claude Code / Codex 用プロンプトを**コピー**する（自動実行しない） |
+| **DAILY** | 毎朝の「今日の7つの観察」（月〜土）。1分野1件 × 6分野 ＋「異物」1件。各カードは **LIGHT DEEP の3行**（何が妙・面白い？／構造・原理候補／どこへ飛ばせそう？）と **HUMAN SELECT**（☆面白い ↓深掘り →試す △保留 ×アーカイブ）。右側は MEMO のすばやい入力と、最近「面白い」と選んだもの |
+| **DIARY** | 中心のログ。DAILY・メモ・気づき・観察・アイデア・実験・実験結果・道具の組み合わせ（TOOLCHAIN / CAPABILITY）が**時系列**で並ぶ。種類（ALL / DAILY / MEMO / OBSERVATION / IDEA / DEEP / EXPERIMENT / PRINCIPLE / TOOLCHAIN）と HUMAN SELECT で絞り込み |
+| **DEEP** | まず **LIGHT DEEP**（3行＋選ぶ）。「↓深掘り」を選んだものだけ **FULL DEEP**（7つの中心質問：入力／変換／なぜ速い／何を捨てた／トレードオフ／最小構造／元用途を消す ＋ 観察・仮説・反例・境界・逆転・転用・原理候補）へ |
+| **CONNECT** | 遠いもの × 遠いもの をぶつける。観察・原理候補だけでなく、思考エンジンやメディアともぶつけられる |
+| **EXPERIMENT** | 旧 BUILD。一番上に「何を確かめたいか」。最小実験の形とメディアを選び、やってみて起きたことを **DIARY に新しい観察として戻す**。本当に作りたいときだけ Claude Code / Codex 用プロンプトを**コピー**（自動実行しない） |
+| **ENGINES** | 思考エンジンの一覧と中身（概要・質問・処理手順・向いている用途）。OKADA「違和感から構造を抜く」／OCHIAI「前提・境界・観測方法を変える」／MATSUOKA「分ける・つなぐ・ずらす・編集する」／KONDO「1テーマを深く掘り、不確実性を減らす」。TRANSFORM（展開）の操作一覧も |
 | ACTIVITY / SETTINGS | 稼働状況・10日自動停止・再開・GitHub 連携・バックアップ |
+
+そのほかの道具：
+
+- **CORE LOCK**（逆側の道具）：何を消したら成立しなくなる？／名前を変えても残る核は？／何を守れば大胆に壊せる？／どこまでは変更できる？ — LIGHT DEEP と DIARY で書けます。
+- **原理の段階**は「確定」させません：OBSERVATION → PATTERN → STRUCTURE → PRINCIPLE CANDIDATE → TESTING → VALIDATED。AI は段階を上げません。
+- **TOOLCHAIN / CAPABILITY**：「Tripo3D × Blender × Three.js × Codex」「紙芝居 × AI画像 × 音声 × 動画生成」のような、できることを増やす組み合わせ。原理とは別の種類として残します。
+- 思考エンジンの名前は「その人の考え方から借りた型」に付けたこのアプリでの呼び名です。本人の思考の正確な再現ではありません。借りたら分解し、混ぜ、原型が分からなくなるまで作り直してかまいません。
 
 **お金をかけない構成**です。
 
@@ -46,14 +80,45 @@ PRINCIPLE LOOP は、たくさんコードを書く装置ではなく、**「何
 GitHub Pages（アプリ）  ←  public/data/*.json（DAILY・索引・activity）
         ↑ 公開
 GitHub Actions（月〜土の深夜と朝だけ動く）
-  00:30 収集 → 重複除去 → 分類 → 候補抽出 → 原理分析（無料枠の AI）→ 7件選定 → ストーリー化 → 保存
-  07:00〜08:00 メールで配信（受け取りは Yahoo!メールなど）
+  00:30 収集 → 重複除去 → 分類 → 候補抽出 → 7件選定 → LIGHT DEEP（無料枠の AI・1件3行だけ）→ 保存
+  07:00〜08:00 メールで配信（送信は Gmail など）
 ```
 
-- 有料のデータベース・常時動くサーバー・有料バックエンドは使いません。
-- 日々の処理で **Claude Code / Codex は一切使いません**（GitHub Actions ＋ Node.js ＋ 無料枠の AI だけ）。
-- 個人データ（DIARY・DEEP のメモ・CONNECT・BUILD）は**ブラウザの中**（localStorage）に保存します。
+- 有料のデータベース・常時動くサーバー・有料バックエンド・ベクトル DB は使いません。
+- 日々の処理で **Claude Code / Codex は一切使いません**（GitHub Actions ＋ Node.js ＋ 無料枠の AI だけ）。思考エンジンも自動では実行しません。
+- 毎朝の AI は1件につき3行だけ書きます（長いストーリーや7つの質問の下書きは作りません）。そのぶん AI の出力が小さくなり、無料枠に余裕ができます。
+- 個人データ（DIARY・DEEP のメモ・CONNECT・EXPERIMENT）は**ブラウザの中**（localStorage）に保存します。
 - AI の鍵・メールのパスワードは **GitHub Secrets** にだけ置き、アプリ（ブラウザ）には出しません。
+
+### コンセプトと例：『サッカー、なのに。』
+
+『サッカー、なのに。』は、PRINCIPLE LOOP の考え方が言葉になる前に生まれた**プロトタイプ**です。
+
+普通のサッカーゲームが見るのは、パス・シュート・戦術です。
+『サッカー、なのに。』が見たのは、その周辺の妙なところでした。
+
+- 10万人の観客がいる
+- 自分の席が分からない
+- 試合は進んでいる
+- なのに、試合を見られない
+
+ここから取り出せる構造の候補は、
+
+> **ジャンルの中心ではなく、周辺の妙な部分を主役へ動かす。**
+
+DAILY の「何が妙・面白い？」、HUMAN SELECT の「☆面白い」、OKADA エンジンの「違和感を探す → 固有名詞を消す → 関係だけを残す → 別分野へ移す」、そして EXPERIMENT の「1画面ゲーム」や「紙芝居」は、すべてこの動きを毎日くり返すための道具です。
+出口はゲームに限りません。同じ構造は、絵本にも、映像にも、展示にもなります。
+
+### 個人データと互換性
+
+- 保存先のキーは以前と同じ `principle-loop.personal.v1` です（変えると今までのデータが見えなくなるため）。中身の `version` が `2` になりました。
+- 初めて新しい版を開いたとき、元のデータを `principle-loop.personal.v1.backup` に**そのまま1回だけ**コピーしてから、v2 の形に移します。
+- 移すときの対応：
+  - 種類：DAILY から保存 → `DAILY`、URL から入れた観察 → `OBSERVATION`、CONNECT → `IDEA`
+  - 段階：観察 → `OBSERVATION`、仮説 → `PATTERN`、原理候補 → `PRINCIPLE_CANDIDATE`、原理 → `PRINCIPLE_CANDIDATE`、実験済み → `TESTING`（元の段階は `legacyState` に残り、DIARY の詳細に表示されます）
+  - 以前「保存」したものは「☆面白い（INTERESTING）」として扱います
+  - 足りない項目（エンジン・CORE LOCK・メディア・系譜など）は空で補います。DEEP のメモ・CONNECT・実験設計はそのまま
+- バックアップの読み込みは、古い形（v1）のファイルでも新しい形（v2）のファイルでも使えます。
 
 ---
 
@@ -158,7 +223,7 @@ npm run check        # 型チェック・テスト・ビルド・公開ファイ
 
 - 失敗した送信は自動で再試行しません（ログイン失敗を重ねてアカウントがロックされないようにするため）。
 - 送信元は `MAIL_USERNAME` のアドレスになります。違うときは Variables の `MAIL_FROM` に送信元アドレスを書きます。
-- 件名は `PRINCIPLE LOOP DAILY｜今日の7つの原理`。各記事に **「DEEPで掘る」** リンクが付きます。
+- 件名は `PRINCIPLE LOOP DAILY｜今日の7つの原理`。各記事に LIGHT DEEP の3行と **「DEEPで掘る」** リンク（開くと LIGHT DEEP。そこで面白い／深掘り／試す…を選びます）が付きます。
 
 ---
 
@@ -249,7 +314,7 @@ AI もまとめて試すなら、`mode` を `all`、`force` にチェックを�
 
 **目的**：使っていない間に、AI の無料枠・GitHub Actions・メールを無駄に使わないため。急かすための機能ではありません。
 
-**「反応」に数えるもの**（アプリでの操作だけ）：記事を開く／掘る／DIARY に保存／CONNECT を使う／BUILD を使う／アプリ内を移動して使う／「継続して使う」ボタン。
+**「反応」に数えるもの**（アプリでの操作だけ）：記事を開く／掘る／☆面白い などを選ぶ／メモを書く／CONNECT を使う／EXPERIMENT を使う／アプリ内を移動して使う／「継続して使う」ボタン。
 **数えないもの**：メールが届いたこと（メールを送っただけでは活動日を更新しません）。
 
 **記録するデータ**は `public/data/activity.json` の 3 つだけです。何を読んだかなどの行動履歴は集めません。
@@ -328,20 +393,26 @@ GitHub Pages は読み取り専用なので、ブラウザから直接ファイ�
 | 毎日のワークフローが「disabled」になった | 一時停止で自動的に止めたか、公開リポジトリで 60 日間リポジトリに動きがなかったため GitHub が止めた。再開の手順で戻せます |
 | git push に失敗（保存できない） | Settings → Actions → General → Workflow permissions が「Read and write」か。main にブランチ保護がある場合は bot の push を許可 |
 | DIARY が消えた | ブラウザのデータ削除・別ブラウザ。定期的に **DIARY → バックアップ** を。読み込みで戻せます |
+| 新しい版にしたら DIARY の段階の名前が変わった | 「原理を確定させない」方針で段階の呼び名を変えました（[個人データと互換性](#個人データと互換性)）。元の段階は詳細画面に「前の版での段階」として出ます。元のデータそのものはブラウザの `principle-loop.personal.v1.backup` に残っています |
+| DIARY に「アーカイブ」したものが見えない | 標準ではアーカイブ以外を表示します。DIARY の絞り込みで「× アーカイブ」または「全部」を選んでください |
 
 ---
 
-## 11. v0.1 の完了条件
+## 11. 完了条件
 
 | 条件 | 状態 | どこで |
 | --- | --- | --- |
 | DAILY に7件表示 | ✅ | `src/views/Daily.tsx` |
 | 月〜土運用・日曜完全停止 | ✅ | cron `0-5` ＋ `decideRun`（テストあり） |
 | 00:30 以降に処理開始・07:00〜08:00 配信 | ✅ | `principle-loop-daily.yml` |
-| DAILY → DEEP・7つの質問 | ✅ | `src/views/Deep.tsx`, `src/shared/questions.ts` |
-| DIARY 保存・状態管理 | ✅ | `src/views/Diary.tsx`, `src/data/store.ts` |
+| DAILY → LIGHT DEEP（3行）→ HUMAN SELECT → DIARY | ✅ | `src/views/LightDeep.tsx`, `src/shared/light-deep.ts`, `src/components/loop.tsx` |
+| 深掘りを選んだときだけ FULL DEEP（7つの質問） | ✅ | `src/views/Deep.tsx`, `src/shared/questions.ts` |
+| DIARY：時系列・種類の拡張・MEMO／気づきのすばやい入力・絞り込み | ✅ | `src/views/Diary.tsx`, `src/lib/diary-model.ts`, `src/data/store.ts` |
+| 既存の localStorage を壊さない（v1 → v2 の移行・バックアップ） | ✅ | `src/lib/diary-model.ts`（テストあり） |
+| 思考エンジン（選択式・複数可・自動実行なし）と ENGINES 画面 | ✅ | `src/engines/`, `src/views/Engines.tsx` |
+| CORE LOCK・メディア選択・TOOLCHAIN / CAPABILITY | ✅ | `src/shared/loop.ts`, `src/components/loop.tsx` |
 | CONNECT | ✅ | `src/views/Connect.tsx`, `src/lib/connect.ts` |
-| BUILD / EXPERIMENT DESIGN | ✅ | `src/views/Build.tsx`, `src/lib/experiment.ts` |
+| EXPERIMENT（旧 BUILD）・結果を DIARY へ戻す | ✅ | `src/views/Build.tsx`, `src/lib/experiment.ts`, `src/lib/diary-model.ts` |
 | Claude Code 用・Codex 用プロンプト出力（自動実行なし） | ✅ | コピーのみ |
 | 日常運転で Claude Code / Codex を使わない | ✅ | Actions ＋ Node.js ＋ 無料枠 AI |
 | メール配信（Yahoo!メール宛て。送信は Gmail か Yahoo!） | ✅ | `scripts/mail/` |
@@ -359,10 +430,12 @@ GitHub Pages は読み取り専用なので、ブラウザから直接ファイ�
 
 ```
 src/                 アプリ（Vite + React + TypeScript）
-  views/             DAILY・READ・DEEP・DIARY・CONNECT・BUILD・ACTIVITY・SETTINGS・SEARCH
+  views/             DAILY・READ・LIGHT DEEP / FULL DEEP・DIARY・CONNECT・EXPERIMENT（Build.tsx）・ENGINES・ACTIVITY・SETTINGS・SEARCH
+  components/loop.tsx  HUMAN SELECT・MEMO・LIGHT DEEP の3行・思考エンジン・CORE LOCK・メディアの部品
+  engines/           思考エンジンのデータ（本体とは分けてある）と TRANSFORM の操作
   data/              データ層（公開 JSON の読み込み・個人データ・活動通知）※同期を足すならここ
-  lib/               画面に依存しないロジック（検索・CONNECT・実験設計・プロンプト）
-  shared/            アプリと夜間処理で共通（型・カテゴリ・7つの質問・日本時間・10日停止の判定）
+  lib/               画面に依存しないロジック（DIARY のモデルと移行・検索・CONNECT・実験設計・プロンプト）
+  shared/            アプリと夜間処理で共通（型・カテゴリ・LIGHT DEEP・循環のことば・7つの質問・日本時間・10日停止の判定）
   ai/                AI Provider（gemini / openai-compatible / mock）※夜間処理だけが使う
 scripts/             夜間処理（Node.js。TypeScript をそのまま実行）
   run.ts             入口（generate / mail / all / mail-test / collect / status）
@@ -381,6 +454,8 @@ node scripts/run.ts --mode=generate --fixtures --date=2026-10-05 --dry-run   # �
 node scripts/run.ts --mode=status               # 状態を見る
 ```
 
-- データの形（DAILY の 1 件）は `src/shared/types.ts` の `DailyItem`。仕様の最低限のフィールドに、`inputTypes`・`boundary`・`invert`・`tags`・`transferability` などを足しています。
+- データの形（DAILY の 1 件）は `src/shared/types.ts` の `DailyItem`。新しい日は `lightDeep`（3行）が中心で、`principleCandidate` には「構造」の行が入ります（索引・検索・CONNECT 用）。古い日は長い分析（`inputTypes`・`boundary` など）を持ち、3行は `getLightDeep()` がその場で補います。
+- DIARY の 1 件は `DiaryEntry`（`type`・`state`・`userDecision`・`engineIds`・`coreLock`・`media`・`tools`・`parentId`・`sourceId`・`derivedFrom`・`experimentId` など）。`userDecision`（人間の判断）は AI の点数（`transferability`）とは別に持ちます。
+- アプリのルートは `#/deep?id=…`（LIGHT DEEP）、`#/deep?id=…&mode=full`（FULL DEEP）、`#/experiment`（`#/build` も引き続き開けます）、`#/engines?id=okada`。
 - 事実と AI の解釈を分けるため、出典の URL・タイトル・日付は AI に書かせず、収集したデータから入れています。
 - 依存パッケージは最小限です（react・react-dom・nodemailer、開発用に vite・typescript など）。RSS の読み込みも自前です。

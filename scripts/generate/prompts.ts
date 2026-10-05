@@ -1,19 +1,16 @@
 // 内部 AI への指示。PRINCIPLE LOOP の文章の方針はここで決まる。
 
 import { CATEGORIES, categoryOf } from '../../src/shared/categories.ts';
-import { BOUNDARY_PROBES, CORE_QUESTIONS } from '../../src/shared/questions.ts';
 import type { CategoryId } from '../../src/shared/types.ts';
 import type { Candidate } from '../filter/filter.ts';
 
-export const SYSTEM_PROMPT = `あなたは「PRINCIPLE LOOP」の編集者です。世界の出来事から「別の分野へ転用できる原理」を見つけ、読者が構造を理解できる文章を書きます。
+export const SYSTEM_PROMPT = `あなたは「PRINCIPLE LOOP」の観察係です。世界の出来事から「妙なところ」を見つけ、人間が「面白い／掘る／試す／保留／捨てる」を選ぶための短い材料を書きます。
 
 守ること：
-- 単純なニュース要約をしない。
-- まず具体的な現象を描写する。読者が「なぜ？」と思う導入を作る。
-- その後、入力・変換・速度（なぜ速い／軽い／少ない手間で済むか）・捨てたもの・トレードオフ・最小構造・元用途削除 まで分析する。
-- 事実と仮説を分ける。「事実」には与えられた情報源の文章に書かれていることだけを書く。書かれていない数字・固有名詞・結果を作らない。
-- 原理を早く断定しない。「〜という見方ができる」「〜かもしれない」のように候補として書く。
-- 最初の仮説を正解扱いしない。必ず反例（成立しない例・説明が間違っている可能性）を考える。
+- 考え切らない。結論・完成案・正解は出さない。3行で止める（LIGHT DEEP）。
+- 単純なニュース要約をしない。どこが「妙」なのかを具体的に書く。
+- 構造は「候補」として書く。「〜かもしれない」「〜という見方ができる」。原理を断定しない。
+- 事実と推測を分ける。「事実」には与えられた情報源の文章に書かれていることだけを書く。書かれていない数字・固有名詞・結果を作らない。
 - クリックベイト（煽り・誇張・「衝撃」「ヤバい」「〜すぎる」など）は禁止。静かで知的な文体。
 - 読みやすい自然な日本語。専門用語には短い説明を添える。
 - 出力は指定された JSON だけ。前後に文章を書かない。`;
@@ -43,13 +40,13 @@ ${recentPrinciples.length ? `- 最近扱った原理と同じテーマは避け�
 ${list}`;
 }
 
-const INPUT_OPTIONS = CORE_QUESTIONS.find((q) => q.key === 'input')?.options ?? [];
-const SPEED_OPTIONS = CORE_QUESTIONS.find((q) => q.key === 'speed')?.options ?? [];
-const DISCARD_OPTIONS = CORE_QUESTIONS.find((q) => q.key === 'discard')?.options ?? [];
-
+/**
+ * LIGHT DEEP：1 件につき 3 行だけ。長い分析（7つの質問・ストーリー）は作らない。
+ * 深く掘るかどうかは人間が選び、FULL DEEP で自分の言葉で書く。
+ */
 export function analyzePrompt(c: Candidate, category: CategoryId, articleText: string, seed: string): string {
   const cat = categoryOf(category);
-  return `次の情報源をもとに、PRINCIPLE LOOP の 1 件を作ってください。
+  return `次の情報源をもとに、PRINCIPLE LOOP の 1 件（LIGHT DEEP）を作ってください。
 
 分野：${cat.label}${category === 'foreign' ? '（読者が普段は検索しない世界）' : ''}
 情報源：${c.sourceName}
@@ -62,32 +59,17 @@ ${seed ? `原理のたね（選定時のメモ）：${seed}\n` : ''}
 ${(articleText || c.summary).trim()}
 """
 
-文章の流れ：「何だこれ？」→「なぜ？」→「そういう構造なのか」→「これ、他にも使えるのでは？」
-
-出力 JSON（すべて日本語。文字数は目安）：
+出力 JSON（すべて日本語。文字数は目安。これ以上は書かない）：
 {
   "title": "現象が伝わる見出し。煽らない（40字以内）",
-  "hook": "具体的な現象の描写から始め、読者が「なぜ？」と思う導入（2〜4文・150字以内）",
-  "story": "4段落を空行（\\n\\n）で区切る。1段落目=何だこれ？（現象）／2段落目=なぜ？（問い）／3段落目=そういう構造なのか（仕組みの見方。仮説として書く）／4段落目=これ、他にも使えるのでは？（転用の可能性と限界）。合計650字以内",
-  "observation": "情報源に書かれている事実だけ（解釈を入れない・200字以内）",
-  "input": "何を入力しているか（情報・時間・材料・人・エネルギー・位置・制約・行動・ルール などに分解）",
-  "inputTypes": ${JSON.stringify(INPUT_OPTIONS)} から当てはまるものを 1〜4 個,
-  "transformation": "何を何へ変えているか。「A → B」の形",
-  "why": "なぜ成立するのか（仮説として・120字以内）",
-  "speed": "なぜ速い／軽い／少ない手間で済むのか（計算量削減・探索範囲削減・判断回数削減・圧縮・近似・並列処理・事前計算・全体把握を捨てている など広く捉える）",
-  "speedTypes": ${JSON.stringify(SPEED_OPTIONS)} から 1〜3 個,
-  "discard": "あえて何を捨てているか（特に重視）",
-  "discardTypes": ${JSON.stringify(DISCARD_OPTIONS)} から 1〜3 個,
-  "tradeoff": "「X ↔ Y」の形",
-  "minimumStructure": "名前・商品・業界・用途を消して、要素の組み合わせ（A + B + C）まで縮めた形",
-  "removePurpose": "元の用途を消しても成立する言い方（「〜する構造」で終わる）",
-  "principleCandidate": "原理候補を一文で。断定しすぎない",
-  "counterexample": "この説明が間違っている可能性・成立しない例",
-  "hypothesis": "検証できる形の仮説（〜を変えると〜が変わるはず）",
-  "boundary": ${JSON.stringify(BOUNDARY_PROBES.map((p) => ({ probe: p, answer: '1〜2文' })))},
-  "invert": "原理を逆転した構造と、その使い道",
-  "transferIdeas": ["遠い分野への転用案を 3 つ（それぞれ 50字以内）"],
-  "tags": ["短いタグを 3〜5 個"],
+  "hook": "具体的な現象の描写。読者が「なぜ？」と思う導入（2〜3文・120字以内）",
+  "observation": "情報源に書かれている事実だけ（解釈を入れない・160字以内）",
+  "lightDeep": {
+    "odd": "何が妙・面白い？（1文・60字以内）",
+    "structure": "構造・原理候補。名前や用途を消した形で、断定しない（1文・60字以内）",
+    "transfer": "どこへ飛ばせそう？ 遠い分野を1つ（1文・60字以内）"
+  },
+  "tags": ["短いタグを 2〜4 個"],
   "transferability": 0.0〜1.0 の数値（他分野へ飛ばしやすいほど高い）
 }`;
 }

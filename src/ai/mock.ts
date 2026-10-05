@@ -46,35 +46,17 @@ export function createMockProvider(): AIProvider {
       if (req.task === 'analyze') {
         const ctx = req.context as MockAnalyzeContext;
         const intro = firstSentences(ctx.summary) || ctx.title;
-        const note = '（AI未設定のため仮の文章です。DEEP で自分の言葉に置き換えてください）';
+        const note = '（仮の文章です。自分の言葉で書いてください）';
         return {
           text: JSON.stringify({
             title: ctx.title.slice(0, 60),
             hook: intro,
-            story: [
-              `${intro}`,
-              'この現象は、なぜこうなるのだろうか。何が入力され、何に変わっているのか。',
-              `仕組みの見方はまだ仮説です。${note}`,
-              '同じ構造は、別の分野でも使えるかもしれない。DEEP の7つの質問で分解してみよう。',
-            ].join('\n\n'),
             observation: ctx.summary.slice(0, 300),
-            input: `（未分析）何が入っている？ 情報・時間・材料・人・エネルギーなど`,
-            inputTypes: [],
-            transformation: '（未分析）何 → 何 に変えている？',
-            why: note,
-            speed: '（未分析）なぜ速い・軽い・手間が少ない？',
-            speedTypes: [],
-            discard: '（未分析）何を捨てている？',
-            discardTypes: [],
-            tradeoff: '（未分析）何 ↔ 何？',
-            minimumStructure: '（未分析）要素 + 関係 + ルール',
-            removePurpose: '（未分析）元の用途を消すと「〜する構造」？',
-            principleCandidate: `${ctx.categoryLabel}の現象から：まだ原理候補はありません`,
-            counterexample: '（未分析）成立しない例は？',
-            hypothesis: '',
-            boundary: [],
-            invert: '',
-            transferIdeas: [],
+            lightDeep: {
+              odd: `（AI未設定）どこが妙？ ${note}`,
+              structure: '（AI未設定）名前を消すと、どんな構造が残る？',
+              transfer: '（AI未設定）遠い分野のどこへ飛ばせそう？',
+            },
             tags: [],
             transferability: 0.3,
           }),

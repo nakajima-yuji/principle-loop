@@ -26,6 +26,7 @@ const EMPTY_ANALYSIS = {
   invert: '',
   tags: [],
   transferability: 0,
+  lightDeep: undefined,
 } satisfies Partial<DailyItem>;
 
 export function isAnalysisFailed(item: Pick<DailyItem, 'analysisFailed'>): boolean {

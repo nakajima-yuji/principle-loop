@@ -1,6 +1,7 @@
 // AI の出力は信用しすぎない。型・長さ・選択肢をここでそろえる。
 // 出典（URL・タイトル・日付）は AI に書かせず、収集したデータから入れる（作り話の URL を防ぐ）。
 
+import { deriveLightDeep, normalizeLightDeep } from '../../src/shared/light-deep.ts';
 import { BOUNDARY_PROBES, CORE_QUESTIONS } from '../../src/shared/questions.ts';
 import type { BoundaryProbe, CategoryId, DailyItem } from '../../src/shared/types.ts';
 import type { Candidate } from '../filter/filter.ts';
@@ -43,7 +44,11 @@ export function toDailyItem(
 ): DailyItem {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
   const t = typeof r.transferability === 'number' && Number.isFinite(r.transferability) ? r.transferability : 0.5;
-  return {
+  // LIGHT DEEP（3行）が基本。古い形（長い分析）で返ってきたときも受け取れるようにしておく
+  const light = normalizeLightDeep(r.lightDeep);
+  const principleCandidate = str(r.principleCandidate, 200) || light?.structure || '';
+  const transferIdeas = strList(r.transferIdeas, 4, 120);
+  const item: DailyItem = {
     id: meta.id,
     date: meta.date,
     category: meta.category,
@@ -67,9 +72,9 @@ export function toDailyItem(
     tradeoff: str(r.tradeoff, 160),
     minimumStructure: str(r.minimumStructure, 200),
     removePurpose: str(r.removePurpose, 240),
-    principleCandidate: str(r.principleCandidate, 200),
+    principleCandidate,
     counterexample: str(r.counterexample, 400),
-    transferIdeas: strList(r.transferIdeas, 4, 120),
+    transferIdeas: transferIdeas.length ? transferIdeas : light ? [light.transfer] : [],
     hypothesis: str(r.hypothesis, 240),
     boundary: normalizeBoundary(r.boundary),
     invert: str(r.invert, 300),
@@ -78,11 +83,14 @@ export function toDailyItem(
     aiProvider: meta.provider,
     saved: false,
   };
+  const ld = light ?? deriveLightDeep(item);
+  return ld && ld.odd && ld.structure && ld.transfer ? { ...item, lightDeep: ld } : item;
 }
 
-/** 生成された 1 件が最低限そろっているか（そろっていなければ作り直し or 代替） */
+/** 生成された 1 件が最低限そろっているか（見出し・導入・LIGHT DEEP の3行） */
 export function isUsable(item: DailyItem): boolean {
-  return Boolean(item.title && item.hook && item.principleCandidate && item.minimumStructure);
+  const ld = item.lightDeep;
+  return Boolean(item.title && item.hook && ld && ld.odd && ld.structure && ld.transfer);
 }
 
 /**

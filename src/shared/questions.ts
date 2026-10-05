@@ -114,12 +114,17 @@ export const BOUNDARY_PROBES: readonly string[] = [
   '巨大化したら？',
 ];
 
+/**
+ * 原理の段階。「原理」は確定させず、実験を通して少しずつ上がる。
+ * AI はこの段階を上げない（人間が選ぶ）。
+ */
 export const PRINCIPLE_STATES = [
   { id: 'OBSERVATION', label: 'OBSERVATION', ja: '観察' },
-  { id: 'HYPOTHESIS', label: 'HYPOTHESIS', ja: '仮説' },
+  { id: 'PATTERN', label: 'PATTERN', ja: 'パターン' },
+  { id: 'STRUCTURE', label: 'STRUCTURE', ja: '構造' },
   { id: 'PRINCIPLE_CANDIDATE', label: 'PRINCIPLE CANDIDATE', ja: '原理候補' },
-  { id: 'PRINCIPLE', label: 'PRINCIPLE', ja: '原理' },
-  { id: 'EXPERIMENTED', label: 'EXPERIMENTED', ja: '実験済み' },
+  { id: 'TESTING', label: 'TESTING', ja: '実験中' },
+  { id: 'VALIDATED', label: 'VALIDATED', ja: '実験で確かめた' },
 ] as const;
 
 /** ストーリーの 4 段階。story の段落にこの順で対応させる。 */

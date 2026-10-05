@@ -30,7 +30,7 @@ export async function tempData(opts: { activity?: Partial<Activity>; state?: Par
 }
 
 /** 本物の AI のように JSON を返す偽物。呼ばれた回数と内容を記録する。 */
-export function fakeAI(opts: { failAnalyze?: boolean; failAnalyzeTimes?: number; failTimes?: number } = {}) {
+export function fakeAI(opts: { failAnalyze?: boolean; failAnalyzeTimes?: number; failTimes?: number; legacy?: boolean } = {}) {
   const calls: AIRequest[] = [];
   let failures = 0;
   let analyzeFailures = 0;
@@ -55,6 +55,21 @@ export function fakeAI(opts: { failAnalyze?: boolean; failAnalyzeTimes?: number;
         analyzeFailures++;
         return { text: '{"title": "途中で切れ' };
       }
+      if (!opts.legacy) {
+        // LIGHT DEEP（3行）の形
+        return {
+          text: JSON.stringify({
+            title: 'テストの見出し',
+            hook: '何かが起きている。なぜだろう。',
+            observation: '事実だけ',
+            lightDeep: { odd: '止まらずに流れているのが妙', structure: '少ない判断で全体が動く', transfer: '群衆の避難誘導' },
+            tags: ['#タグ', 'テスト'],
+            transferability: 0.8,
+            sourceUrl: 'https://evil.example/作り話',
+          }),
+        };
+      }
+      // 古い形（長い分析）。今も受け取れることを確かめるため
       return {
         text: JSON.stringify({
           title: 'テストの見出し',

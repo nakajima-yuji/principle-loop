@@ -53,6 +53,16 @@ test('件名・本文・DEEP へのリンク（# ルーティング）', () => {
   assert.equal(appLink('https://a.example/x', '/deep', { id: '1' }), 'https://a.example/x/#/deep?id=1');
 });
 
+test('朝のメールは LIGHT DEEP の3行（AI は3行で止める）', () => {
+  const daily = { ...sample, items: sample.items.map((it, i) => (i === 0 ? { ...it, lightDeep: { odd: '妙な<点>', structure: '構造の行', transfer: '飛ばす先' } } : it)) };
+  const m = buildDailyEmail(daily, APP);
+  assert.match(m.html, /LIGHT DEEP（AI は3行で止めています）/);
+  assert.match(m.html, /妙な&lt;点&gt;/);
+  assert.match(m.html, /構造の行/);
+  assert.match(m.text, /妙：妙な<点>\n構造：構造の行\n飛ばす：飛ばす先/);
+  assert.equal((m.html.match(/>LIGHT DEEP（AI は3行で止めています）</g) ?? []).length, 7, '古い形の日も3行を補う');
+});
+
 test('HTML に入る文字はエスケープする', () => {
   const evil = { ...sample, items: sample.items.map((i, n) => (n === 0 ? { ...i, title: '<script>alert(1)</script>', sourceUrl: 'javascript:alert(1)' } : i)) };
   const m = buildDailyEmail(evil, APP);

@@ -36,7 +36,7 @@ export function SearchView({ q }: { q: string }) {
 
   return (
     <div className="page stack">
-      <PageHead kicker="SEARCH" title="検索" sub="DAILY（過去分を含む）・DIARY・原理・タグを、このブラウザの中で全文検索します。" />
+      <PageHead kicker="SEARCH" title="検索" sub="DAILY（過去分を含む）・DIARY（メモ・観察・実験結果を含む）・タグを、このブラウザの中で全文検索します。" />
       <form className="row" onSubmit={onSubmit} role="search">
         <input className="text" style={{ flex: 1, minWidth: 0 }} type="search" value={text} onChange={(e) => setText(e.target.value)} placeholder="例：フィードバック　#自己組織化" aria-label="検索語" autoFocus />
         <button type="submit" className="btn primary">
