@@ -40,9 +40,11 @@ async function requestJson<T>(opts: OpenAIOptions, body: unknown): Promise<T> {
         body: JSON.stringify(body),
         signal: AbortSignal.timeout(120_000),
       });
-      const json = (await res.json()) as { choices?: { message?: { content?: string } }[]; error?: { message?: string } };
+      const json = (await res.json()) as { choices?: { message?: { content?: string | { type?: string; text?: string }[] } }[]; error?: { message?: string } };
       if (!res.ok) throw new Error(`OpenAI text ${res.status}: ${json.error?.message ?? res.statusText}`);
-      return parseJsonLoose<T>(json.choices?.[0]?.message?.content ?? '');
+      const content = json.choices?.[0]?.message?.content;
+      const text = typeof content === 'string' ? content : Array.isArray(content) ? content.map((part) => part.text ?? '').join('') : '';
+      return parseJsonLoose<T>(text);
     } catch (error) {
       last = error;
       if (attempt >= opts.maxRetries) break;
@@ -62,12 +64,13 @@ export async function generateIdeas(opts: OpenAIOptions, daily: DailyFile, feedb
     structure: item.lightDeep?.structure ?? item.minimumStructure,
     transfer: item.lightDeep?.transfer ?? item.transferIdeas.join('、'),
   }));
-  const prompt = `当日のDAILY素材:\n${JSON.stringify(observations)}\n\nJIMA FILTERの過去傾向（補助、空なら無視）:\n${feedback || 'なし'}\n\nまず候補を${Math.min(15, observations.length * 2)}件作り、林フィルターで検討したうえで、BEST/FAR/WILDを各1件返してください。JSON配列のみで、各要素は category, title, one_sentence, source_daily（id配列）, principle, structure, cross_domain_connection, why_interesting, why_selected, possible_medium, image_prompt を持たせてください。image_promptは文字やロゴを含めないコンセプトビジュアル用です。`;
+  const prompt = `当日のDAILY素材:\n${JSON.stringify(observations)}\n\nJIMA FILTERの過去傾向（補助、空なら無視）:\n${feedback || 'なし'}\n\nまず候補を${Math.min(15, observations.length * 2)}件作り、林フィルターで検討したうえで、BEST/FAR/WILDを各1件返してください。説明文・Markdown・コードフェンスは禁止です。JSONオブジェクトのみを返し、キーは BEST, FAR, WILD、各値は category, title, one_sentence, source_daily（id配列）, principle, structure, cross_domain_connection, why_interesting, why_selected, possible_medium, image_prompt を持たせてください。image_promptは文字やロゴを含めないコンセプトビジュアル用です。`;
   const result = await requestJson<{ ideas?: AutoCandidate[]; candidates?: AutoCandidate[]; items?: AutoCandidate[]; BEST?: AutoCandidate; FAR?: AutoCandidate; WILD?: AutoCandidate } | AutoCandidate[]>(opts, {
     model: opts.textModel,
     messages: [{ role: 'system', content: system }, { role: 'user', content: prompt }],
     response_format: { type: 'json_object' },
-    max_completion_tokens: 3000,
+    reasoning_effort: 'low',
+    max_completion_tokens: 6000,
   });
   const kinds: AutoIdea['category'][] = ['BEST', 'FAR', 'WILD'];
   const objectResult = Array.isArray(result) ? null : result;
