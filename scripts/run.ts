@@ -6,6 +6,7 @@
 //   node scripts/run.ts --mode=mail-test  最新の DAILY をテスト送信
 //   node scripts/run.ts --mode=collect    収集と絞り込みだけ（AI もメールも使わない）
 //   node scripts/run.ts --mode=status     いまの状態を表示するだけ
+//   node scripts/run.ts --mode=auto       当日のDAILYから3案＋3画像（7日間限定）
 //
 // オプション：--force（日曜・停止中・生成済みでも実行：テスト用） --dry-run（何も書き込まない・送らない）
 //             --date=YYYY-MM-DD（その日の 00:40 として動かす） --fixtures（ネットにつながず tests/fixtures を使う）
@@ -22,6 +23,7 @@ import { createFixtureFetcher, createHttpFetcher } from './collect/fetch.ts';
 import { collectAll } from './collect/sources.ts';
 import { filterCandidates } from './filter/filter.ts';
 import { runGenerate } from './generate/pipeline.ts';
+import { runAuto } from './auto/run-auto.ts';
 import { loadConfig } from './lib/config.ts';
 import { readJsonFile } from './lib/fsutil.ts';
 import { createLogger } from './lib/log.ts';
@@ -32,7 +34,7 @@ import { createSmtpSender, mailConfigFromEnv, resolveAppUrl } from './mail/send.
 import { emptyArchive } from '../src/shared/archive.ts';
 import type { ArchiveIndex } from '../src/shared/types.ts';
 
-const MODES = ['generate', 'mail', 'all', 'mail-test', 'collect', 'status'] as const;
+const MODES = ['generate', 'mail', 'all', 'mail-test', 'collect', 'status', 'auto'] as const;
 type Mode = (typeof MODES)[number];
 
 function parseArgs(argv: string[]) {
@@ -124,6 +126,13 @@ async function main() {
     log.info(JSON.stringify(stats));
     candidates.forEach((c) => log.info(`${c.key} [${c.category}] ${c.score.toFixed(2)} ${c.title.slice(0, 90)}（${c.sourceName}）`));
     return;
+  }
+
+  if (args.mode === 'auto') {
+    const r = await runAuto({ now: args.now, paths, config, dryRun: args.dryRun, log: (message) => log.info(message) });
+    (r.status === 'failed' ? log.error : log.info)(`AUTO：${r.status} — ${r.message}`);
+    await setOutput('auto_status', r.status);
+    if (r.status === 'failed') failed = true;
   }
 
   if (args.mode === 'generate' || args.mode === 'all') {

@@ -70,6 +70,52 @@ export interface DailyFile {
   items: DailyItem[];
 }
 
+export type AutoIdeaKind = 'BEST' | 'FAR' | 'WILD';
+export type JimaReaction = 'interesting' | 'not_interesting' | 'grow';
+
+export interface AutoIdea {
+  date: string;
+  category: AutoIdeaKind;
+  title: string;
+  one_sentence: string;
+  source_daily: string[];
+  principle: string;
+  structure: string;
+  cross_domain_connection: string;
+  why_interesting: string;
+  why_selected: string;
+  possible_medium: string;
+  image_prompt: string;
+  image_path?: string;
+  feedback?: { reaction: JimaReaction; comment?: string; updatedAt: string };
+}
+
+export interface AutoIdeasFile {
+  version: 1;
+  date: string;
+  experimentDay: number;
+  generatedAt: string;
+  ideas: AutoIdea[];
+  apiCalls: { text: number; images: number };
+  estimatedUsd?: number;
+}
+
+export interface AutoExperimentState {
+  version: 1;
+  startedOn: string;
+  experimentDay1: string;
+  maxExperimentDays: 7;
+  maxDailyImages: 3;
+  maxTotalImages: 21;
+  monthlyBudgetJpy: 1500;
+  totalImages: number;
+  totalTextCalls: number;
+  totalImageCalls: number;
+  stopped: boolean;
+  stopReason?: string;
+  updatedAt: string;
+}
+
 /** 検索・重複判定用の軽量な索引（public/data/archive/index.json） */
 export interface ArchiveEntry {
   id: string;

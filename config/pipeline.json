@@ -19,5 +19,17 @@
     "timeoutMs": 15000,
     "maxBytes": 3000000,
     "concurrency": 4
+  },
+  "auto": {
+    "maxExperimentDays": 7,
+    "maxDailyIdeas": 3,
+    "maxDailyImages": 3,
+    "maxTotalImages": 21,
+    "monthlyBudgetJpy": 1500,
+    "textModel": "gpt-5-mini",
+    "imageModel": "gpt-image-1",
+    "imageQuality": "low",
+    "maxCandidates": 15,
+    "maxRetries": 1
   }
 }

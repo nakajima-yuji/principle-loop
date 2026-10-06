@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { normalizeActivity } from '../shared/activity.ts';
 import { withFailureFlags } from '../shared/item-status.ts';
-import type { Activity, ArchiveIndex, DailyFile, DailyItem } from '../shared/types.ts';
+import type { Activity, ArchiveIndex, AutoIdeasFile, DailyFile, DailyItem } from '../shared/types.ts';
 import { dateFromItemId } from '../shared/time.ts';
 import { getPersonal } from './store.ts';
 
@@ -46,6 +46,14 @@ export async function loadLatestDaily(): Promise<DailyFile> {
   const latest = index.days[0]?.date;
   if (!latest) throw new Error('まだ DAILY がありません');
   return loadDaily(latest);
+}
+
+export async function loadAutoIdeas(date: string): Promise<AutoIdeasFile | null> {
+  try {
+    return await getJson<AutoIdeasFile>(`auto-ideas/${date}.json`, true);
+  } catch {
+    return null;
+  }
 }
 
 export async function loadActivity(): Promise<Activity> {

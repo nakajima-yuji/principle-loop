@@ -4,7 +4,8 @@ import { Icon } from '../components/Icon.tsx';
 import { ItemCard } from '../components/ItemCard.tsx';
 import { EntryKindChip, EntryThumb, LightDeepLines, QuickMemo } from '../components/loop.tsx';
 import { Thumb } from '../components/Thumb.tsx';
-import { loadArchive, loadDaily, useAsync } from '../data/api.ts';
+import { loadArchive, loadAutoIdeas, loadDaily, useAsync } from '../data/api.ts';
+import { browserStorage, readJson } from '../data/storage.ts';
 import { useServerActivity } from '../data/server-activity.ts';
 import { usePersonal } from '../data/store.ts';
 import { chronological } from '../lib/diary-model.ts';
@@ -14,13 +15,14 @@ import { FAILED_LABEL, isAnalysisFailed } from '../shared/item-status.ts';
 import { getLightDeep } from '../shared/light-deep.ts';
 import { SELECTION_CRITERIA } from '../shared/questions.ts';
 import { formatDotDate, formatJaDate, isSundayJst, jstDateString } from '../shared/time.ts';
-import type { ArchiveIndex, DailyFile, UserDecision } from '../shared/types.ts';
+import type { ArchiveIndex, AutoIdeasFile, AutoIdea, DailyFile, JimaReaction, UserDecision } from '../shared/types.ts';
 
-async function loadPage(date: string | null): Promise<{ index: ArchiveIndex; daily: DailyFile }> {
+async function loadPage(date: string | null): Promise<{ index: ArchiveIndex; daily: DailyFile; auto: AutoIdeasFile | null }> {
   const index = await loadArchive();
   const target = date ?? index.days[0]?.date;
   if (!target) throw new Error('まだ DAILY がありません。夜間処理が動くと、ここに今日の7つの原理が並びます。');
-  return { index, daily: await loadDaily(target) };
+  const daily = await loadDaily(target);
+  return { index, daily, auto: await loadAutoIdeas(target) };
 }
 
 export function DailyView({ date }: { date: string | null }) {
@@ -34,7 +36,7 @@ export function DailyView({ date }: { date: string | null }) {
   if (page.loading && !page.data) return <Loading />;
   if (page.error || !page.data) return <ErrorBox message={page.error ?? '読み込めませんでした'} />;
 
-  const { index, daily } = page.data;
+  const { index, daily, auto } = page.data;
   const now = new Date();
   const today = jstDateString(now);
   const latest = index.days[0]?.date;
@@ -83,6 +85,8 @@ export function DailyView({ date }: { date: string | null }) {
       {isSundayJst(now) && isLatest && !paused && (
         <Notice icon="clock">日曜日はお休みです（収集・AI・メールすべて停止）。月曜の朝に再開します。</Notice>
       )}
+
+      {auto && <AutoIdeasSection data={auto} />}
 
       <div className="daily-layout">
         <section className="panel daily-main" aria-labelledby="daily-title">
@@ -214,6 +218,56 @@ export function DailyView({ date }: { date: string | null }) {
         </aside>
       </div>
     </div>
+  );
+}
+
+const AUTO_FEEDBACK_KEY = 'principle-loop.auto-feedback.v1';
+
+function AutoIdeasSection({ data }: { data: AutoIdeasFile }) {
+  const [feedback, setFeedback] = useState<Record<string, JimaReaction>>(() => readJson(browserStorage, AUTO_FEEDBACK_KEY, {}));
+  const saveReaction = (idea: AutoIdea, reaction: JimaReaction) => {
+    const next = { ...feedback, [`${data.date}:${idea.category}`]: reaction };
+    browserStorage.set(AUTO_FEEDBACK_KEY, JSON.stringify(next));
+    setFeedback(next);
+  };
+  return (
+    <section className="panel panel-pad auto-ideas" aria-labelledby="auto-ideas-title">
+      <div className="panel-head">
+        <div>
+          <span className="page-kicker">PRINCIPLE LOOP AUTO</span>
+          <h2 id="auto-ideas-title">今日の3案＋3画像</h2>
+        </div>
+        <span className="status-pill">DAY {data.experimentDay} / 7</span>
+      </div>
+      <p className="small muted">DAILYの観察を岡田エンジン、南方コレクター、林フィルター、JIMA FILTERで展開した7日間限定の実験です。</p>
+      <div className="auto-ideas-grid">
+        {data.ideas.map((idea) => {
+          const key = `${data.date}:${idea.category}`;
+          const selected = feedback[key];
+          return (
+            <article className="auto-idea" key={idea.category}>
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <strong>{idea.category}</strong>
+                {idea.image_path && <img src={`./${idea.image_path}`} alt="" loading="lazy" />}
+              </div>
+              <h3>{idea.title}</h3>
+              <p>{idea.one_sentence}</p>
+              <dl className="small">
+                <dt>原理</dt><dd>{idea.principle}</dd>
+                <dt>構造</dt><dd>{idea.structure}</dd>
+                <dt>接続</dt><dd>{idea.cross_domain_connection}</dd>
+                <dt>選定理由</dt><dd>{idea.why_selected}</dd>
+              </dl>
+              <div className="row auto-feedback" aria-label={`${idea.category}のJIMA FILTER評価`}>
+                {([['interesting', '👍 面白い'], ['not_interesting', '👎 微妙'], ['grow', '★ 育てる']] as const).map(([reaction, label]) => (
+                  <button key={reaction} type="button" className={`btn sm ${selected === reaction ? 'primary' : ''}`} onClick={() => saveReaction(idea, reaction)}>{label}</button>
+                ))}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 

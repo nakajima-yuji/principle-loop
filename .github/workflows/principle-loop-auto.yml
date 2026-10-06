@@ -1,0 +1,72 @@
+# PRINCIPLE LOOP AUTO
+# まず workflow_dispatch で手動テストし、ログと利用額を確認してから
+# Repository Variable AUTO_CRON_ENABLED=true を設定してください。DAILY成功後だけ起動します。
+name: PRINCIPLE LOOP AUTO
+
+on:
+  workflow_run:
+    workflows: ["PRINCIPLE LOOP Daily"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      date:
+        description: '対象日（空欄なら日本時間の今日）'
+        required: false
+        type: string
+      dry_run:
+        description: 'APIを呼ぶがファイルを書かない確認モード'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  auto:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && vars.AUTO_CRON_ENABLED == 'true') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: principle-loop-auto
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - name: 依存パッケージを入れる
+        run: npm ci --no-audit --no-fund
+      - name: PRINCIPLE LOOP AUTO（7日間限定）
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          AUTO_TEXT_MODEL: ${{ vars.AUTO_TEXT_MODEL }}
+          IMAGE_MODEL: ${{ vars.IMAGE_MODEL }}
+          IMAGE_QUALITY: ${{ vars.IMAGE_QUALITY }}
+          MAX_EXPERIMENT_DAYS: ${{ vars.MAX_EXPERIMENT_DAYS }}
+          MAX_DAILY_IMAGES: ${{ vars.MAX_DAILY_IMAGES }}
+          MAX_TOTAL_IMAGES: ${{ vars.MAX_TOTAL_IMAGES }}
+          MONTHLY_BUDGET_JPY: ${{ vars.MONTHLY_BUDGET_JPY }}
+          DATE: ${{ inputs.date }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          DATE_ARG=""
+          if [ -n "$DATE" ]; then DATE_ARG="--date=$DATE"; fi
+          DRY_ARG=""
+          if [ "$DRY_RUN" = "true" ]; then DRY_ARG="--dry-run"; fi
+          node scripts/run.ts --mode=auto $DATE_ARG $DRY_ARG
+      - name: AUTOの結果を保存する
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git config user.name "principle-loop-auto"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A public/data
+          if [ -d experiment ]; then git add -A experiment; fi
+          if [ -d feedback ]; then git add -A feedback; fi
+          if git diff --cached --quiet; then
+            echo "変更はありません"
+            exit 0
+          fi
+          git commit -m "auto: PRINCIPLE LOOP AUTO"
+          git push

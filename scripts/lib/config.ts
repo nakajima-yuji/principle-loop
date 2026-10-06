@@ -45,6 +45,20 @@ export interface PipelineConfig {
     articleChars: number;
   };
   fetch: { timeoutMs: number; maxBytes: number; concurrency: number };
+  auto: AutoConfig;
+}
+
+export interface AutoConfig {
+  maxExperimentDays: number;
+  maxDailyIdeas: number;
+  maxDailyImages: number;
+  maxTotalImages: number;
+  monthlyBudgetJpy: number;
+  textModel: string;
+  imageModel: string;
+  imageQuality: 'low' | 'medium' | 'high';
+  maxCandidates: number;
+  maxRetries: number;
 }
 
 export interface Config {
@@ -70,6 +84,18 @@ export const DEFAULT_PIPELINE: PipelineConfig = {
     articleChars: 3500,
   },
   fetch: { timeoutMs: 15000, maxBytes: 3_000_000, concurrency: 4 },
+  auto: {
+    maxExperimentDays: 7,
+    maxDailyIdeas: 3,
+    maxDailyImages: 3,
+    maxTotalImages: 21,
+    monthlyBudgetJpy: 1500,
+    textModel: 'gpt-5-mini',
+    imageModel: 'gpt-image-1',
+    imageQuality: 'low',
+    maxCandidates: 15,
+    maxRetries: 1,
+  },
 };
 
 /** 環境変数（GitHub の Variables）で数値の上限を上書きする。変な値は無視する。 */
@@ -95,6 +121,16 @@ export function applyEnvOverrides(p: PipelineConfig, env: NodeJS.ProcessEnv): Pi
       minIntervalMs: envInt(env, 'AI_MIN_INTERVAL_MS', p.ai.minIntervalMs, 0, 120_000),
       maxPromptChars: envInt(env, 'AI_MAX_PROMPT_CHARS', p.ai.maxPromptChars, 2000, 60_000),
       maxOutputTokens: envInt(env, 'AI_MAX_OUTPUT_TOKENS', p.ai.maxOutputTokens, 512, 32_000),
+    },
+    auto: {
+      ...p.auto,
+      maxExperimentDays: envInt(env, 'MAX_EXPERIMENT_DAYS', p.auto.maxExperimentDays, 1, 7),
+      maxDailyIdeas: envInt(env, 'MAX_DAILY_IDEAS', p.auto.maxDailyIdeas, 1, 3),
+      maxDailyImages: envInt(env, 'MAX_DAILY_IMAGES', p.auto.maxDailyImages, 1, 3),
+      maxTotalImages: envInt(env, 'MAX_TOTAL_IMAGES', p.auto.maxTotalImages, 1, 21),
+      monthlyBudgetJpy: envInt(env, 'MONTHLY_BUDGET_JPY', p.auto.monthlyBudgetJpy, 1, 1500),
+      maxCandidates: envInt(env, 'AUTO_MAX_CANDIDATES', p.auto.maxCandidates, 3, 15),
+      maxRetries: envInt(env, 'AUTO_MAX_RETRIES', p.auto.maxRetries, 0, 1),
     },
   };
 }
@@ -125,6 +161,7 @@ export async function loadConfig(configDir: string, env: NodeJS.ProcessEnv = pro
     ...pipelineRaw,
     ai: { ...DEFAULT_PIPELINE.ai, ...(pipelineRaw.ai ?? {}) },
     fetch: { ...DEFAULT_PIPELINE.fetch, ...(pipelineRaw.fetch ?? {}) },
+    auto: { ...DEFAULT_PIPELINE.auto, ...(pipelineRaw.auto ?? {}) },
   };
   return {
     sources,

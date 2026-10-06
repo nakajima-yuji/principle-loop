@@ -2612,3 +2612,15 @@ a.potd-principle {
 .card .card-body .card-title {
   margin-bottom: 0;
 }
+/* 7日間限定 PRINCIPLE LOOP AUTO */
+.auto-ideas { margin-top: 4px; }
+.auto-ideas-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
+.auto-idea { border: 1px solid var(--line); border-radius: 14px; padding: 14px; background: var(--paper); }
+.auto-idea img { width: 64px; height: 64px; border-radius: 10px; object-fit: cover; background: var(--wash); }
+.auto-idea h3 { margin: 12px 0 6px; font-size: 17px; }
+.auto-idea p { margin: 0 0 10px; }
+.auto-idea dl { display: grid; grid-template-columns: 52px 1fr; gap: 5px 8px; margin: 0 0 12px; }
+.auto-idea dt { color: var(--ink3); font-weight: 700; }
+.auto-idea dd { margin: 0; }
+.auto-feedback { flex-wrap: wrap; gap: 6px; }
+@media (max-width: 900px) { .auto-ideas-grid { grid-template-columns: 1fr; } }

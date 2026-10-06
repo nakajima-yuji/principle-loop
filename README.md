@@ -373,7 +373,33 @@ GitHub Pages は読み取り専用なので、ブラウザから直接ファイ�
 
 ---
 
-## 10. トラブル対応
+## 10. PRINCIPLE LOOP AUTO（7日間限定の実験）
+
+`PRINCIPLE LOOP AUTO` は、当日のDAILYだけを起点に、岡田エンジン → 南方コレクター → 林フィルター → JIMA FILTER の順で、BEST / FAR / WILD の3案と各1枚のコンセプト画像を作ります。1日3案・3画像、合計21画像を上限にし、初回の正常生成日を DAY 1 として8日目以降はOpenAI APIを呼びません。既存のDAILY処理とは別ワークフローです。
+
+### 最初の設定
+
+1. [OpenAI Platform](https://platform.openai.com/) でアカウントを作り、Billing で支払い方法と利用上限を設定します。料金・モデルの最新情報は [公式 Pricing](https://openai.com/api/pricing/) と Usage 画面で確認してください。料金は変更されるため、このREADMEでは固定額を断定しません。
+2. API key を作成し、リポジトリの **Settings → Secrets and variables → Actions → New repository secret** に、値を表示せず `OPENAI_API_KEY` として登録します。ソース、Pages、JSON、ログにはキーを書きません。
+3. **Actions → PRINCIPLE LOOP AUTO → Run workflow** を選び、まず手動実行します。`dry_run` はAPIを呼んでファイルを書かない確認用です。最初は通常実行を1回だけ行い、ActionsログとOpenAI Usageで確認してください。
+4. 使用モデルは Variables の `AUTO_TEXT_MODEL`（既定 `gpt-5-mini`）、`IMAGE_MODEL`（既定 `gpt-image-1`）、`IMAGE_QUALITY`（既定 `low`）で変更できます。画像APIには `OPENAI_API_KEY` だけを渡し、ブラウザには渡しません。
+
+### cron を開始する
+
+手動テスト、生成結果、利用額を確認した後、Repository Variables に `AUTO_CRON_ENABLED=true` を追加します。AUTOは `PRINCIPLE LOOP Daily` の成功完了後だけ起動するため、DAILY更新 → AUTOの順になります。重複実行は日付ファイルと concurrency で防ぎます。
+
+### 状態・停止・終了レポート
+
+- 現在のDAYは `experiment/auto-idea-experiment.json` の `experimentDay1` と当日の日付から計算されます。画像数は `totalImages`、API呼び出し数は `totalTextCalls` / `totalImageCalls` です。
+- 緊急停止は Actions で `PRINCIPLE LOOP AUTO` を Disable し、必要なら `OPENAI_API_KEY` の Secret を削除またはローテーションします。コード側も `MAX_EXPERIMENT_DAYS=7`、`MAX_DAILY_IMAGES=3`、`MAX_TOTAL_IMAGES=21`、`MONTHLY_BUDGET_JPY=1500` を上限として二重チェックします。
+- 8日目以降、または上限到達後は `7-day experiment completed` をログに残して終了します。画像生成の途中で止まっても、既存画像は再生成せず未生成分だけを処理します。
+- 7日後の **7-DAY REPORT** は、保存された `public/data/auto-ideas/*.json`、画像数、`feedback/jima-filter.json`（同期運用時）を材料に人間が作成します。API利用額は推定値ではなく OpenAI Usage の実測値を採用します。
+
+### 保存とJIMA FILTER
+
+案は `public/data/auto-ideas/YYYY-MM-DD.json`、画像は `public/data/auto-images/YYYY-MM-DD-{best,far,wild}.webp` に保存します。DAILY画面の「👍 面白い」「👎 微妙」「★ 育てる」はブラウザの既存localStorage方式で保存され、人物由来モジュールとは混ぜません。
+
+## 11. トラブル対応
 
 | 症状 | 確認すること |
 | --- | --- |
@@ -398,7 +424,7 @@ GitHub Pages は読み取り専用なので、ブラウザから直接ファイ�
 
 ---
 
-## 11. 完了条件
+## 12. 完了条件
 
 | 条件 | 状態 | どこで |
 | --- | --- | --- |
@@ -426,7 +452,7 @@ GitHub Pages は読み取り専用なので、ブラウザから直接ファイ�
 
 ---
 
-## 12. 開発者向けメモ
+## 13. 開発者向けメモ
 
 ```
 src/                 アプリ（Vite + React + TypeScript）

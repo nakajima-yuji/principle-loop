@@ -18,7 +18,8 @@
     "generate": "node scripts/run.ts --mode=generate",
     "mail": "node scripts/run.ts --mode=mail",
     "mail:test": "node scripts/run.ts --mode=mail-test",
-    "status": "node scripts/run.ts --mode=status"
+    "status": "node scripts/run.ts --mode=status",
+    "auto": "node scripts/run.ts --mode=auto"
   },
   "dependencies": {
     "nodemailer": "^10.0.13",
