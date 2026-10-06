@@ -67,7 +67,7 @@ export async function generateIdeas(opts: OpenAIOptions, daily: DailyFile, feedb
     model: opts.textModel,
     messages: [{ role: 'system', content: system }, { role: 'user', content: prompt }],
     response_format: { type: 'json_object' },
-    max_tokens: 3000,
+    max_completion_tokens: 3000,
   });
   const raw = Array.isArray(result) ? result : result.ideas ?? [];
   const kinds: AutoIdea['category'][] = ['BEST', 'FAR', 'WILD'];
