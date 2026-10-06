@@ -63,16 +63,17 @@ export async function generateIdeas(opts: OpenAIOptions, daily: DailyFile, feedb
     transfer: item.lightDeep?.transfer ?? item.transferIdeas.join('、'),
   }));
   const prompt = `当日のDAILY素材:\n${JSON.stringify(observations)}\n\nJIMA FILTERの過去傾向（補助、空なら無視）:\n${feedback || 'なし'}\n\nまず候補を${Math.min(15, observations.length * 2)}件作り、林フィルターで検討したうえで、BEST/FAR/WILDを各1件返してください。JSON配列のみで、各要素は category, title, one_sentence, source_daily（id配列）, principle, structure, cross_domain_connection, why_interesting, why_selected, possible_medium, image_prompt を持たせてください。image_promptは文字やロゴを含めないコンセプトビジュアル用です。`;
-  const result = await requestJson<{ ideas?: AutoCandidate[] } | AutoCandidate[]>(opts, {
+  const result = await requestJson<{ ideas?: AutoCandidate[]; candidates?: AutoCandidate[]; items?: AutoCandidate[]; BEST?: AutoCandidate; FAR?: AutoCandidate; WILD?: AutoCandidate } | AutoCandidate[]>(opts, {
     model: opts.textModel,
     messages: [{ role: 'system', content: system }, { role: 'user', content: prompt }],
     response_format: { type: 'json_object' },
     max_completion_tokens: 3000,
   });
-  const raw = Array.isArray(result) ? result : result.ideas ?? [];
   const kinds: AutoIdea['category'][] = ['BEST', 'FAR', 'WILD'];
+  const objectResult = Array.isArray(result) ? null : result;
+  const raw = Array.isArray(result) ? result : objectResult?.ideas ?? objectResult?.candidates ?? objectResult?.items ?? kinds.map((kind) => objectResult?.[kind]).filter((x): x is AutoCandidate => Boolean(x));
   return kinds.map((category, index) => {
-    const candidate = raw[index] ?? raw.find((x) => x.title);
+    const candidate = (objectResult?.[category] ?? raw[index] ?? raw.find((x) => x.title)) as AutoCandidate | undefined;
     if (!candidate) throw new Error(`${category} の候補がありません`);
     return {
       date: daily.date,
