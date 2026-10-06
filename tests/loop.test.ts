@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { test } from 'node:test';
-import { ENGINES, engineChatPrompt, getEngine, mixQuestions, toggleEngine } from '../src/engines/index.ts';
-import { TRANSFORM_OPS } from '../src/engines/transform.ts';
+import { ENGINES, ENGINE_PIPELINE_EXAMPLES, engineChatPrompt, getEngine, getOperation, mixQuestions, pipelineChatPrompt, pipelineLabel, toggleEngine, validPipeline } from '../src/engines/index.ts';
+import { ENGINE_LENSES, ENGINE_OPERATIONS, TRANSFORM_OPS } from '../src/engines/transform.ts';
 import {
   DIARY_FILTERS,
   chronological,
@@ -185,7 +185,7 @@ test('生成：3行の JSON を DailyItem にする（原理候補は「構造�
 test('ENGINES：データとして持ち、選んだときだけ使う（なし・複数も選べる）', () => {
   assert.deepEqual(
     ENGINES.map((e) => e.id),
-    ['none', 'okada', 'ochiai', 'matsuoka', 'kondo'],
+    ['none', 'okada', 'akasegawa', 'minakata', 'hayashi', 'ochiai', 'matsuoka', 'kondo'],
   );
   for (const e of ENGINES) {
     for (const k of ['id', 'name', 'description', 'shortDescription'] as const) assert.ok(e[k].length > 0, `${e.id}.${k}`);
@@ -199,6 +199,9 @@ test('ENGINES：データとして持ち、選んだときだけ使う（なし�
   assert.equal(getEngine('ochiai')?.shortDescription, '前提・境界・観測方法を変える');
   assert.equal(getEngine('matsuoka')?.shortDescription, '分ける・つなぐ・ずらす・編集する');
   assert.equal(getEngine('kondo')?.shortDescription, '1テーマを深く掘り、不確実性を減らす');
+  assert.equal(getEngine('akasegawa')?.origin, 'person');
+  assert.equal(getEngine('minakata')?.origin, 'person');
+  assert.equal(getEngine('hayashi')?.origin, 'person');
 
   let sel = toggleEngine([], 'okada');
   sel = toggleEngine(sel, 'ochiai');
@@ -215,6 +218,29 @@ test('ENGINES：データとして持ち、選んだときだけ使う（なし�
   assert.match(prompt, /KONDO/);
   assert.doesNotMatch(prompt, /NONE/);
   assert.ok(TRANSFORM_OPS.some((o) => o.label === '観測と被観測を相互化する'));
+});
+
+test('ENGINE PIPELINE：人物エンジンと一般操作を任意順序で組み合わせる', () => {
+  const expected = [
+    ['岡田だけ', 'OKADA'],
+    ['岡田 → 南方', 'OKADA → MINAKATA'],
+    ['赤瀬川 → 岡田', 'AKASEGAWA → OKADA'],
+    ['南方 → 林', 'MINAKATA → HAYASHI'],
+    ['岡田 → 状態変化', 'OKADA → 状態変化探索'],
+    ['岡田 → 知らない前提', 'OKADA → 知らない前提'],
+    ['岡田 → 深層掘削', 'OKADA → 深層掘削'],
+  ];
+  for (const [label, output] of expected) {
+    const example = ENGINE_PIPELINE_EXAMPLES.find((x) => x.label === label);
+    assert.ok(example);
+    assert.equal(pipelineLabel(example.steps), output);
+    assert.equal(validPipeline(example.steps).length, example.steps.length);
+    assert.match(pipelineChatPrompt(example.steps, { title: '氷', text: '氷が溶けて流れた' }), /観察方法がどう変わったか/);
+  }
+  assert.equal(getOperation('deep-drill')?.kind, 'technique');
+  assert.equal(getOperation('unknown-premise')?.kind, 'lens');
+  assert.ok(ENGINE_OPERATIONS.some((x) => x.id === 'state-change'));
+  assert.ok(ENGINE_LENSES.some((x) => x.id === 'knowledge-gap'));
 });
 
 test('CORE LOCK・メディア・最小実験', () => {

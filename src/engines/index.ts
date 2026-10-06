@@ -4,8 +4,14 @@
 // - 名前は「その人の考え方から借りた型」に付けたこのアプリでの呼び名。本人の思考の正確な再現ではない
 // - 借りたあとは分解し、別のエンジンや自分の観察と混ぜ、原型が分からなくなるまで再構成してよい
 
+import { ENGINE_LENSES, ENGINE_OPERATIONS, type TransformOp } from './transform.ts';
+
+export type EngineOrigin = 'person' | 'personal-filter';
+
 export type ThinkingEngine = {
   id: string;
+  /** 人物由来の思考エンジン。一般操作はここに登録しない。 */
+  origin: EngineOrigin;
   name: string;
   description: string;
   shortDescription: string;
@@ -16,13 +22,32 @@ export type ThinkingEngine = {
   viewpoints?: string[];
   /** 毎回使う固定の問い（任意） */
   fixedQuestions?: string[];
+  /** この人物エンジンから借りられる一般操作のID */
+  operationIds?: string[];
+  /** この人物エンジンから借りられる観察レンズのID */
+  lensIds?: string[];
 };
+
+export type PipelineStep =
+  | { type: 'engine'; id: string }
+  | { type: 'operation' | 'technique' | 'lens'; id: string };
+
+export const ENGINE_PIPELINE_EXAMPLES: readonly { label: string; steps: PipelineStep[] }[] = [
+  { label: '岡田だけ', steps: [{ type: 'engine', id: 'okada' }] },
+  { label: '岡田 → 南方', steps: [{ type: 'engine', id: 'okada' }, { type: 'engine', id: 'minakata' }] },
+  { label: '赤瀬川 → 岡田', steps: [{ type: 'engine', id: 'akasegawa' }, { type: 'engine', id: 'okada' }] },
+  { label: '南方 → 林', steps: [{ type: 'engine', id: 'minakata' }, { type: 'engine', id: 'hayashi' }] },
+  { label: '岡田 → 状態変化', steps: [{ type: 'engine', id: 'okada' }, { type: 'operation', id: 'state-change' }] },
+  { label: '岡田 → 知らない前提', steps: [{ type: 'engine', id: 'okada' }, { type: 'lens', id: 'unknown-premise' }] },
+  { label: '岡田 → 深層掘削', steps: [{ type: 'engine', id: 'okada' }, { type: 'technique', id: 'deep-drill' }] },
+];
 
 export const NONE_ENGINE_ID = 'none';
 
 export const ENGINES: readonly ThinkingEngine[] = [
   {
     id: 'none',
+    origin: 'person',
     name: 'NONE',
     shortDescription: '借りない。自分の感覚のまま進む',
     description:
@@ -33,6 +58,7 @@ export const ENGINES: readonly ThinkingEngine[] = [
   },
   {
     id: 'okada',
+    origin: 'person',
     name: 'OKADA',
     shortDescription: '違和感から構造を抜く',
     description:
@@ -63,9 +89,48 @@ export const ENGINES: readonly ThinkingEngine[] = [
     ],
     viewpoints: ['観測すると相手にも影響する', '情報を取得しようとすると自分も露出する', '痕跡', '罠', '偽装', '誤誘導'],
     suitableFor: ['日常の観察（公園・街・子どもの遊び）', '作品やゲームの仕組みの分解', '探索・推理・かくれんぼ型の体験', '表面ではなく構造を取り換えたいとき'],
+    operationIds: ['deep-drill', 'state-change', 'unknown-premise', 'observation-shift', 'latent-function'],
+    lensIds: ['observer-subject', 'knowledge-gap', 'time-shift'],
+  },
+  {
+    id: 'akasegawa',
+    origin: 'person',
+    name: 'AKASEGAWA',
+    shortDescription: '日常の「なんだこれ？」を拾う',
+    description: '用途不明、使われなくなったもの、偶然の形、痕跡、ズレ、余白、不自然な配置、誰かの行動の残りから、まだ名前の付いていない違和感を拾う。価値を決めず、意味になる前の観察を残す。',
+    questions: ['これは何に使うものか分からないまま、何が気になる？', '誰かの行動の何が残っている？', '用途を決めずに形・痕跡・余白だけを見ると？', '名前を付ける前の違和感を、どんな場面で再現できる？'],
+    process: ['なんだこれ？を拾う', '用途・意味を保留する', '形・痕跡・ズレ・余白を記録する', '別の状況で再配置する', '人がどう意味づけるか観察する'],
+    suitableFor: ['街や日常の観察', '漫画の小道具・背景', 'ゲームの謎や痕跡', '意味が後から立ち上がる作品'],
+    operationIds: ['unknown-premise', 'observation-shift', 'counterexample'],
+    lensIds: ['knowledge-gap', 'observer-subject'],
+  },
+  {
+    id: 'minakata',
+    origin: 'person',
+    name: 'MINAKATA',
+    shortDescription: '遠くまで集め、萃点を探す',
+    description: '評価や実装可能性で早く絞らず、異分野・反対・例外・極端な事例を大量に集める。遠いもの同士の関係が一点に集まる「萃点」を探し、探索空間を広げるコレクター。',
+    questions: ['同じ関係は生物・物理・遊び・都市・儀式のどこにある？', '反対の例・失敗例・極端な例は？', '遠い分野をさらに一段つなぐと何が見える？', 'まだ評価せず、何を追加で集めるべき？'],
+    process: ['大量化する', '遠距離化する', '異分野化する', '反対・例外・極端を集める', '関係を収集する', '連鎖して萃点を探す'],
+    suitableFor: ['発想の幅を広げるとき', 'ゲームのルール候補集め', '世界設定・漫画の連想', '評価前のリサーチ'],
+    operationIds: ['extreme', 'counterexample', 'state-change'],
+    lensIds: ['time-shift', 'knowledge-gap'],
+  },
+  {
+    id: 'hayashi',
+    origin: 'person',
+    name: 'HAYASHI',
+    shortDescription: '残すものを決め、伝わる入口を作る',
+    description: '大量に広げるのではなく、王道との差分、一文での伝わり方、光点、入口、新規性の説明可能性を確認する。変だから削除するのではなく、何を残せば人に届くかを選ぶ。',
+    questions: ['王道は何で、この案との差分はどこ？', '一文で人に伝わるか？', '最初の5秒・1ページ・1操作の光点は？', '何を削っても面白さの中心は残る？'],
+    process: ['王道と比較する', '差分を一文にする', '入口の光点を決める', '残す核と削る要素を分ける', '最小の体験にする'],
+    suitableFor: ['候補を作品に絞るとき', 'ゲームの最初の体験', '漫画の1ページ目', '動画の冒頭フック'],
+    operationIds: ['latent-function', 'extreme'],
+    lensIds: ['time-shift', 'observer-subject'],
   },
   {
     id: 'ochiai',
+    origin: 'person',
     name: 'OCHIAI',
     shortDescription: '前提・境界・観測方法を変える',
     description:
@@ -82,6 +147,7 @@ export const ENGINES: readonly ThinkingEngine[] = [
   },
   {
     id: 'matsuoka',
+    origin: 'person',
     name: 'MATSUOKA',
     shortDescription: '分ける・つなぐ・ずらす・編集する',
     description:
@@ -98,6 +164,7 @@ export const ENGINES: readonly ThinkingEngine[] = [
   },
   {
     id: 'kondo',
+    origin: 'person',
     name: 'KONDO',
     shortDescription: '1テーマを深く掘り、不確実性を減らす',
     description:
@@ -128,6 +195,43 @@ export const ENGINES: readonly ThinkingEngine[] = [
 
 export function getEngine(id: string): ThinkingEngine | undefined {
   return ENGINES.find((e) => e.id === id);
+}
+
+export function getOperation(id: string): TransformOp | undefined {
+  return [...ENGINE_OPERATIONS, ...ENGINE_LENSES].find((op) => op.id === id);
+}
+
+export function validPipeline(steps: readonly PipelineStep[]): PipelineStep[] {
+  return steps.filter((step) => {
+    if (step.type === 'engine') return Boolean(getEngine(step.id));
+    const op = getOperation(step.id);
+    return Boolean(op && (step.type === op.kind || (step.type === 'operation' && op.kind === undefined)));
+  });
+}
+
+export function pipelineLabel(steps: readonly PipelineStep[]): string {
+  return validPipeline(steps)
+    .map((step) => (step.type === 'engine' ? getEngine(step.id)?.name : getOperation(step.id)?.label) ?? step.id)
+    .join(' → ');
+}
+
+/** 任意順序の組み合わせを、外部AIへ手動で渡すための短いプロンプトにする。 */
+export function pipelineChatPrompt(steps: readonly PipelineStep[], target: { title: string; text: string }): string {
+  const valid = validPipeline(steps);
+  return [
+    'PRINCIPLE LOOPの観察を、下記の順序で一段ずつ処理してください。固定パイプラインとして扱わず、各段階の出力を次段へ渡してください。',
+    'AIは完成案を断定せず、観察方法がどう変わったかを短く示してください。',
+    '',
+    `【観察】${target.title}`,
+    target.text,
+    '',
+    `【順序】${pipelineLabel(valid) || 'なし'}`,
+    ...valid.map((step, i) => {
+      const label = step.type === 'engine' ? getEngine(step.id)?.name : getOperation(step.id)?.label;
+      const desc = step.type === 'engine' ? getEngine(step.id)?.shortDescription : getOperation(step.id)?.example;
+      return `${i + 1}. ${label ?? step.id}：${desc ?? ''}`;
+    }),
+  ].join('\n');
 }
 
 /**

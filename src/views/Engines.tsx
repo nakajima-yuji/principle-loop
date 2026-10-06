@@ -1,10 +1,11 @@
 // ENGINES：思考エンジン（考え方の型）を見る場所。ここでは何も実行しない。
 // 使うのは LIGHT DEEP / DIARY で「借りる」と選んだときだけ。
 
+import { useState } from 'react';
 import { PageHead } from '../components/common.tsx';
 import { Icon } from '../components/Icon.tsx';
-import { ENGINES, NONE_ENGINE_ID, getEngine, type ThinkingEngine } from '../engines/index.ts';
-import { TRANSFORM_OPS } from '../engines/transform.ts';
+import { ENGINES, ENGINE_PIPELINE_EXAMPLES, NONE_ENGINE_ID, pipelineChatPrompt, pipelineLabel, getEngine, type PipelineStep, type ThinkingEngine } from '../engines/index.ts';
+import { ENGINE_LENSES, ENGINE_OPERATIONS, TRANSFORM_OPS } from '../engines/transform.ts';
 import { href } from '../router.ts';
 import { LOOP_FLOW } from '../shared/loop.ts';
 
@@ -36,6 +37,15 @@ export function EnginesView({ id }: { id: string | null }) {
 
       {selected && <EngineDetail engine={selected} />}
 
+      <PipelineComposer />
+
+      <section className="panel panel-pad small" aria-label="NAKAJIMA FILTER">
+        <strong>NAKAJIMA FILTER（個人の反応）</strong>
+        <p className="muted" style={{ lineHeight: 1.8, marginBottom: 0 }}>
+          「面白い」「微妙」「育てる」など、あなたの反応を記録する別レイヤーです。岡田・赤瀬川・南方・林などの人物由来エンジンや、操作・レンズの定義は変更しません。
+        </p>
+      </section>
+
       <section className="panel panel-pad">
         <div className="panel-head">
           <span className="panel-title">
@@ -63,6 +73,38 @@ export function EnginesView({ id }: { id: string | null }) {
   );
 }
 
+function PipelineComposer() {
+  const [steps, setSteps] = useState<PipelineStep[]>(ENGINE_PIPELINE_EXAMPLES[0].steps);
+  const add = (step: PipelineStep) => setSteps((current) => [...current, step]);
+  return (
+    <section className="panel panel-pad stack" aria-label="任意順序のエンジンパイプライン">
+      <div className="panel-head">
+        <span className="panel-title"><Icon name="shuffle" size={18} /> 任意順序で組み合わせる</span>
+        <span className="small muted">固定パイプラインではありません</span>
+      </div>
+      <div className="row" style={{ gap: 6 }}>
+        {ENGINE_PIPELINE_EXAMPLES.map((example) => (
+          <button key={example.label} type="button" className="tag" onClick={() => setSteps(example.steps)}>{example.label}</button>
+        ))}
+      </div>
+      <div className="pipeline-steps" aria-label="選択中の順序">
+        {steps.length === 0 ? <span className="muted">まだ選択されていません</span> : steps.map((step, index) => (
+          <button key={`${step.type}-${step.id}-${index}`} type="button" className="tag on" onClick={() => setSteps((current) => current.filter((_, i) => i !== index))} title="クリックでこの段階を外す">
+            {index + 1}. {step.type === 'engine' ? getEngine(step.id)?.name : [...ENGINE_OPERATIONS, ...ENGINE_LENSES].find((x) => x.id === step.id)?.label ?? step.id} ×
+          </button>
+        ))}
+      </div>
+      <div className="row" style={{ gap: 6 }}>
+        {ENGINES.filter((e) => e.id !== NONE_ENGINE_ID).map((e) => <button key={e.id} type="button" className="tag" onClick={() => add({ type: 'engine', id: e.id })}>＋ {e.name}</button>)}
+        {ENGINE_OPERATIONS.map((op) => <button key={op.id} type="button" className="tag" onClick={() => add({ type: op.kind === 'technique' ? 'technique' : 'operation', id: op.id })}>＋ {op.label}</button>)}
+        {ENGINE_LENSES.map((op) => <button key={op.id} type="button" className="tag" onClick={() => add({ type: 'lens', id: op.id })}>＋ {op.label}</button>)}
+      </div>
+      <p className="small muted">現在の順序：{pipelineLabel(steps) || 'なし'}。人物エンジンと一般操作は別の種類として記録されます。</p>
+      <button type="button" className="btn sm" onClick={() => void navigator.clipboard?.writeText(pipelineChatPrompt(steps, { title: 'ここに観察のタイトル', text: 'ここに観察・メモを入れる' }))}>AIチャット用のパイプライン文をコピー</button>
+    </section>
+  );
+}
+
 function EngineCard({ engine, active }: { engine: ThinkingEngine; active: boolean }) {
   return (
     <a className={`panel engine-card ${active ? 'active' : ''}`} href={href('/engines', { id: active ? undefined : engine.id })} aria-expanded={active}>
@@ -83,6 +125,17 @@ function EngineDetail({ engine }: { engine: ThinkingEngine }) {
         <div className="page-kicker">{engine.name} ENGINE</div>
         <h2 style={{ fontSize: 21, fontWeight: 800 }}>{engine.shortDescription}</h2>
       </div>
+      {engine.operationIds && (
+        <div>
+          <span className="field-label">借りられる操作・技法・レンズ（人物エンジンとは別物）</span>
+          <div className="row" style={{ gap: 6 }}>
+            {engine.operationIds.concat(engine.lensIds ?? []).map((id) => {
+              const op = [...ENGINE_OPERATIONS, ...ENGINE_LENSES].find((x) => x.id === id);
+              return op ? <span key={id} className="tag">{op.label}</span> : null;
+            })}
+          </div>
+        </div>
+      )}
       <div>
         <span className="field-label">概要</span>
         <p style={{ lineHeight: 1.85 }}>{engine.description}</p>
