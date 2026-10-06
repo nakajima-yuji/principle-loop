@@ -1,7 +1,134 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-05T22:07:13.832Z",
+  "updatedAt": "2026-10-06T20:28:30.771Z",
   "days": [
+    {
+      "date": "2026-10-07",
+      "principleOfTheDay": "20261007-01",
+      "items": [
+        {
+          "id": "20261007-01",
+          "date": "2026-10-07",
+          "category": "nature",
+          "title": "流行の「波」は複雑な要因か、単純なリズムの変奏か",
+          "hook": "感染症の流行が繰り返す際、私たちは往々にして複雑な社会変動を原因に求めます。しかし、ごく単純なモデルにわずかな時間変化を加えるだけで、その複雑な波形が再現できてしまうかもしれません。",
+          "principleCandidate": "単純な数式に対し、パラメータを時間軸上で微調整するだけで複雑性が創発する仕組み。",
+          "minimumStructure": "",
+          "sourceTitle": "How Simple Models Can Reproduce Multiple Epidemic Waves: Peak Topology, Minimal Dynamic Complexity, and Inference for Time-Varying Transmission",
+          "sourceUrl": "https://arxiv.org/abs/2610.05556",
+          "sourceName": "arXiv（個体群・進化）",
+          "tags": [
+            "数理モデル",
+            "複雑系",
+            "統計推論"
+          ]
+        },
+        {
+          "id": "20261007-02",
+          "date": "2026-10-07",
+          "category": "tech",
+          "title": "個体を追跡せず、咳の発生密度を測る聴覚センサー",
+          "hook": "空間に配置された安価なデバイスが、特定の個人の特定を避けつつ、誰が何回咳をしたのかをパターン化している。病原体の拡散予測のために開発されたこの技術は、監視とプライバシーの境界をどこに引くべきか問いかける。",
+          "principleCandidate": "特定の事象が発生した際の空間的な減衰率から、発生源の相対的位置関係を算出する仕組みかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "New sensor system tracks coughs in a room—without knowing who's coughing",
+          "sourceUrl": "https://techxplore.com/news/2026-10-sensor-tracks-room.html",
+          "sourceName": "Phys.org Technology",
+          "tags": [
+            "プライバシー",
+            "空間センシング",
+            "LoRa",
+            "非侵襲"
+          ]
+        },
+        {
+          "id": "20261007-03",
+          "date": "2026-10-07",
+          "category": "science",
+          "title": "魚の群れは「推論」をしているのか",
+          "hook": "魚の群れが環境の変化に反応する際、個々の魚は何も計算していないという。しかし、群れ全体で見ると、まるで環境の勾配を精密に読み取っているかのように動くのはなぜか。",
+          "principleCandidate": "個別の単純な反応の積み重ねが、上位層で確率的な判断として現れる。",
+          "minimumStructure": "",
+          "sourceTitle": "Collective Sensing as Emergent Bayesian Inference",
+          "sourceUrl": "https://arxiv.org/abs/2610.04415",
+          "sourceName": "arXiv（自己組織化・適応系）",
+          "tags": [
+            "自己組織化",
+            "ベイズ推論",
+            "群知能"
+          ]
+        },
+        {
+          "id": "20261007-04",
+          "date": "2026-10-07",
+          "category": "mind",
+          "title": "対戦相手を消し、環境との対峙だけで個人の実力を測る「Solo」評価",
+          "hook": "デジタルゲームや教育など、直接的な対戦がない環境での実力評価は困難です。対戦相手という参照点なしに、個人のスキルをどのように抽出できるのでしょうか。",
+          "principleCandidate": "環境の不確実性を正規化することで、個人の習熟度を絶対的な指標に変換する試みかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "All against the machine: the Solo score for rating skill in variable environments",
+          "sourceUrl": "https://arxiv.org/abs/2610.04523",
+          "sourceName": "arXiv（物理と社会）",
+          "tags": [
+            "心理学",
+            "統計",
+            "評価指標"
+          ]
+        },
+        {
+          "id": "20261007-05",
+          "date": "2026-10-07",
+          "category": "build",
+          "title": "物理的な傾斜と実体化する服の模様",
+          "hook": "映画制作において、傾いたオフィスや飛び出す模様がCGを使わず物理的なセットで再現されています。なぜあえて物理的な制約にこだわるのでしょうか。",
+          "principleCandidate": "計算された不自由さが、観客の無意識に現実感というノイズを混入させているのかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "christopher glass made plaid explode and skyscrapers tilt for boots riley’s latest film",
+          "sourceUrl": "https://www.designboom.com/design/christopher-glass-plaid-explode-skyscrapers-tilt-boots-riley-film/",
+          "sourceName": "designboom",
+          "tags": [
+            "映画美術",
+            "物理空間",
+            "制作プロセス"
+          ]
+        },
+        {
+          "id": "20261007-06",
+          "date": "2026-10-07",
+          "category": "culture",
+          "title": "視覚情報を味覚と触覚へ。妊娠検査を「個の体験」に戻す試み",
+          "hook": "妊娠検査キットの多くは視覚による判定を前提としており、視覚障害者は他者の助けを借りなければ結果を知ることができません。この「誰かに見せる」という行為が、個人のプライバシーや安全を脅かす可能性があると指摘されています。",
+          "principleCandidate": "情報を特定の感覚モダリティに依存させず、身体の別の知覚回路へ迂回させる設計。",
+          "minimumStructure": "",
+          "sourceTitle": "This Lollipop Could Help Blind Women Independently Detect Pregnancy",
+          "sourceUrl": "https://www.smithsonianmag.com/innovation/this-lollipop-could-help-blind-women-independently-detect-pregnancy-180989608/",
+          "sourceName": "Smithsonian Magazine",
+          "tags": [
+            "アクセシビリティ",
+            "UXデザイン",
+            "プライバシー"
+          ]
+        },
+        {
+          "id": "20261007-07",
+          "date": "2026-10-07",
+          "category": "foreign",
+          "title": "円形であることの合理と、機械がもたらした終焉",
+          "hook": "かつて農業の未来と目された円形の納屋。なぜ効率を求めたはずのその形は、特定の時代の到来とともに急速に姿を消したのでしょうか。",
+          "principleCandidate": "特定の環境最適化が、道具の大型化という外部変数の介入で硬直的な制約へ転換する。",
+          "minimumStructure": "",
+          "sourceTitle": "Round Barn Capital of the World in Rochester, Indiana",
+          "sourceUrl": "https://www.atlasobscura.com/places/round-barn-capital-of-the-world",
+          "sourceName": "Atlas Obscura",
+          "tags": [
+            "建築",
+            "農業",
+            "最適化",
+            "陳腐化"
+          ]
+        }
+      ]
+    },
     {
       "date": "2026-10-06",
       "principleOfTheDay": "20261006-01",
