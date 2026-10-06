@@ -85,6 +85,10 @@ export interface AutoIdea {
   why_interesting: string;
   why_selected: string;
   possible_medium: string;
+  player_or_viewer_action?: string;
+  core_loop?: string;
+  concrete_scene?: string;
+  prototype?: string;
   image_prompt: string;
   image_path?: string;
   feedback?: { reaction: JimaReaction; comment?: string; updatedAt: string };

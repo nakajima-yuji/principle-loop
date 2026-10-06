@@ -256,6 +256,10 @@ function AutoIdeasSection({ data }: { data: AutoIdeasFile }) {
                 <dt>原理</dt><dd>{idea.principle}</dd>
                 <dt>構造</dt><dd>{idea.structure}</dd>
                 <dt>接続</dt><dd>{idea.cross_domain_connection}</dd>
+                <dt>体験</dt><dd>{idea.player_or_viewer_action}</dd>
+                <dt>ループ</dt><dd>{idea.core_loop}</dd>
+                <dt>最初の場面</dt><dd>{idea.concrete_scene}</dd>
+                <dt>最小試作</dt><dd>{idea.prototype}</dd>
                 <dt>選定理由</dt><dd>{idea.why_selected}</dd>
               </dl>
               <div className="row auto-feedback" aria-label={`${idea.category}のJIMA FILTER評価`}>
