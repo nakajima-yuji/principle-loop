@@ -140,6 +140,16 @@ function EngineDetail({ engine }: { engine: ThinkingEngine }) {
         <span className="field-label">概要</span>
         <p style={{ lineHeight: 1.85 }}>{engine.description}</p>
       </div>
+      {engine.evidence && (
+        <div>
+          <span className="field-label">モデルの根拠（事実・観察・仮説）</span>
+          <div className="stack small">
+            <div><strong>事実：</strong>{engine.evidence.facts.join('／')}</div>
+            <div><strong>観察：</strong>{engine.evidence.observations.join('／')}</div>
+            <div><strong>仮説：</strong>{engine.evidence.hypotheses.join('／')}</div>
+          </div>
+        </div>
+      )}
       {engine.fixedQuestions && (
         <div>
           <span className="field-label">固定の問い（毎回この順で）</span>

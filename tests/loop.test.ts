@@ -198,7 +198,14 @@ test('ENGINES：データとして持ち、選んだときだけ使う（なし�
   assert.equal(okada?.fixedQuestions?.[0], '固有名詞を全部消すと何が残る？');
   assert.equal(getEngine('ochiai')?.shortDescription, '前提・境界・観測方法を変える');
   assert.equal(getEngine('matsuoka')?.shortDescription, '分ける・つなぐ・ずらす・編集する');
-  assert.equal(getEngine('kondo')?.shortDescription, '1テーマを深く掘り、不確実性を減らす');
+  const kondo = getEngine('kondo');
+  assert.equal(kondo?.shortDescription, '不確実性をモデル化し、成立する実用品へ圧縮する');
+  assert.match(kondo?.description ?? '', /思考モデル/);
+  assert.deepEqual(kondo?.fixedQuestions, ['本当に必要か？', '原理を説明できるか？', '何が失敗するか？', '数値化できるか？', '小さく試せるか？', '再現できるか？', '他人にも使えるか？', 'やらない方が合理的ではないか？']);
+  assert.ok(kondo?.process.includes('代理世界（モデル・シミュレーター）を作る'));
+  assert.ok(kondo?.viewpoints?.includes('やらないことを合理的な意思決定として扱う'));
+  assert.ok(kondo?.evidence?.facts.includes('FIREシミュレーターを作る'));
+  assert.ok(kondo?.evidence?.observations.length && kondo.evidence.hypotheses.length);
   assert.equal(getEngine('akasegawa')?.origin, 'person');
   assert.equal(getEngine('minakata')?.origin, 'person');
   assert.equal(getEngine('hayashi')?.origin, 'person');
@@ -216,6 +223,8 @@ test('ENGINES：データとして持ち、選んだときだけ使う（なし�
   assert.match(prompt, /結論や完成案は出さない/);
   assert.match(prompt, /OKADA/);
   assert.match(prompt, /KONDO/);
+  assert.match(prompt, /最悪ケース/);
+  assert.match(prompt, /再現/);
   assert.doesNotMatch(prompt, /NONE/);
   assert.ok(TRANSFORM_OPS.some((o) => o.label === '観測と被観測を相互化する'));
 });
