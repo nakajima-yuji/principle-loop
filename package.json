@@ -19,7 +19,8 @@
     "mail": "node scripts/run.ts --mode=mail",
     "mail:test": "node scripts/run.ts --mode=mail-test",
     "status": "node scripts/run.ts --mode=status",
-    "auto": "node scripts/run.ts --mode=auto"
+    "auto": "node scripts/run.ts --mode=auto",
+    "luhmann": "node scripts/luhmann.ts"
   },
   "dependencies": {
     "nodemailer": "^10.0.13",

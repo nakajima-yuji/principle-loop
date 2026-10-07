@@ -383,7 +383,25 @@ ENGINES画面の「任意順序で組み合わせる」から、岡田だけ、�
 
 岡田エンジンには、必要なときだけ選べる深層掘削（現象・関係・機構・原因・機能・認知感情・情報・力資源）、状態変化探索（対象×条件→状態変化→新しい性質→再利用）、知らない前提、観測↔被観測のレンズを追加しています。毎回すべてを自動実行せず、人間が必要な段階だけ借ります。
 
-## 11. PRINCIPLE LOOP AUTO（7日間限定の実験）
+## 11. LUHMANN SYSTEM（明示起動型の独立MVP）
+
+LUHMANN SYSTEMは、岡田・南方・林・赤瀬川などと同列の通常エンジンではありません。通常はOFFで、`npm run luhmann -- --input="..."` を人間が明示的に実行したときだけ、与えた入力1件を処理します。DAILY、DIARY、MEMOを監視せず、結果を自動保存しません。
+
+MVPは `ATOMIC → ABSTRACT → STRUCTURE → NEAR / STRUCTURAL / FAR / OPPOSITE / CAUSAL / CHAIN / TENSION / ANALOGY / INVERSION → BRIDGE → PATTERN → PRINCIPLE CANDIDATE → EMERGENCE` を1回のAPI呼び出しで依頼し、内部の探索結果を圧縮してJSONで返します。結果は一時結果です。
+
+```bash
+# OPENAI_API_KEY または既存のAI_API_KEYを環境変数に設定したうえで、明示起動
+npm run luhmann -- --input="蜘蛛の巣"
+
+# 保存も人間が明示した場合だけ行う（自動保存ではない）
+npm run luhmann -- --input="NARUTOの影分身" --out=/tmp/luhmann-result.json
+```
+
+プロバイダーは既存の `AI_PROVIDER` / `AI_MODEL` / `AI_BASE_URL` を使え、LUHMANN専用に `LUHMANN_PROVIDER` / `LUHMANN_MODEL` / `LUHMANN_BASE_URL` で上書きできます。内部結果には接続種別、距離、構造適合度、新規性、説明力、生成力、信頼度を含めます。AIの原理は断定せず、候補として扱います。
+
+コードは `src/systems/luhmann/` に分離し、既存の `scripts/run.ts`、DAILY、DIARY、AUTOの通常経路から呼びません。
+
+## 12. PRINCIPLE LOOP AUTO（7日間限定の実験）
 
 `PRINCIPLE LOOP AUTO` は、当日のDAILYだけを起点に、岡田エンジン → 南方コレクター → 林フィルター → JIMA FILTER の順で、BEST / FAR / WILD の3案と各1枚のコンセプト画像を作ります。1日3案・3画像、合計21画像を上限にし、初回の正常生成日を DAY 1 として8日目以降はOpenAI APIを呼びません。既存のDAILY処理とは別ワークフローです。
 
@@ -409,7 +427,7 @@ ENGINES画面の「任意順序で組み合わせる」から、岡田だけ、�
 
 案は `public/data/auto-ideas/YYYY-MM-DD.json`、画像は `public/data/auto-images/YYYY-MM-DD-{best,far,wild}.webp` に保存します。DAILY画面の「👍 面白い」「👎 微妙」「★ 育てる」はブラウザの既存localStorage方式で保存され、人物由来モジュールとは混ぜません。
 
-## 12. トラブル対応
+## 13. トラブル対応
 
 | 症状 | 確認すること |
 | --- | --- |
@@ -434,7 +452,7 @@ ENGINES画面の「任意順序で組み合わせる」から、岡田だけ、�
 
 ---
 
-## 13. 完了条件
+## 14. 完了条件
 
 | 条件 | 状態 | どこで |
 | --- | --- | --- |
@@ -462,7 +480,7 @@ ENGINES画面の「任意順序で組み合わせる」から、岡田だけ、�
 
 ---
 
-## 14. 開発者向けメモ
+## 15. 開発者向けメモ
 
 ```
 src/                 アプリ（Vite + React + TypeScript）
