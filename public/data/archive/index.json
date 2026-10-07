@@ -1,7 +1,132 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-06T20:28:30.771Z",
+  "updatedAt": "2026-10-07T20:42:35.629Z",
   "days": [
+    {
+      "date": "2026-10-08",
+      "principleOfTheDay": "20261008-01",
+      "items": [
+        {
+          "id": "20261008-01",
+          "date": "2026-10-08",
+          "category": "nature",
+          "title": "心筋細胞の鼓動で発電する、電池不要の柔軟なメッシュ",
+          "hook": "心臓の鼓動を直接電力に変える、髪の毛より薄いメッシュが開発された。ウェアラブル機器から電池を排除し、身体そのものを発電所として利用する可能性が示されている。",
+          "principleCandidate": "生物の生理的なリズムを、そのままエネルギー抽出のトリガーとして変換・利用する仕組みかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Ultrathin mesh harvests energy from human heart cells to generate electricity",
+          "sourceUrl": "https://techxplore.com/news/2026-10-ultrathin-mesh-harvests-energy-human.html",
+          "sourceName": "Phys.org Technology",
+          "tags": [
+            "バイオエレクトロニクス",
+            "エネルギーハーベスティング",
+            "身体拡張"
+          ]
+        },
+        {
+          "id": "20261008-02",
+          "date": "2026-10-08",
+          "category": "tech",
+          "title": "AIエージェントが繰り返す「視覚情報の過剰な再処理」",
+          "hook": "複数の専門AIが連携するシステムで、同じ画像が何度もAPIへ送信されています。なぜ、一度見たはずの情報をわざわざ再構築するのでしょうか。この無駄な処理コストを「視覚オーケストレーション税」と呼び、効率化を試みる動きがあります。",
+          "principleCandidate": "専門化が進むほど、全体最適よりも個別の手続きが優先されるという構造かもしれません。",
+          "minimumStructure": "",
+          "sourceTitle": "Visual Orchestration Tax in Agentic VLM Pipelines: Auditing and Certifying Visual Evidence Reuse",
+          "sourceUrl": "https://arxiv.org/abs/2610.08170",
+          "sourceName": "arXiv（マルチエージェント）",
+          "tags": [
+            "AI",
+            "アーキテクチャ",
+            "効率化"
+          ]
+        },
+        {
+          "id": "20261008-03",
+          "date": "2026-10-08",
+          "category": "science",
+          "title": "物理ニューラルネットワークにおける層の時分割再利用",
+          "hook": "物理的な計算機でニューラルネットワークを構築しようとすると、デジタル環境と比べて規模の拡大が困難という壁に当たります。この制約を打開するために、単一の物理層を時間軸上で何度も使い回すという手法が提案されています。",
+          "principleCandidate": "空間的な制約を時間的な反復に置き換えることで、処理の複雑性を擬似的に拡張しているのかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Time-multiplexed layer reuse for physical neural networks",
+          "sourceUrl": "https://arxiv.org/abs/2511.00044",
+          "sourceName": "arXiv（自己組織化・適応系）",
+          "tags": [
+            "物理計算",
+            "時分割",
+            "ニューラルネットワーク"
+          ]
+        },
+        {
+          "id": "20261008-04",
+          "date": "2026-10-08",
+          "category": "mind",
+          "title": "意見の収束を左右する「誰を選ぶか」と「確認バイアス」の拮抗",
+          "hook": "集団内で意見が合意に向かうとき、私たちは無意識に相手を選別しています。この選別プロセスが、自分の意見を補強する心理的傾向とぶつかり合うことで、社会全体の合意形成に意外な影響を与えているようです。",
+          "principleCandidate": "情報を取捨選択するフィルター機能と、他者との接続のランダム性が、システム全体の均衡を逆方向に引っ張り合っている。",
+          "minimumStructure": "",
+          "sourceTitle": "Probabilistic neighbors' selection competes with confirmation bias in a bounded confidence model",
+          "sourceUrl": "https://arxiv.org/abs/2610.07971",
+          "sourceName": "arXiv（物理と社会）",
+          "tags": [
+            "集団力学",
+            "合意形成",
+            "システム論"
+          ]
+        },
+        {
+          "id": "20261008-05",
+          "date": "2026-10-08",
+          "category": "build",
+          "title": "建築・風景・都市の境界を消し去る設計のあり方",
+          "hook": "建築家クレイグ・ダイカーズは、建築を独立した箱として扱わず、都市や風景と混ざり合うものとして再定義し続けている。境界線をあえて曖昧にすることで、人々はどこからが建築なのかを意識しなくなるかもしれない。",
+          "principleCandidate": "要素を独立させず、隣接する環境と連続させることで全体を一体化させる手法。",
+          "minimumStructure": "",
+          "sourceTitle": "AIA UK/RIBA Keynote Lecture featuring Craig Dykers of Snøhetta",
+          "sourceUrl": "https://www.archdaily.com/1186418/aia-uk-riba-keynote-lecture-featuring-craig-dykers-of-snohetta",
+          "sourceName": "ArchDaily",
+          "tags": [
+            "建築設計",
+            "都市計画",
+            "境界の消失"
+          ]
+        },
+        {
+          "id": "20261008-06",
+          "date": "2026-10-08",
+          "category": "foreign",
+          "title": "文豪が愛した「括弧」という名の未完の装置",
+          "hook": "詩人フィリップ・シドニーは、物語の核心を括弧の中で中断させたまま生涯を終えた。なぜ彼は、重要な思考を「本筋の外側」に閉じ込めることを好んだのか。",
+          "principleCandidate": "本筋とは別の領域を確保し、未完のまま未来へ接続する保留の形式かもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Philip Sidney and the Extreme (Dis)graces of the Parenthesis",
+          "sourceUrl": "https://publicdomainreview.org/essay/philip-sidney-and-the-extreme-disgraces-of-the-parenthesis",
+          "sourceName": "The Public Domain Review",
+          "tags": [
+            "文学",
+            "記号",
+            "未完"
+          ]
+        },
+        {
+          "id": "20261008-07",
+          "date": "2026-10-08",
+          "category": "science",
+          "title": "光が動かす分子のダンス：電子と陽子の連動を初観測",
+          "hook": "植物の光合成や細胞のエネルギー代謝において、電子と陽子は驚異的な効率で移動している。この現象はあまりに高速で、これまでその詳細な構造変化を直接捉えることは不可能だった。",
+          "principleCandidate": "個別の要素が独立せず、周囲の環境変化と相互に連動することで、中間工程を省く最適化の仕組みかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Scientists finally see how nature moves energy so efficiently",
+          "sourceUrl": "https://www.sciencedaily.com/releases/2026/10/261004001841.htm",
+          "sourceName": "ScienceDaily Matter & Energy",
+          "tags": [
+            "分子物理",
+            "量子力学",
+            "エネルギー効率"
+          ]
+        }
+      ]
+    },
     {
       "date": "2026-10-07",
       "principleOfTheDay": "20261007-01",
