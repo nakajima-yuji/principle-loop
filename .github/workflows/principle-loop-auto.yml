@@ -1,6 +1,5 @@
 # PRINCIPLE LOOP AUTO
-# まず workflow_dispatch で手動テストし、ログと利用額を確認してから
-# Repository Variable AUTO_CRON_ENABLED=true を設定してください。DAILY成功後だけ起動します。
+# PRINCIPLE LOOP Daily の成功完了後に自動起動します。手動実行もできます。
 name: PRINCIPLE LOOP AUTO
 
 on:
@@ -24,7 +23,7 @@ permissions:
 
 jobs:
   auto:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && vars.AUTO_CRON_ENABLED == 'true') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     concurrency:

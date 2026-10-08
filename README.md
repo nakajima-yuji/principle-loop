@@ -416,7 +416,7 @@ npm run luhmann -- --input="NARUTOの影分身" --out=/tmp/luhmann-result.json
 
 ### cron を開始する
 
-手動テスト、生成結果、利用額を確認した後、Repository Variables に `AUTO_CRON_ENABLED=true` を追加します。AUTOは `PRINCIPLE LOOP Daily` の成功完了後だけ起動するため、DAILY更新 → AUTOの順になります。重複実行は日付ファイルと concurrency で防ぎます。
+手動テスト、生成結果、利用額を確認した後は、`PRINCIPLE LOOP Daily` の成功完了後にAUTOが毎日自動起動します。DAILY更新 → AUTOの順になります。重複実行は日付ファイルと concurrency で防ぎます。以前必要だった `AUTO_CRON_ENABLED` Variableは使いません。
 
 ### 状態・停止・終了レポート
 
