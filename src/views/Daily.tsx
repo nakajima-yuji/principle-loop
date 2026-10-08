@@ -65,6 +65,10 @@ export function DailyView({ date }: { date: string | null }) {
           <strong>PRINCIPLE LOOP PAUSED</strong> — 10日間反応がなかったため、夜間の収集・AI生成・朝のメールを止めています。
         </Notice>
       )}
+      <Notice icon="info">
+        <strong>DAILYの正しいアドレス：</strong> GitHub Pagesでは、URLに <span className="code">/#/daily</span> を使います。
+        この日のDAILYを直接開く場合は <a href={href('/daily', { date: daily.date })}>こちら</a> です（<span className="code">/#/daily?date={daily.date}</span>）。
+      </Notice>
       {daily.sample && (
         <Notice icon="info">
           これは<strong>サンプル</strong>です（実在する研究・事例をもとに作成）。自動収集を設定すると、月〜土の朝にここが新しい7つの原理に入れ替わります。
