@@ -1,7 +1,135 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-07T20:42:35.629Z",
+  "updatedAt": "2026-10-08T20:45:45.513Z",
   "days": [
+    {
+      "date": "2026-10-09",
+      "principleOfTheDay": "20261009-01",
+      "items": [
+        {
+          "id": "20261009-01",
+          "date": "2026-10-09",
+          "category": "nature",
+          "title": "細菌は個体密度を数えるのをやめたのか",
+          "hook": "細菌は周囲の密度を測って行動を決めるとされてきたが、環境が激しく変わるとその見積もりは信頼できない。個体密度という「内なる指標」を捨て、環境変動に直接適応する戦略が示唆されている。",
+          "principleCandidate": "個別の判断を放棄し、総量規制されたリソースを外部信号の比率に追従させる仕組みかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Stochasticity and Environmental Switching Shape Quorum Sensing Evolution in Bacterial Populations",
+          "sourceUrl": "https://arxiv.org/abs/2610.10492",
+          "sourceName": "arXiv（個体群・進化）",
+          "tags": [
+            "生物学",
+            "進化",
+            "適応戦略",
+            "システム理論"
+          ]
+        },
+        {
+          "id": "20261009-02",
+          "date": "2026-10-09",
+          "category": "tech",
+          "title": "複数AIの連携不全を、情報の「通り道」から診断する",
+          "hook": "複数のAIエージェントが協力して作業する際、同じ失敗に見えても原因は様々です。AI同士のやり取りの「形」を見るだけで、どこで何が起きたのかを突き止める手法が提案されています。",
+          "principleCandidate": "集団の相互作用の形を可視化し、システム全体の不調を診断するフレームワークかもしれません。",
+          "minimumStructure": "",
+          "sourceTitle": "Know the Shape, Find the Fault: Topology-Conditioned Diagnosis of Multi-Agent LLM Failures",
+          "sourceUrl": "https://arxiv.org/abs/2610.10126",
+          "sourceName": "arXiv（マルチエージェント）",
+          "tags": [
+            "AI",
+            "マルチエージェント",
+            "トポロジー",
+            "デバッグ"
+          ]
+        },
+        {
+          "id": "20261009-03",
+          "date": "2026-10-09",
+          "category": "science",
+          "title": "単純なルールの配置が生む計算能力",
+          "hook": "右も左も区別できないほど単純なルールを並べるだけで、なぜ複雑な計算が可能になるのか。個々の要素が自明であっても、その配置という「多様性」が計算の普遍性を創発させている可能性がある。",
+          "principleCandidate": "個別の単位に性質を宿さず、その配置関係による干渉で機能を創発させる仕組みかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "A repeating sequence of simple rules creates a universal computer",
+          "sourceUrl": "https://arxiv.org/abs/2610.09879",
+          "sourceName": "arXiv（自己組織化・適応系）",
+          "tags": [
+            "自己組織化",
+            "計算理論",
+            "創発"
+          ]
+        },
+        {
+          "id": "20261009-04",
+          "date": "2026-10-09",
+          "category": "mind",
+          "title": "情報を制限することで見えてくる、複雑な構造の全体像",
+          "hook": "複雑な最適化問題では、細部にこだわりすぎて全体が見えなくなることがあります。あえて伝達する情報を制限したほうが、地形の全容を正確に捉えられるかもしれません。",
+          "principleCandidate": "情報の解像度を意図的に落とすことで、ノイズを除去し構造を浮き彫りにする仕組みかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Revealing more on complex energy landscapes by passing less local information: Cavity approach with trust region in non-convex optimization problems",
+          "sourceUrl": "https://arxiv.org/abs/2610.10096",
+          "sourceName": "arXiv（物理と社会）",
+          "tags": [
+            "最適化",
+            "情報制限",
+            "複雑系"
+          ]
+        },
+        {
+          "id": "20261009-05",
+          "date": "2026-10-09",
+          "category": "build",
+          "title": "夜を売るための「借り物の記号」が昼間にさらすもの",
+          "hook": "夜の繁華街や田舎道で、建物はネオンや柱、ヤシの木といった断片的な記号をまとい「どこでもない場所」を演じます。しかし昼間の光の下では、それらの装飾は単なる物理的な看板へと姿を変えます。",
+          "principleCandidate": "目的の体験を想起させる断片的な記号を外側に配置し、空間の定義を書き換える手法かもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "the nightclub facade as a machine for manufacturing desire – françois prost",
+          "sourceUrl": "https://www.designboom.com/architecture/francois-prost-facade-machine-manufacturing-desire/",
+          "sourceName": "designboom",
+          "tags": [
+            "建築",
+            "都市計画",
+            "記号学",
+            "欲望の製造"
+          ]
+        },
+        {
+          "id": "20261009-06",
+          "date": "2026-10-09",
+          "category": "culture",
+          "title": "森の地面下、数センチに眠る戦の神への捧げ物",
+          "hook": "ドイツの森林地帯で、数世紀もの間、地表からわずか数センチ下に隠れていたローマ時代の神殿跡が見つかりました。なぜこれほど長い間、人の気配に気づかれずに土の中に溶け込んでいたのでしょうか。",
+          "principleCandidate": "境界線上に作られた空間は、未知の領域に対して心理的な防波堤として機能していたかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Just Inches Below the Forest Floor, Archaeologists in Germany Unearthed a Roman Temple Likely Dedicated to Mars, the God of War",
+          "sourceUrl": "https://www.smithsonianmag.com/smart-news/just-inches-below-the-forest-floor-archaeologists-in-germany-unearthed-a-roman-temple-likely-dedicated-to-mars-the-god-of-war-180989650/",
+          "sourceName": "Smithsonian Magazine",
+          "tags": [
+            "考古学",
+            "境界",
+            "ローマ帝国"
+          ]
+        },
+        {
+          "id": "20261009-07",
+          "date": "2026-10-09",
+          "category": "foreign",
+          "title": "チャタヌーガ：歴史的建造物が音楽の器になる街",
+          "hook": "かつての鉄道駅や工場が、今ではブルーグラス音楽の即興演奏で溢れかえります。この街の空間は、なぜ特定の音楽文化を磁石のように吸い寄せ続けるのでしょうか。",
+          "principleCandidate": "過去の機能的な連結拠点が、時代を経て「集団の調和」を増幅させるための共鳴器に置き換わっているかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "It All Comes Together in Chattanooga",
+          "sourceUrl": "https://www.atlasobscura.com/articles/it-all-comes-together-in-chattanooga",
+          "sourceName": "Atlas Obscura",
+          "tags": [
+            "都市デザイン",
+            "音楽文化",
+            "空間転用"
+          ]
+        }
+      ]
+    },
     {
       "date": "2026-10-08",
       "principleOfTheDay": "20261008-01",
