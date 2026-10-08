@@ -235,21 +235,51 @@ function HayashiScorecard() {
   const [transmission, setTransmission] = useState('未評価');
   const [unknown, setUnknown] = useState('未評価');
   const [notes, setNotes] = useState('');
+  const [title, setTitle] = useState('');
+  const [prediction, setPrediction] = useState('');
+  const [actual, setActual] = useState('');
+  const [saved, setSaved] = useState<HayashiAssessment[]>(() => {
+    try {
+      const data: unknown = JSON.parse(localStorage.getItem('principle-loop.hayashi.v3') ?? '[]');
+      return Array.isArray(data) ? data.filter(isHayashiAssessment).slice(0, 30) : [];
+    } catch { return []; }
+  });
+  const save = () => {
+    if (!title.trim()) return;
+    const record: HayashiAssessment = {
+      id: String(Date.now()), date: new Date().toISOString(), title: title.trim(),
+      scores: [...scores], transmission, unknown, notes, prediction, actual,
+    };
+    const next = [record, ...saved].slice(0, 30);
+    try { localStorage.setItem('principle-loop.hayashi.v3', JSON.stringify(next)); setSaved(next); }
+    catch { window.alert('保存できませんでした。'); }
+  };
+  const remove = (id: string) => {
+    const next = saved.filter((record) => record.id !== id);
+    try { localStorage.setItem('principle-loop.hayashi.v3', JSON.stringify(next)); setSaved(next); }
+    catch { window.alert('削除できませんでした。'); }
+  };
   const total = scores.reduce((sum, value) => sum + value, 0);
   const copy = () => {
     const lines = [
       'HAYASHI FILTER v3.0｜試験採点',
+      `企画: ${title}`,
       ...HAYASHI_CRITERIA.map((c, i) => `${c.label}: ${scores[i]}/${c.max}`),
       `合計: ${total}/100（棄却基準ではない）`,
       `伝達力: ${transmission}`,
       `未知の可能性: ${unknown}`,
-      `原案の核・試作・予測と実際の反応: ${notes}`,
+      `原案の核・試作: ${notes}`,
+      `予測: ${prediction}`,
+      `実際の反応: ${actual}`,
       '原案維持／小改善／大胆な改変を並列に検討。BEST/FAR/WILDを点数順だけで捨てない。',
     ];
     void navigator.clipboard?.writeText(lines.join('\\n'));
   };
   return (
     <div className="stack">
+      <label className="stack small">企画名（保存時に必須）
+        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="例：転ぶたびに道ができる" />
+      </label>
       <strong>試験採点：{total}/100</strong>
       {HAYASHI_CRITERIA.map((criterion, i) => (
         <label key={criterion.label} className="stack small">
@@ -273,7 +303,46 @@ function HayashiScorecard() {
       <label className="stack small">原案の核・検証メモ
         <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="何を壊さないか／何を試すか／予測と実際の反応" />
       </label>
-      <button type="button" className="btn sm" onClick={copy}>評価結果をコピー</button>
+      <label className="stack small">事前に予測した反応
+        <textarea rows={2} value={prediction} onChange={(e) => setPrediction(e.target.value)} />
+      </label>
+      <label className="stack small">実際の試遊反応
+        <textarea rows={2} value={actual} onChange={(e) => setActual(e.target.value)} />
+      </label>
+      <div className="row" style={{ gap: 8 }}>
+        <button type="button" className="btn sm" onClick={copy}>評価結果をコピー</button>
+        <button type="button" className="btn sm" onClick={save} disabled={!title.trim()}>この評価を保存</button>
+      </div>
+      <p className="small muted">このブラウザ内に最大30件保存します。端末間同期はありません。</p>
+      {saved.length > 0 && <div className="stack">
+        <strong>保存した評価（{saved.length}件）</strong>
+        {saved.map((record) => <div key={record.id} className="panel panel-pad small">
+          <strong>{record.title}</strong> — {record.scores.reduce((a, b) => a + b, 0)}/100
+          <p className="muted">伝達力：{record.transmission}／未知：{record.unknown}</p>
+          {record.prediction && <p>予測：{record.prediction}</p>}
+          {record.actual && <p>実際：{record.actual}</p>}
+          <button type="button" className="tag" onClick={() => remove(record.id)}>削除</button>
+        </div>)}
+      </div>}
     </div>
   );
+}
+
+type HayashiAssessment = {
+  id: string; date: string; title: string; scores: number[];
+  transmission: string; unknown: string; notes: string;
+  prediction: string; actual: string;
+};
+function isHayashiAssessment(value: unknown): value is HayashiAssessment {
+  if (!value || typeof value !== 'object') return false;
+  const record = value as Partial<HayashiAssessment>;
+  return typeof record.id === 'string'
+    && typeof record.title === 'string'
+    && Array.isArray(record.scores)
+    && record.scores.length === 6
+    && record.scores.every((score) => typeof score === 'number' && Number.isFinite(score))
+    && typeof record.transmission === 'string'
+    && typeof record.unknown === 'string'
+    && typeof record.prediction === 'string'
+    && typeof record.actual === 'string';
 }
