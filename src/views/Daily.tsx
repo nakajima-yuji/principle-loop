@@ -69,9 +69,7 @@ export function DailyView({ date }: { date: string | null }) {
       <Notice icon="info">
         <strong>DAILYの正しいアドレス：</strong> GitHub Pagesでは、URLに <span className="code">/#/daily</span> を使います。
         この日のDAILYを直接開く場合は{' '}
-        <a href={dailyDirectUrl} target="_blank" rel="noreferrer">
-          こちら
-        </a>{' '}
+        <a href={dailyDirectUrl}>こちら</a>{' '}
         です（<span className="code">/#/daily?date={daily.date}</span>）。
       </Notice>
       {daily.sample && (
