@@ -33,6 +33,10 @@ export const ENGINE_OPERATIONS: readonly TransformOp[] = [
   { id: 'latent-function', label: '潜在機能を見る', example: '変化した後に何ができるようになったか', kind: 'operation' },
   { id: 'extreme', label: '極端化', example: '条件・時間・規模を極端に振る', kind: 'operation' },
   { id: 'counterexample', label: '例外収集', example: '通常ではなく、うまくいかない例から構造を拾う', kind: 'operation' },
+  // OKADA v3.0: independent research hypotheses, not confirmed author terminology.
+  { id: 'improvised-hypothesis', label: '即興仮説生成（研究中）', example: '暫定説明を出す→説明しながら更新→前提と反例を確認', kind: 'technique' },
+  { id: 'multi-problem-unification', label: '多問題統合（研究中）', example: '複数の問題を一つの因果構造で説明できるか検証', kind: 'technique' },
+  { id: 'historical-premise-disruption', label: '時代的前提破壊（研究中）', example: '現代の常識を外し、異なる時代の制約で再構成', kind: 'technique' },
 ];
 
 export const ENGINE_LENSES: readonly TransformOp[] = [
