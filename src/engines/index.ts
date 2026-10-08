@@ -95,7 +95,13 @@ export const ENGINES: readonly ThinkingEngine[] = [
     ],
     viewpoints: ['観測すると相手にも影響する', '情報を取得しようとすると自分も露出する', '痕跡', '罠', '偽装', '誤誘導'],
     suitableFor: ['日常の観察（公園・街・子どもの遊び）', '作品やゲームの仕組みの分解', '探索・推理・かくれんぼ型の体験', '表面ではなく構造を取り換えたいとき'],
-    operationIds: ['deep-drill', 'state-change', 'unknown-premise', 'observation-shift', 'latent-function'],
+    // v3.0 research candidates: selectable, not attributed as verified author methods.
+    evidence: {
+      facts: ['過去記事・著作・講演を一次資料として300件調査する計画（調査完了を意味しない）'],
+      observations: ['既存の違和感検出・構造抽出・深層掘削を維持する'],
+      hypotheses: ['即興仮説生成', '多問題統合', '時代的前提破壊'],
+    },
+    operationIds: ['deep-drill', 'state-change', 'unknown-premise', 'observation-shift', 'latent-function', 'improvised-hypothesis', 'multi-problem-unification', 'historical-premise-disruption'],
     lensIds: ['observer-subject', 'knowledge-gap', 'time-shift'],
   },
   {
