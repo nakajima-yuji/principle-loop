@@ -46,6 +46,7 @@ export const ENGINE_PIPELINE_EXAMPLES: readonly { label: string; steps: Pipeline
   { label: '岡田 → 状態変化', steps: [{ type: 'engine', id: 'okada' }, { type: 'operation', id: 'state-change' }] },
   { label: '岡田 → 知らない前提', steps: [{ type: 'engine', id: 'okada' }, { type: 'lens', id: 'unknown-premise' }] },
   { label: '岡田 → 深層掘削', steps: [{ type: 'engine', id: 'okada' }, { type: 'technique', id: 'deep-drill' }] },
+  { label: '岡田 → 自己反証', steps: [{ type: 'engine', id: 'okada' }, { type: 'technique', id: 'self-falsification' }] },
 ];
 
 export const NONE_ENGINE_ID = 'none';
@@ -104,7 +105,7 @@ export const ENGINES: readonly ThinkingEngine[] = [
       observations: ['既存の違和感検出・構造抽出・深層掘削を維持する'],
       hypotheses: ['即興仮説生成', '多問題統合', '時代的前提破壊'],
     },
-    operationIds: ['deep-drill', 'state-change', 'unknown-premise', 'observation-shift', 'latent-function', 'improvised-hypothesis', 'multi-problem-unification', 'historical-premise-disruption'],
+    operationIds: ['deep-drill', 'state-change', 'unknown-premise', 'observation-shift', 'latent-function', 'improvised-hypothesis', 'multi-problem-unification', 'historical-premise-disruption', 'hypothesis-branching', 'self-falsification', 'contradiction-drill', 'practice-theory-revision'],
     lensIds: ['observer-subject', 'knowledge-gap', 'time-shift'],
   },
   {
