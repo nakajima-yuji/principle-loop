@@ -26,6 +26,8 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      status: ${{ steps.auto_run.outputs.auto_status }}
     concurrency:
       group: principle-loop-auto
       cancel-in-progress: false
@@ -38,6 +40,7 @@ jobs:
       - name: 依存パッケージを入れる
         run: npm ci --no-audit --no-fund
       - name: PRINCIPLE LOOP AUTO（7日間限定）
+        id: auto_run
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           AUTO_TEXT_MODEL: ${{ vars.AUTO_TEXT_MODEL }}
@@ -69,3 +72,12 @@ jobs:
           fi
           git commit -m "auto: PRINCIPLE LOOP AUTO"
           git push
+
+  deploy:
+    needs: auto
+    if: ${{ needs.auto.result == 'success' && needs.auto.outputs.status == 'generated' && inputs.dry_run != true }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/pages.yml
