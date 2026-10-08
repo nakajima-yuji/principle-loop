@@ -49,7 +49,11 @@ test('件名・本文・DEEP へのリンク（# ルーティング）', () => {
   assert.match(m.html, /今日、世界で見つけた7つの原理。/);
   assert.equal((m.html.match(/>DEEPで掘る</g) ?? []).length, 7);
   assert.match(m.html, /https:\/\/nakajima-yuji\.github\.io\/principle-loop\/#\/deep\?id=20261003-03/);
+  assert.match(m.html, /https:\/\/nakajima-yuji\.github\.io\/principle-loop\/#\/daily/);
   assert.match(m.text, /DEEPで掘る：https:\/\/nakajima-yuji\.github\.io\/principle-loop\/#\/deep\?id=20261003-01/);
+  assert.match(m.text, /アプリ：https:\/\/nakajima-yuji\.github\.io\/principle-loop\/#\/daily/);
+  assert.doesNotMatch(m.html, /principle-loop\/daily\?/);
+  assert.doesNotMatch(m.text, /principle-loop\/daily\?/);
   assert.equal(appLink('https://a.example/x', '/deep', { id: '1' }), 'https://a.example/x/#/deep?id=1');
 });
 
