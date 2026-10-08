@@ -140,6 +140,13 @@ function EngineDetail({ engine }: { engine: ThinkingEngine }) {
         <span className="field-label">概要</span>
         <p style={{ lineHeight: 1.85 }}>{engine.description}</p>
       </div>
+      {engine.id === 'okada' && (
+        <div className="panel panel-pad small" aria-label="OKADA v3 research">
+          <strong>OKADA v3.0（研究版）</strong>
+          <p className="muted">即興仮説生成・多問題統合・時代的前提破壊は検証中の選択式操作です。岡田斗司夫本人が明示した技法とは断定しません。</p>
+          <a href="https://github.com/nakajima-yuji/principle-loop/blob/main/research/2026-10-08-okada-engine-v3-research.md" target="_blank" rel="noreferrer">300資料研究計画・出典区分を見る ↗</a>
+        </div>
+      )}
       {engine.evidence && (
         <div>
           <span className="field-label">モデルの根拠（事実・観察・仮説）</span>
