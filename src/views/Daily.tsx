@@ -49,6 +49,7 @@ export function DailyView({ date }: { date: string | null }) {
   const dayIdx = index.days.findIndex((d) => d.date === daily.date);
   const prevDay = dayIdx >= 0 ? index.days[dayIdx + 1]?.date : undefined;
   const nextDay = dayIdx > 0 ? index.days[dayIdx - 1]?.date : undefined;
+  const dailyDirectUrl = `${typeof window === 'undefined' ? '' : window.location.href.split('#')[0]}${href('/daily', { date: daily.date })}`;
 
   return (
     <div className="page stack">
@@ -68,7 +69,7 @@ export function DailyView({ date }: { date: string | null }) {
       <Notice icon="info">
         <strong>DAILYの正しいアドレス：</strong> GitHub Pagesでは、URLに <span className="code">/#/daily</span> を使います。
         この日のDAILYを直接開く場合は{' '}
-        <a href={href('/daily', { date: daily.date })} target="_blank" rel="noreferrer">
+        <a href={dailyDirectUrl} target="_blank" rel="noreferrer">
           こちら
         </a>{' '}
         です（<span className="code">/#/daily?date={daily.date}</span>）。
