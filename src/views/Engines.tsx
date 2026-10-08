@@ -39,8 +39,8 @@ export function EnginesView({ id }: { id: string | null }) {
 
       <PipelineComposer />
 
-      <section className="panel panel-pad small" aria-label="NAKAJIMA FILTER">
-        <strong>NAKAJIMA FILTER（個人の反応）</strong>
+      <section className="panel panel-pad small" aria-label="JIMA FILTER">
+        <strong>JIMA FILTER（個人の反応）</strong>
         <p className="muted" style={{ lineHeight: 1.8, marginBottom: 0 }}>
           「面白い」「微妙」「育てる」など、あなたの反応を記録する別レイヤーです。岡田・赤瀬川・南方・林などの人物由来エンジンや、操作・レンズの定義は変更しません。
         </p>
@@ -147,6 +147,15 @@ function EngineDetail({ engine }: { engine: ThinkingEngine }) {
           <a href="https://github.com/nakajima-yuji/principle-loop/blob/main/research/2026-10-08-okada-engine-v3-research.md" target="_blank" rel="noreferrer">300資料研究計画・出典区分を見る ↗</a>
         </div>
       )}
+      {engine.id === 'hayashi' && (
+        <div className="panel panel-pad stack" aria-label="HAYASHI FILTER v3.0">
+          <strong>HAYASHI FILTER v3.0｜未知の面白さを保護する</strong>
+          <p className="small muted">伝達力と未知の可能性は別軸。100点は試験的な説明補助であり、低得点だけで案を棄却しません。</p>
+          <HayashiScorecard />
+          <p className="small muted">原案維持・小改善・大胆な改変を並列に考え、最終判断は人間が行います。実際の試遊反応との予測誤差を次の評価へ戻してください。</p>
+          <a href="https://github.com/nakajima-yuji/principle-loop/blob/main/docs/HAYASHI_FILTER_V3.md" target="_blank" rel="noreferrer">設計・出典区分を見る ↗</a>
+        </div>
+      )}
       {engine.evidence && (
         <div>
           <span className="field-label">モデルの根拠（事実・観察・仮説）</span>
@@ -209,5 +218,62 @@ function EngineDetail({ engine }: { engine: ThinkingEngine }) {
       </div>
       <p className="small muted">使うときは、DAILY のカードを開いて（LIGHT DEEP）「思考エンジンを借りる」から選びます。DIARY の詳細からも選べます。</p>
     </section>
+  );
+}
+
+const HAYASHI_CRITERIA = [
+  { label: '王道との差分', max: 20 },
+  { label: '光点・伝達力', max: 20 },
+  { label: '感情の強度', max: 20 },
+  { label: '操作と因果', max: 15 },
+  { label: '展開・持続性', max: 15 },
+  { label: '独自の組み合わせ', max: 10 },
+] as const;
+
+function HayashiScorecard() {
+  const [scores, setScores] = useState<number[]>([10, 10, 10, 8, 8, 5]);
+  const [transmission, setTransmission] = useState('未評価');
+  const [unknown, setUnknown] = useState('未評価');
+  const [notes, setNotes] = useState('');
+  const total = scores.reduce((sum, value) => sum + value, 0);
+  const copy = () => {
+    const lines = [
+      'HAYASHI FILTER v3.0｜試験採点',
+      ...HAYASHI_CRITERIA.map((c, i) => `${c.label}: ${scores[i]}/${c.max}`),
+      `合計: ${total}/100（棄却基準ではない）`,
+      `伝達力: ${transmission}`,
+      `未知の可能性: ${unknown}`,
+      `原案の核・試作・予測と実際の反応: ${notes}`,
+      '原案維持／小改善／大胆な改変を並列に検討。BEST/FAR/WILDを点数順だけで捨てない。',
+    ];
+    void navigator.clipboard?.writeText(lines.join('\\n'));
+  };
+  return (
+    <div className="stack">
+      <strong>試験採点：{total}/100</strong>
+      {HAYASHI_CRITERIA.map((criterion, i) => (
+        <label key={criterion.label} className="stack small">
+          <span>{criterion.label}：{scores[i]}/{criterion.max}</span>
+          <input type="range" min={0} max={criterion.max} value={scores[i]}
+            onChange={(event) => setScores((old) => old.map((n, j) => j === i ? Number(event.target.value) : n))} />
+        </label>
+      ))}
+      <div className="row" style={{ gap: 12, flexWrap: 'wrap' }}>
+        <label className="stack small">伝達力
+          <select value={transmission} onChange={(e) => setTransmission(e.target.value)}>
+            {['未評価', '低い', '中程度', '高い'].map((v) => <option key={v}>{v}</option>)}
+          </select>
+        </label>
+        <label className="stack small">未知の可能性
+          <select value={unknown} onChange={(e) => setUnknown(e.target.value)}>
+            {['未評価', '要実験・保護', '低い', '中程度', '高い'].map((v) => <option key={v}>{v}</option>)}
+          </select>
+        </label>
+      </div>
+      <label className="stack small">原案の核・検証メモ
+        <textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="何を壊さないか／何を試すか／予測と実際の反応" />
+      </label>
+      <button type="button" className="btn sm" onClick={copy}>評価結果をコピー</button>
+    </div>
   );
 }
