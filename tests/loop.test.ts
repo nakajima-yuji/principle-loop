@@ -4,6 +4,8 @@ import path from 'node:path';
 import { test } from 'node:test';
 import { ENGINES, ENGINE_PIPELINE_EXAMPLES, engineChatPrompt, getEngine, getOperation, mixQuestions, pipelineChatPrompt, pipelineLabel, toggleEngine, validPipeline } from '../src/engines/index.ts';
 import { ENGINE_LENSES, ENGINE_OPERATIONS, TRANSFORM_OPS } from '../src/engines/transform.ts';
+import { MODULE_LEDGER } from '../src/engines/module-ledger.ts';
+import { emptyJimaFilter, jimaSummary, normalizeJimaProfile } from '../src/engines/jima-filter.ts';
 import {
   DIARY_FILTERS,
   chronological,
@@ -185,7 +187,7 @@ test('生成：3行の JSON を DailyItem にする（原理候補は「構造�
 test('ENGINES：データとして持ち、選んだときだけ使う（なし・複数も選べる）', () => {
   assert.deepEqual(
     ENGINES.map((e) => e.id),
-    ['none', 'okada', 'akasegawa', 'minakata', 'hayashi', 'ochiai', 'matsuoka', 'kondo'],
+    ['none', 'okada', 'akasegawa', 'akimoto', 'minakata', 'hayashi', 'ochiai', 'matsuoka', 'kondo', 'sakurai'],
   );
   for (const e of ENGINES) {
     for (const k of ['id', 'name', 'description', 'shortDescription'] as const) assert.ok(e[k].length > 0, `${e.id}.${k}`);
@@ -206,6 +208,12 @@ test('ENGINES：データとして持ち、選んだときだけ使う（なし�
   assert.ok(kondo?.viewpoints?.includes('やらないことを合理的な意思決定として扱う'));
   assert.ok(kondo?.evidence?.facts.includes('FIREシミュレーターを作る'));
   assert.ok(kondo?.evidence?.observations.length && kondo.evidence.hypotheses.length);
+  assert.equal(getEngine('akimoto')?.status, 'experimental');
+  assert.equal(getEngine('sakurai')?.status, 'experimental');
+  assert.equal(MODULE_LEDGER.length, 10);
+  assert.equal(MODULE_LEDGER.find((x) => x.moduleId === 'jima')?.decision, 'experimental');
+  assert.deepEqual(jimaSummary(normalizeJimaProfile({ version: 1, filter: 'JIMA FILTER', reactions: [{ id: 'a', reaction: 'interesting', createdAt: '2026-10-09T00:00:00Z' }] })), { explicit: 1, inferred: 0, adopted: 1, held: 0, rejected: 0, unknownProtected: 0 });
+  assert.deepEqual(jimaSummary(emptyJimaFilter()), { explicit: 0, inferred: 0, adopted: 0, held: 0, rejected: 0, unknownProtected: 0 });
   assert.equal(getEngine('akasegawa')?.origin, 'person');
   assert.equal(getEngine('minakata')?.origin, 'person');
   assert.equal(getEngine('hayashi')?.origin, 'person');

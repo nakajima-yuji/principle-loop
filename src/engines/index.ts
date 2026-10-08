@@ -15,6 +15,10 @@ export type ThinkingEngine = {
   name: string;
   description: string;
   shortDescription: string;
+  /** 定義の世代。人物本人の公式版を意味しない。 */
+  version?: string;
+  /** research / experimental など、確度を示す任意の状態 */
+  status?: 'stable' | 'research' | 'experimental';
   questions: string[];
   process: string[];
   suitableFor: string[];
@@ -119,6 +123,34 @@ export const ENGINES: readonly ThinkingEngine[] = [
     suitableFor: ['街や日常の観察', '漫画の小道具・背景', 'ゲームの謎や痕跡', '意味が後から立ち上がる作品'],
     operationIds: ['unknown-premise', 'observation-shift', 'counterexample'],
     lensIds: ['knowledge-gap', 'observer-subject'],
+  },
+  {
+    id: 'akimoto',
+    origin: 'person',
+    name: 'AKIMOTO REACTOR',
+    version: '0.1',
+    status: 'experimental',
+    shortDescription: '複数主体の相互作用から創発を起こす',
+    description:
+      '複数の主体・環境・ルールを同時に置き、各主体の反応が次の条件を変えるフィードバック系として観察する。単独のアイデアを評価するのではなく、相互作用・遅延・閾値・役割の変化から、設計者が直接書いていないパターン（創発）を発見する。秋元リアクターは研究中のPRINCIPLE LOOP独自モデルであり、本人の公式手法の再現とは断定しない。',
+    questions: [
+      '誰と誰（何と何）が相互作用している？',
+      '一方の行動が、もう一方の次の条件をどう変える？',
+      '反応の遅延・蓄積・閾値・正負のフィードバックはどこにある？',
+      '主体が増えたとき、個別の意図から予測できないパターンは出る？',
+      'ルールを一つ変えると、全体の関係・役割・均衡はどう変わる？',
+      '創発した現象を、観測可能・再現可能な小さな実験にできる？',
+    ],
+    process: ['主体・環境・ルールを分ける', '相互作用を書き出す', 'フィードバックと遅延を探す', '小さな系を動かす', '創発したパターンを記録する', 'ルールを一つ変えて再実験する'],
+    viewpoints: ['個体ではなく関係を見る', '相互作用が次の条件を変える', '遅延・蓄積・閾値', '意図しない秩序', '観測者も系に影響する'],
+    suitableFor: ['群衆・コミュニティ・組織の設計', 'ゲームのNPC・経済・生態系', '会話やSNSの連鎖', '創発するルールのプロトタイプ'],
+    evidence: {
+      facts: ['docs/AKIMOTO_REACTOR.md に独立した創発フレームの設計資料がある'],
+      observations: ['複数主体の反応と環境変化をループとして扱う設計が記録されている'],
+      hypotheses: ['相互作用を小さく実行すると、単独主体の分析では見えないパターンを発見できる'],
+    },
+    operationIds: ['state-change', 'latent-function', 'counterexample'],
+    lensIds: ['observer-subject', 'time-shift'],
   },
   {
     id: 'minakata',
@@ -276,6 +308,35 @@ export const ENGINES: readonly ThinkingEngine[] = [
     suitableFor: ['FIRE・日影・投資など条件依存の判断', 'リスクのある計画の事前検証', '複雑な情報をシミュレーターやツールにする', '他人が再利用できる実用品を設計するとき', '「面白い」を成立条件・失敗条件のある試作へ変える'],
     operationIds: ['deep-drill', 'state-change', 'latent-function'],
     lensIds: ['time-shift', 'knowledge-gap'],
+  },
+  {
+    id: 'sakurai',
+    origin: 'person',
+    name: 'SAKURAI GAMES',
+    version: '0.1',
+    status: 'experimental',
+    shortDescription: '操作と結果を試遊前にシミュレーションする',
+    description:
+      'プレイヤーが何を操作し、ゲーム世界がどう反応し、その結果として次に何をしたくなるかを事前に小さく検証する。ルールの面白さを説明文で採点せず、入力→即時反応→意味のある結果→次の選択という体験の連鎖として扱う。桜井ゲームスは研究中のPRINCIPLE LOOP独自モデルであり、本人の公式手法の完全な再現とは断定しない。',
+    questions: [
+      'プレイヤーは実際に何を入力・選択・操作する？',
+      '操作の直後に何が見え、聞こえ、変化する？',
+      '結果はプレイヤーの意図とどう結びつく？',
+      '30秒以内に「もう一度試したい」理由が生まれる？',
+      '操作の上達・発見・リスク・報酬はどこで増える？',
+      '紙・1画面・NPC3体など、最小の試遊で何を検証できる？',
+      '想定した面白さと実際のプレイヤー行動の差は何？',
+    ],
+    process: ['プレイヤーの目的を一文にする', '入力と結果を対応させる', '30秒のコアループを紙や模型にする', '予測される行動と意外な行動を分ける', '最小試遊で観察する', '操作・結果・ルールを一つずつ調整する'],
+    viewpoints: ['操作→反応→意味→次の選択', 'プレイヤーの意図とシステムの返答', '理解できるが予測しきれない', '試遊前の仮説と試遊後の差', '面白さを説明ではなく行動で見る'],
+    suitableFor: ['ゲームのコアループ設計', 'インタラクティブ作品', '玩具・遊びのプロトタイプ', '漫画や動画に転用できる選択と反応の設計'],
+    evidence: {
+      facts: ['現在は人物資料から確定した実装ではなく、ゲーム設計用の研究モデルとして追加する'],
+      observations: ['AUTOの出力にはplayer_or_viewer_action・core_loop・prototypeの項目が既にある'],
+      hypotheses: ['文章の面白さより、プレイヤーの操作と結果の反復を先に試すと成立条件を見つけやすい'],
+    },
+    operationIds: ['state-change', 'latent-function', 'extreme'],
+    lensIds: ['time-shift', 'observer-subject'],
   },
 ];
 

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { PageHead } from '../components/common.tsx';
 import { Icon } from '../components/Icon.tsx';
 import { ENGINES, ENGINE_PIPELINE_EXAMPLES, NONE_ENGINE_ID, pipelineChatPrompt, pipelineLabel, getEngine, type PipelineStep, type ThinkingEngine } from '../engines/index.ts';
+import { MODULE_LEDGER } from '../engines/module-ledger.ts';
 import { ENGINE_LENSES, ENGINE_OPERATIONS, TRANSFORM_OPS } from '../engines/transform.ts';
 import { href } from '../router.ts';
 import { LOOP_FLOW } from '../shared/loop.ts';
@@ -40,10 +41,25 @@ export function EnginesView({ id }: { id: string | null }) {
       <PipelineComposer />
 
       <section className="panel panel-pad small" aria-label="JIMA FILTER">
-        <strong>JIMA FILTER（個人の反応）</strong>
+        <strong>JIMA FILTER v2（個人の反応）</strong>
         <p className="muted" style={{ lineHeight: 1.8, marginBottom: 0 }}>
-          「面白い」「微妙」「育てる」など、あなたの反応を記録する別レイヤーです。岡田・赤瀬川・南方・林などの人物由来エンジンや、操作・レンズの定義は変更しません。
+          「面白い」「微妙」「育てる」など、あなたの明示判断・推定判断・短期／長期の差を記録する別レイヤーです。少数の反応で好みを断定せず、未知の候補を保護します。人物由来エンジンや操作・レンズの定義は変更しません。
         </p>
+      </section>
+
+      <section className="panel panel-pad small" aria-label="思考モジュール更新台帳">
+        <div className="panel-head">
+          <strong>思考モジュール更新台帳</strong>
+          <span className="muted">承認前は候補として保持</span>
+        </div>
+        <div className="stack small">
+          {MODULE_LEDGER.map((entry) => (
+            <div key={entry.moduleId} className="row" style={{ justifyContent: 'space-between', gap: 8 }}>
+              <span><strong>{entry.moduleName}</strong> <span className="muted">{entry.oldVersion} → {entry.newVersionCandidate}</span></span>
+              <span className="tag">{entry.decision === 'experimental' ? '実験中' : entry.decision}</span>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="panel panel-pad">
