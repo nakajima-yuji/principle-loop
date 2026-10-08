@@ -37,6 +37,11 @@ export const ENGINE_OPERATIONS: readonly TransformOp[] = [
   { id: 'improvised-hypothesis', label: '即興仮説生成（研究中）', example: '暫定説明を出す→説明しながら更新→前提と反例を確認', kind: 'technique' },
   { id: 'multi-problem-unification', label: '多問題統合（研究中）', example: '複数の問題を一つの因果構造で説明できるか検証', kind: 'technique' },
   { id: 'historical-premise-disruption', label: '時代的前提破壊（研究中）', example: '現代の常識を外し、異なる時代の制約で再構成', kind: 'technique' },
+  // v3.1: PRINCIPLE LOOP experimental extensions. Not established as Toshio Okada's own methods.
+  { id: 'hypothesis-branching', label: '仮説の連続生成（実験）', example: '同じ現象に対して相互に異なる仮説を3つ出し、観察可能な差を探す', kind: 'technique' },
+  { id: 'self-falsification', label: '自己反証（実験）', example: '最有力仮説が破綻する条件・反例・代替説明を明示する', kind: 'technique' },
+  { id: 'contradiction-drill', label: '矛盾の深掘り（実験）', example: '相反する欲求・制約を同時に生む原因を特定する', kind: 'technique' },
+  { id: 'practice-theory-revision', label: '行動による理論更新（実験）', example: '仮説→最小実験→観察→説明の更新を設計する', kind: 'technique' },
 ];
 
 export const ENGINE_LENSES: readonly TransformOp[] = [
