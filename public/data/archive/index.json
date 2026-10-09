@@ -1,7 +1,136 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-08T20:45:45.513Z",
+  "updatedAt": "2026-10-09T20:13:51.139Z",
   "days": [
+    {
+      "date": "2026-10-10",
+      "principleOfTheDay": "20261010-01",
+      "items": [
+        {
+          "id": "20261010-01",
+          "date": "2026-10-10",
+          "category": "nature",
+          "title": "生態系の多様性指標で遺伝の複雑さを測る",
+          "hook": "生物の形質に関わる遺伝子の多様性を測る手法が、生態学の「ヒル数」と等価であることが示されました。なぜ種を数える計算式が、微小な遺伝的寄与の集積を定量化できるのでしょうか。",
+          "principleCandidate": "複数の要素が寄与する集合体において、重要度に応じた重み付けを適応的に変化させることで、全体像を単一の数値に変換しているかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "The Hill numbers synthesize and generalize measures of trait polygenicity",
+          "sourceUrl": "https://arxiv.org/abs/2610.10825",
+          "sourceName": "arXiv（個体群・進化）",
+          "tags": [
+            "遺伝学",
+            "統計",
+            "多様性",
+            "数理モデル"
+          ]
+        },
+        {
+          "id": "20261010-02",
+          "date": "2026-10-10",
+          "category": "tech",
+          "title": "エージェントの学習が招く「過密」という損失の逆説",
+          "hook": "協力者が資源を求めて学習し移動するほど、集団全体の福祉が低下する現象が見られた。効率的な行動を求めたはずが、なぜかランダム移動よりも悪い結果を招いている。",
+          "principleCandidate": "個別の最適化が全体の容量制限を無視することで、全体最適を損なう現象かもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Spatial Pattern Formation from Multi-Agent Learning in Public Goods Dilemmas",
+          "sourceUrl": "https://arxiv.org/abs/2610.12321",
+          "sourceName": "arXiv（マルチエージェント）",
+          "tags": [
+            "マルチエージェント",
+            "学習アルゴリズム",
+            "公共財ゲーム"
+          ]
+        },
+        {
+          "id": "20261010-03",
+          "date": "2026-10-10",
+          "category": "science",
+          "title": "雑音を「調律」する適応的結合の力",
+          "hook": "ノイズが逆に秩序を生む「確率共鳴」という現象がある。この現象を、結合の強さを自ら変えるネットワークで制御できるという研究が示された。ノイズを排除するのではなく、むしろ利用するシステムの可能性かもしれない。",
+          "principleCandidate": "環境の揺らぎに対し、相互作用の強度が動的に追従することで特定の周期性が浮かび上がる仕組み。",
+          "minimumStructure": "",
+          "sourceTitle": "Stochastic resonance in adaptive dynamical networks",
+          "sourceUrl": "https://arxiv.org/abs/2610.11367",
+          "sourceName": "arXiv（自己組織化・適応系）",
+          "tags": [
+            "確率共鳴",
+            "自己組織化",
+            "適応系",
+            "物理学"
+          ]
+        },
+        {
+          "id": "20261010-04",
+          "date": "2026-10-10",
+          "category": "mind",
+          "title": "同期する電力網の「安全な領域」をエネルギー障壁から再定義する",
+          "hook": "電力網の同期は安定しているように見えても、一時的な揺らぎで限界を超え、保護機能が作動してしまうことがある。同期後の状態だけでなく、そこに至るまでの「過程」に隠された脆弱性が指摘されている。",
+          "principleCandidate": "システムが許容する最大負荷を、最終状態の安定性ではなく、推移過程のエネルギー障壁の厚みで規定できるかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Energy-barrier characterization of secured basins in coupled oscillators with inertia",
+          "sourceUrl": "https://arxiv.org/abs/2610.11147",
+          "sourceName": "arXiv（物理と社会）",
+          "tags": [
+            "システム安定性",
+            "倉本モデル",
+            "複雑ネットワーク"
+          ]
+        },
+        {
+          "id": "20261010-05",
+          "date": "2026-10-10",
+          "category": "build",
+          "title": "歴史の周縁を「貴族」として描く肖像写真の転換",
+          "hook": "写真家ティム・ウォーカーは、LGBTQ+の歴史を綴る展覧会で、活動家たちを16世紀のチューダー朝の肖像画風に撮影しました。なぜ、歴史的に抑圧されてきた人々を権威の象徴である「貴族」の構図で再定義したのでしょうか。",
+          "principleCandidate": "権力の視覚言語を借り受けることで、記憶の階層を意図的に書き換える手法かもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "tim walker traces five decades of queer activism through portraiture in ‘fairyland’",
+          "sourceUrl": "https://www.designboom.com/art/tim-walker-five-decades-queer-activism-portraiture-national-portrait-gallery-london-fairyland/",
+          "sourceName": "designboom",
+          "tags": [
+            "写真",
+            "歴史",
+            "権力",
+            "表象"
+          ]
+        },
+        {
+          "id": "20261010-06",
+          "date": "2026-10-10",
+          "category": "foreign",
+          "title": "墓地が観光地化する時の「不穏」の正体",
+          "hook": "静寂の場であるはずの墓地が、都市伝説や心霊スポットとして観光資源に変換されています。死者の安眠を妨げるようなこの現象は、歴史を保存する行為と好奇心の境界を曖昧にしているのかもしれません。",
+          "principleCandidate": "場所の持つ本来の機能が失われた後、外部からの物語付与によって別の価値が再構築されるプロセスかもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Atlas Obscura’s Guide to America’s Most Haunted Cemeteries",
+          "sourceUrl": "https://www.atlasobscura.com/articles/america-haunted-cemeteries",
+          "sourceName": "Atlas Obscura",
+          "tags": [
+            "墓地",
+            "観光",
+            "歴史",
+            "都市伝説"
+          ]
+        },
+        {
+          "id": "20261010-07",
+          "date": "2026-10-10",
+          "category": "science",
+          "title": "Twitchチャットの文字列に潜む複雑な自己組織化の兆候",
+          "hook": "ライブ配信のチャット欄は無秩序な罵倒の羅列に見える。しかし、そのメッセージの長さや投稿間隔を解析すると、個人の意識の流れに似た数学的な規則性が浮かび上がるかもしれない。",
+          "principleCandidate": "外部刺激に対する反応が、個々の独立性を超えてシステム全体で特定の揺らぎを生み出す動的な結合系かもしれない。",
+          "minimumStructure": "",
+          "sourceTitle": "Some Twitch chats exhibit multifractal characteristics resembling stream-of-consciousness narrative",
+          "sourceUrl": "https://arxiv.org/abs/2610.10654",
+          "sourceName": "arXiv（自己組織化・適応系）",
+          "tags": [
+            "物理学",
+            "複雑系",
+            "人間行動"
+          ]
+        }
+      ]
+    },
     {
       "date": "2026-10-09",
       "principleOfTheDay": "20261009-01",
