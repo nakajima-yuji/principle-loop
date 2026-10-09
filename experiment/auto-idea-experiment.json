@@ -6,9 +6,9 @@
   "maxDailyImages": 3,
   "maxTotalImages": 21,
   "monthlyBudgetJpy": 1500,
-  "totalImages": 12,
-  "totalTextCalls": 4,
-  "totalImageCalls": 12,
+  "totalImages": 15,
+  "totalTextCalls": 5,
+  "totalImageCalls": 15,
   "stopped": false,
-  "updatedAt": "2026-10-08T20:50:06.741Z"
+  "updatedAt": "2026-10-09T20:16:27.474Z"
 }
