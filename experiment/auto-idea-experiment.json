@@ -9,6 +9,7 @@
   "totalImages": 18,
   "totalTextCalls": 6,
   "totalImageCalls": 18,
-  "stopped": false,
-  "updatedAt": "2026-10-11T19:41:14.795Z"
+  "stopped": true,
+  "updatedAt": "2026-10-12T22:35:07.711Z",
+  "stopReason": "7-day experiment completed"
 }
