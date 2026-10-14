@@ -1,7 +1,7 @@
 {
   "lastGeneratedDate": "2026-10-13",
   "lastMailedDate": "2026-10-13",
-  "pauseNoticePending": true,
+  "pauseNoticePending": false,
   "aiUsage": {
     "date": "2026-10-13",
     "requests": 8
